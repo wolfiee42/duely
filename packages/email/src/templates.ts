@@ -102,3 +102,85 @@ export function magicLinkEmail(input: Brand & { url: string; minutes: number }):
     text: `Use this link to view your invoices. It works once and expires in ${input.minutes} minutes.\n\n${input.url}\n`,
   };
 }
+
+export interface ReminderInput {
+  clientName: string;
+  number: string;
+  amountDueMinor: number;
+  dueDate: string;
+  /** Negative before the due date, positive after. */
+  daysFromDue: number;
+  templateKey: "pre_due" | "due" | "overdue" | "final";
+  tone: "friendly" | "neutral" | "firm";
+}
+
+const plural = (n: number, word: string) => `${n} ${word}${n === 1 ? "" : "s"}`;
+
+/** Where the invoice link goes in a stored reminder body; filled in when the email is sent. */
+export const PORTAL_URL_TOKEN = "{{portal_url}}";
+
+/**
+ * The editable part of a reminder: a subject and a plain-text body for one policy step. The body holds
+ * `{{portal_url}}` where the pay link goes. Reviewers can change the text before it is sent (FR-9.12).
+ */
+export function reminderDraft(input: ReminderInput): { subject: string; body: string } {
+  const amount = formatUsd(input.amountDueMinor);
+  const days = Math.abs(input.daysFromDue);
+  const when =
+    input.daysFromDue < 0
+      ? `due in ${plural(days, "day")} (${input.dueDate})`
+      : input.daysFromDue === 0
+        ? `due today (${input.dueDate})`
+        : `${plural(days, "day")} past due (due ${input.dueDate})`;
+
+  const subject =
+    input.templateKey === "final"
+      ? `Final reminder: invoice ${input.number}`
+      : input.templateKey === "overdue"
+        ? `Invoice ${input.number} is past due`
+        : input.templateKey === "due"
+          ? `Invoice ${input.number} is due today`
+          : `Invoice ${input.number} is due soon`;
+
+  const lead = {
+    friendly: "Just a friendly reminder that",
+    neutral: "This is a reminder that",
+    firm: "Our records show that",
+  }[input.tone];
+  const close = {
+    friendly:
+      "If you've already paid, thank you, and please ignore this note. Reply to this email if anything is unclear.",
+    neutral:
+      "If you've already paid, thank you. Reply to this email if you have a question or need to arrange a payment date.",
+    firm: "Please pay as soon as you can. If there is a problem with this invoice, reply to this email so we can sort it out.",
+  }[input.tone];
+
+  return {
+    subject,
+    body: `Hello ${input.clientName},\n\n${lead} invoice ${input.number} for ${amount} is ${when}.\n\n${close}\n\nView and pay: ${PORTAL_URL_TOKEN}`,
+  };
+}
+
+/** Turns a stored reminder (possibly edited by a person) into the email that is sent. Everything is escaped. */
+export function renderReminder(
+  input: Brand & { subject: string; body: string; portalUrl: string; unsubscribeUrl: string },
+): Rendered {
+  const text = input.body.replaceAll(PORTAL_URL_TOKEN, input.portalUrl);
+  const paragraphs = input.body
+    .split(/\n{2,}/)
+    .filter((p) => !p.includes(PORTAL_URL_TOKEN))
+    .map((p) => `<p>${escapeHtml(p).replaceAll("\n", "<br>")}</p>`)
+    .join("");
+  const note = "Don't want these reminders?";
+  return {
+    subject: input.subject,
+    html: layout(input, input.subject, paragraphs, {
+      label: "View and pay",
+      url: input.portalUrl,
+    }).replace(
+      "</body>",
+      `<p style="color:#666;font-size:12px">${note} <a href="${safeUrl(input.unsubscribeUrl)}">Stop reminders</a></p></body>`,
+    ),
+    text: `${text}\n\n${note} ${input.unsubscribeUrl}\n`,
+  };
+}

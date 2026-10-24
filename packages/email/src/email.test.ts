@@ -3,6 +3,7 @@ import { describe, expect, it } from "vite-plus/test";
 import { createResendClient, EmailSendError } from "./client";
 import { createFakeEmail } from "./fake";
 import { escapeHtml, invoiceEmail, magicLinkEmail, receiptEmail } from "./templates";
+import { EmailWebhookError, signSvix, verifyResendWebhook } from "./webhook";
 
 const brand = { firmName: "Acme <b>&</b> Co", brandColor: "#112233" };
 
@@ -98,5 +99,55 @@ describe("fake email", () => {
     const b = await f.send(m);
     expect(b).toEqual(a);
     expect(f.sent).toHaveLength(1);
+  });
+});
+
+describe("Resend webhook verification", () => {
+  const secret = `whsec_${btoa("super-secret-key-bytes")}`;
+  const body = JSON.stringify({ type: "email.bounced", data: { email_id: "re_1" } });
+  const now = 1_800_000_000;
+  const headers = async (
+    over: Partial<Record<"id" | "timestamp" | "signature", string | null>> = {},
+  ) => ({
+    id: "msg_1",
+    timestamp: String(now),
+    signature: await signSvix("msg_1", now, body, secret),
+    ...over,
+  });
+
+  it("accepts a correctly signed event", async () => {
+    const event = await verifyResendWebhook(body, await headers(), secret, { nowSeconds: now });
+    expect(event.type).toBe("email.bounced");
+  });
+
+  it("accepts any of several signatures during secret rotation", async () => {
+    const h = await headers();
+    const rotated = { ...h, signature: `v1,AAAA ${h.signature}` };
+    await expect(
+      verifyResendWebhook(body, rotated, secret, { nowSeconds: now }),
+    ).resolves.toBeTruthy();
+  });
+
+  it.each([
+    ["no signature", { signature: null }],
+    ["no id", { id: null }],
+    ["a wrong signature", { signature: "v1,AAAAAAAA" }],
+    ["a replayed old timestamp", { timestamp: String(now - 3600) }],
+  ])("rejects %s", async (_label, over) => {
+    await expect(
+      verifyResendWebhook(body, await headers(over), secret, { nowSeconds: now }),
+    ).rejects.toBeInstanceOf(EmailWebhookError);
+  });
+
+  it("rejects a tampered body", async () => {
+    await expect(
+      verifyResendWebhook(`${body} `, await headers(), secret, { nowSeconds: now }),
+    ).rejects.toThrow(/mismatch/);
+  });
+
+  it("refuses everything when no secret is configured", async () => {
+    await expect(
+      verifyResendWebhook(body, await headers(), "", { nowSeconds: now }),
+    ).rejects.toThrow(/not configured/);
   });
 });
