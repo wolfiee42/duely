@@ -1,0 +1,49 @@
+{
+  "name": "cove-monorepo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "vp run --recursive build",
+    "build:web": "vp run web#build",
+    "dev": "vp run --recursive --parallel dev",
+    "dev:web": "vp run --filter=@repo/web dev",
+    "lint": "vp lint --type-aware --type-check",
+    "lint:fix": "vp lint --type-aware --type-check --fix",
+    "test": "vp test",
+    "test:e2e": "vp run --recursive test:e2e",
+    "format": "vp fmt",
+    "format:check": "vp fmt --check",
+    "check": "vp check",
+    "check:fix": "vp check --fix",
+    "env:audit": "cd apps/web && varlock audit . ../../packages/auth ../../packages/db",
+    "env:load": "varlock load --path apps/web",
+    "env:codegen": "varlock codegen --path apps/web",
+    "prepare": "vp config && vp run env:codegen",
+    "deps": "vpx taze@latest -Ilwr --maturity-period 3",
+    "fallow": "vpx fallow@latest --skip health",
+    "tanstack": "vpx @tanstack/cli@latest",
+    "db": "vp run --filter=@repo/db db",
+    "ui": "vp run --filter=@repo/ui ui",
+    "ui:web": "vp run --filter=@repo/web ui",
+    "auth:secret": "vpx auth@latest secret",
+    "auth:generate": "vp run --filter=@repo/db auth:generate",
+    "skills": "vpx skills@latest",
+    "intent": "vpx @tanstack/intent@latest"
+  },
+  "devDependencies": {
+    "@tanstack/eslint-plugin-query": "catalog:",
+    "@tanstack/eslint-plugin-router": "catalog:",
+    "varlock": "catalog:",
+    "vite-plus": "catalog:"
+  },
+  "engines": {
+    "node": ">=24"
+  },
+  "packageManager": "pnpm@12.15.0",
+  "generator": "create-cove",
+  "intent": {
+    "skills": [
+      "@tanstack/*"
+    ]
+  }
+}

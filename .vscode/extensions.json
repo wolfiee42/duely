@@ -1,0 +1,7 @@
+{
+  "recommendations": [
+    "VoidZero.vite-plus-extension-pack",
+    "bradlc.vscode-tailwindcss",
+    "varlock.env-spec-language"
+  ]
+}
