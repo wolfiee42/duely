@@ -5,6 +5,7 @@ import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query
 import { DefaultCatchBoundary } from "#/components/default-catch-boundary.tsx";
 import { DefaultNotFound } from "#/components/default-not-found.tsx";
 
+import { createStaffTrpc } from "./lib/trpc/staff.ts";
 import { routeTree } from "./routeTree.gen";
 
 export function getRouter() {
@@ -19,7 +20,7 @@ export function getRouter() {
 
   const router = createRouter({
     routeTree,
-    context: { queryClient },
+    context: { queryClient, trpc: createStaffTrpc(queryClient) },
     defaultPreload: "intent",
     // react-query will handle data fetching & caching
     // https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#passing-all-loader-events-to-an-external-cache

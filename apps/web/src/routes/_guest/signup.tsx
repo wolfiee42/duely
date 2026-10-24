@@ -1,5 +1,4 @@
 import { authClient } from "@repo/auth/auth-client";
-import { authQueryOptions } from "@repo/auth/tanstack/queries";
 import { Button } from "@repo/ui/components/button";
 import { Input } from "@repo/ui/components/input";
 import { Label } from "@repo/ui/components/label";
@@ -8,7 +7,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { LoaderCircleIcon } from "lucide-react";
 
-import { SocialSignInButtons } from "#/components/sign-in-social-buttons.tsx";
+import { authQueryOptions } from "#/lib/auth/queries.ts";
 
 export const Route = createFileRoute("/_guest/signup")({
   component: SignupForm,
@@ -76,7 +75,7 @@ function SignupForm() {
     <div className="flex flex-col gap-6">
       <div className="space-y-2 text-center">
         <h1 className="text-2xl font-bold tracking-tight">Create your account</h1>
-        <p className="text-sm text-muted-foreground">Start with a few basic details.</p>
+        <p className="text-sm text-muted-foreground">First your account, then your firm.</p>
       </div>
       <form onSubmit={handleSubmit} aria-busy={isPending}>
         <div className="flex flex-col gap-6">
@@ -134,7 +133,6 @@ function SignupForm() {
               {isPending ? "Signing up..." : "Sign up"}
             </Button>
           </div>
-          <SocialSignInButtons callbackURL={redirectUrl} disabled={isPending} />
         </div>
       </form>
 

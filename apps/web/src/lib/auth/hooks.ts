@@ -1,6 +1,6 @@
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 
-import { authQueryOptions } from "./queries";
+import { authQueryOptions } from "./queries.ts";
 
 /**
  * These hooks can be used in our components.

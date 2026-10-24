@@ -1,14 +1,9 @@
 import { createAuthClient } from "better-auth/react";
-import { ENV } from "varlock/env";
 
 /**
  * https://better-auth.com/docs/concepts/client
  *
- * Our better-auth server instance lives in the TanStack Start server,
- * so authClient should only be used on the client (event handlers, effects, etc).
- *
- * For server/SSR operations, prefer `auth.api` instead, and wrap in a serverFn if needed.
+ * Requests go to the page's own origin, which is always the app host: staff auth lives only there (D20).
+ * Use it on the client only (event handlers, effects, etc). On the server, call `createAuth().api`.
  */
-export const authClient = createAuthClient({
-  baseURL: ENV.VITE_BASE_URL,
-});
+export const authClient = createAuthClient();

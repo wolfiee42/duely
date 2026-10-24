@@ -11,13 +11,14 @@
     "deploy": "vp run build && varlock-wrangler deploy",
     "start:e2e": "varlock run -- node .output/server/index.mjs",
     "test:e2e": "playwright test --pass-with-no-tests",
-    "ui": "vpx shadcn@latest"
+    "ui": "vpx shadcn@latest",
+    "cf-typegen": "wrangler types"
   },
   "dependencies": {
     "@fontsource-variable/inter": "catalog:",
     "@icons-pack/react-simple-icons": "catalog:",
+    "@repo/api": "workspace:*",
     "@repo/auth": "workspace:*",
-    "@repo/db": "workspace:*",
     "@repo/logger": "workspace:*",
     "@repo/ui": "workspace:*",
     "@tanstack/react-form": "catalog:",
@@ -25,9 +26,10 @@
     "@tanstack/react-router": "catalog:",
     "@tanstack/react-router-ssr-query": "catalog:",
     "@tanstack/react-start": "catalog:",
+    "@trpc/client": "catalog:",
+    "@trpc/tanstack-react-query": "catalog:",
     "@varlock/cloudflare-integration": "catalog:",
     "date-fns": "catalog:",
-    "drizzle-orm": "catalog:",
     "evlog": "catalog:",
     "lucide-react": "catalog:",
     "nanoid": "catalog:",

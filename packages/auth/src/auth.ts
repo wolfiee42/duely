@@ -1,53 +1,49 @@
-import "@tanstack/react-start/server-only";
 import { drizzleAdapter } from "@better-auth/drizzle-adapter/relations-v2";
-import { db } from "@repo/db";
+import type { Db } from "@repo/db";
 import * as schema from "@repo/db/schema";
 import { betterAuth } from "better-auth/minimal";
-import { tanstackStartCookies } from "better-auth/tanstack-start";
-import { ENV } from "varlock/env";
 
-export const auth = betterAuth({
-  baseURL: ENV.VITE_BASE_URL,
-  secret: ENV.BETTER_AUTH_SECRET,
-  telemetry: {
-    enabled: false,
-  },
-  database: drizzleAdapter(db, {
-    provider: "pg",
-    schema,
-  }),
+export interface AuthConfig {
+  /** A per-request client (SPEC 9.1); never keep the returned instance at module scope. */
+  db: Db;
+  /** Public origin of the app host. Cookies are host-only on it and never sent to tenant hosts (D20). */
+  baseURL: string;
+  secret: string;
+}
 
-  // https://better-auth.com/docs/integrations/tanstack#usage-tips
-  plugins: [tanstackStartCookies()],
+export function createAuth({ db, baseURL, secret }: AuthConfig) {
+  return betterAuth({
+    baseURL,
+    secret,
+    telemetry: {
+      enabled: false,
+    },
+    database: drizzleAdapter(db, {
+      provider: "pg",
+      schema,
+    }),
 
-  // https://better-auth.com/docs/concepts/session-management#session-caching
-  session: {
-    cookieCache: {
+    // https://better-auth.com/docs/concepts/session-management#session-caching
+    session: {
+      cookieCache: {
+        enabled: true,
+        maxAge: 5 * 60, // 5 minutes
+      },
+    },
+
+    // D9: email and password only for v1.
+    // https://better-auth.com/docs/authentication/email-password
+    emailAndPassword: {
       enabled: true,
-      maxAge: 5 * 60, // 5 minutes
     },
-  },
 
-  // https://better-auth.com/docs/concepts/oauth
-  socialProviders: {
-    github: {
-      clientId: ENV.GITHUB_CLIENT_ID!,
-      clientSecret: ENV.GITHUB_CLIENT_SECRET,
+    advanced: {
+      database: {
+        // https://better-auth.com/docs/adapters/drizzle#joins
+        joins: true,
+      },
     },
-    google: {
-      clientId: ENV.GOOGLE_CLIENT_ID!,
-      clientSecret: ENV.GOOGLE_CLIENT_SECRET,
-    },
-  },
-  // https://better-auth.com/docs/authentication/email-password
-  emailAndPassword: {
-    enabled: true,
-  },
+  });
+}
 
-  advanced: {
-    database: {
-      // https://better-auth.com/docs/adapters/drizzle#joins
-      joins: true,
-    },
-  },
-});
+export type Auth = ReturnType<typeof createAuth>;

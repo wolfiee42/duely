@@ -8,9 +8,20 @@ import { ReactQueryDevtoolsPanel } from "@tanstack/react-query-devtools";
 import { createRootRouteWithContext, HeadContent, Scripts } from "@tanstack/react-router";
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
+import { $getHostContext } from "#/lib/host.ts";
+import type { StaffTrpc } from "#/lib/trpc/staff.ts";
+
 import appCss from "#/styles.css?url";
 
-export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
+export const Route = createRootRouteWithContext<{ queryClient: QueryClient; trpc: StaffTrpc }>()({
+  // The host never changes within a session, so it is fetched once and cached.
+  beforeLoad: async ({ context }) => ({
+    host: await context.queryClient.query({
+      queryKey: ["host"],
+      queryFn: () => $getHostContext(),
+      staleTime: "static",
+    }),
+  }),
   head: () => ({
     meta: [
       {
@@ -22,22 +33,15 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       },
       {
         // scaffold:title
-        title: "Cove Stack",
+        title: "Duely",
       },
       {
         name: "description",
         // scaffold:description
-        content: "A minimal monorepo starter stack for 🏝️ TanStack Start",
+        content: "Invoicing and collections for small firms",
       },
     ],
-    links: [
-      // Replace with your icons here, or remove if you have a favicon.ico in public/
-      {
-        rel: "icon",
-        href: "https://mugnavo.com/favicon.ico",
-      },
-      { rel: "stylesheet", href: appCss },
-    ],
+    links: [{ rel: "stylesheet", href: appCss }],
   }),
   shellComponent: RootDocument,
 });

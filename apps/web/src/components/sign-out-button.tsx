@@ -1,8 +1,9 @@
 import { authClient } from "@repo/auth/auth-client";
-import { authQueryOptions } from "@repo/auth/tanstack/queries";
 import { Button } from "@repo/ui/components/button";
 import { useQueryClient } from "@tanstack/react-query";
 import { useRouter } from "@tanstack/react-router";
+
+import { authQueryOptions } from "#/lib/auth/queries.ts";
 
 export function SignOutButton() {
   const queryClient = useQueryClient();

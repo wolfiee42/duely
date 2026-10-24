@@ -7,8 +7,6 @@ import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { LoaderCircleIcon } from "lucide-react";
 
-import { SocialSignInButtons } from "#/components/sign-in-social-buttons.tsx";
-
 export const Route = createFileRoute("/_guest/login")({
   component: LoginForm,
 });
@@ -91,7 +89,6 @@ function LoginForm() {
               {isPending ? "Logging in..." : "Log in"}
             </Button>
           </div>
-          <SocialSignInButtons callbackURL={redirectUrl} disabled={isPending} />
         </div>
       </form>
 

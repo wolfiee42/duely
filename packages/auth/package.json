@@ -8,17 +8,12 @@
   },
   "dependencies": {
     "@better-auth/drizzle-adapter": "catalog:",
-    "better-auth": "catalog:",
-    "varlock": "catalog:"
+    "@repo/db": "workspace:*",
+    "better-auth": "catalog:"
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
     "@types/node": "catalog:",
     "typescript": "catalog:"
-  },
-  "peerDependencies": {
-    "@repo/db": "workspace:*",
-    "@tanstack/react-query": "catalog:",
-    "@tanstack/react-start": "catalog:"
   }
 }

@@ -1,10 +1,10 @@
 import { queryOptions } from "@tanstack/react-query";
 
-import { $getUser } from "./functions";
+import { $getUser } from "./functions.ts";
 
 /**
- * This query is mainly used in _auth/route.tsx, which is the _auth layout
- * that protects all child routes under it (e.g. _auth/app/*)
+ * Shared by the route guards (_guest, _staff, onboarding) so the signed-in user is fetched once
+ * and cached by TanStack Query.
  */
 export const authQueryOptions = () =>
   queryOptions({
