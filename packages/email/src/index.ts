@@ -1,2 +1,3 @@
-// Email templates and provider adapter. Filled in by later Phase 1+ tasks.
-export {};
+export * from "./client";
+export * from "./templates";
+export * from "./types";
