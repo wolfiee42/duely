@@ -5,11 +5,12 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./schema": "./src/schema/index.ts"
+    "./schema": "./src/schema/index.ts",
+    "./testing": "./src/testing.ts"
   },
   "scripts": {
     "db": "varlock run --path ../../apps/web -- drizzle-kit",
-    "auth:generate": "varlock run --path ../../apps/web -- vpx auth@latest generate --config ../auth/src/auth.ts --y --output ./src/schema/auth.schema.ts"
+    "auth:generate": "varlock run --path ../../apps/web -- vpx auth@latest generate --config ../auth/src/cli.ts --y --output ./src/schema/auth.schema.ts"
   },
   "dependencies": {
     "drizzle-orm": "catalog:",
@@ -22,8 +23,5 @@
     "@types/node": "catalog:",
     "drizzle-kit": "catalog:",
     "typescript": "catalog:"
-  },
-  "peerDependencies": {
-    "@tanstack/react-start": "catalog:"
   }
 }

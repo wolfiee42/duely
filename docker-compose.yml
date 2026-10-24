@@ -1,14 +1,18 @@
 services:
   db:
-    image: postgres:alpine
+    image: postgres:18-alpine
     ports:
       - 5432:5432
     volumes:
-      - postgres_data_cove:/var/lib/postgresql
+      - postgres_data_duely:/var/lib/postgresql
+      # Runs once, on first start of an empty volume: roles (SPEC D4), local passwords, db owner.
+      - ./packages/db/sql/roles.sql:/docker-entrypoint-initdb.d/01-roles.sql:ro
+      - ./packages/db/sql/dev-passwords.sql:/docker-entrypoint-initdb.d/02-dev-passwords.sql:ro
+      - ./packages/db/sql/dev-database.sql:/docker-entrypoint-initdb.d/03-dev-database.sql:ro
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=cove
+      - POSTGRES_DB=duely
 
 volumes:
-  postgres_data_cove:
+  postgres_data_duely:
