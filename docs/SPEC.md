@@ -1067,18 +1067,18 @@ Each spike ends with a written result in `docs/adr/`. A failed spike means the a
 
 ### Phase 4: Collections engine
 
-- [ ] P4-01 · Migration 003: policies, steps, reminder_jobs, messages, promises, disputes, review_items · M
-- [ ] P4-02 · `packages/domain` planner + quiet hours/timezone/DST property tests · L · 9.8
-- [ ] P4-03 · Policy and steps CRUD + default policy on firm creation · M · 9.1 to 9.3
-- [ ] P4-04 · Plan jobs on send; cancel on pay/void · M · 9.4, 9.6
-- [ ] P4-05 · `workers/jobs` `scheduled()` tick: claim, enqueue, reaper (jobs and queued messages), sweeps · L · 9.5
-- [ ] P4-06 · `process_job` and `send_message` consumers per section 3.2 (outbox) · L · 9.9, 8.3
-- [ ] P4-07 · **Scheduler-concurrency + send-recheck tests** (gate) · M
-- [ ] P4-08 · Promise and dispute pause/resume + replan · L · 9.7, 10.x
-- [ ] P4-09 · Draft approval flow + review queue UI (v1 without AI) · M · 9.12, 12.1, 12.2
-- [ ] P4-10 · Resend delivery webhooks, bounce handling, unsubscribe · M · 8.4, 8.7
-- [ ] P4-11 · Inbound email pipeline: token matching, stripping, unmatched → queue · L · 8.5, 8.6, 8.8
-- [ ] P4-12 · Policy preview endpoint and UI · S · 9.11
+- [x] P4-01 · Migration 003: policies, steps, reminder_jobs, messages, promises, disputes, review_items · M
+- [x] P4-02 · `packages/domain` planner + quiet hours/timezone/DST property tests · L · 9.8
+- [x] P4-03 · Policy and steps CRUD + default policy on firm creation · M · 9.1 to 9.3
+- [x] P4-04 · Plan jobs on send; cancel on pay/void · M · 9.4, 9.6
+- [x] P4-05 · `workers/jobs` `scheduled()` tick: claim, enqueue, reaper (jobs and queued messages), sweeps · L · 9.5
+- [x] P4-06 · `process_job` and `send_message` consumers per section 3.2 (outbox) · L · 9.9, 8.3
+- [x] P4-07 · **Scheduler-concurrency + send-recheck tests** (gate) · M
+- [x] P4-08 · Promise and dispute pause/resume + replan · L · 9.7, 10.x
+- [x] P4-09 · Draft approval flow + review queue UI (v1 without AI) · M · 9.12, 12.1, 12.2
+- [x] P4-10 · Resend delivery webhooks, bounce handling, unsubscribe · M · 8.4, 8.7
+- [x] P4-11 · Inbound email pipeline: token matching, stripping, unmatched → queue · L · 8.5, 8.6, 8.8
+- [x] P4-12 · Policy preview endpoint and UI · S · 9.11
 
 ### Phase 5: AI layer
 

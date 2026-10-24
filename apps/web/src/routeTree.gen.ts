@@ -23,11 +23,14 @@ import { Route as PortalIndexRouteImport } from './routes/portal/index'
 import { Route as PortalLoginRouteImport } from './routes/portal/login'
 import { Route as PortalReceiptsRouteImport } from './routes/portal/receipts'
 import { Route as StaffAppIndexRouteImport } from './routes/_staff/app/index'
+import { Route as StaffAppPoliciesRouteImport } from './routes/_staff/app/policies'
+import { Route as StaffAppReviewRouteImport } from './routes/_staff/app/review'
 import { Route as StaffAppSettingsRouteImport } from './routes/_staff/app/settings'
 import { Route as ApiDevActivateDomainRouteImport } from './routes/api/dev/activate-domain'
 import { Route as ApiDevCompleteOnboardingRouteImport } from './routes/api/dev/complete-onboarding'
 import { Route as ApiDevOutboxRouteImport } from './routes/api/dev/outbox'
 import { Route as ApiDevSimulatePaymentRouteImport } from './routes/api/dev/simulate-payment'
+import { Route as ApiDevTickRouteImport } from './routes/api/dev/tick'
 import { Route as PortalInvoicesInvoiceIdRouteImport } from './routes/portal/invoices/$invoiceId'
 import { Route as StaffAppClientsIndexRouteImport } from './routes/_staff/app/clients/index'
 import { Route as StaffAppClientsClientIdRouteImport } from './routes/_staff/app/clients/$clientId'
@@ -103,6 +106,16 @@ const StaffAppIndexRoute = StaffAppIndexRouteImport.update({
   path: '/',
   getParentRoute: () => StaffAppRouteRoute,
 } as any)
+const StaffAppPoliciesRoute = StaffAppPoliciesRouteImport.update({
+  id: '/policies',
+  path: '/policies',
+  getParentRoute: () => StaffAppRouteRoute,
+} as any)
+const StaffAppReviewRoute = StaffAppReviewRouteImport.update({
+  id: '/review',
+  path: '/review',
+  getParentRoute: () => StaffAppRouteRoute,
+} as any)
 const StaffAppSettingsRoute = StaffAppSettingsRouteImport.update({
   id: '/settings',
   path: '/settings',
@@ -127,6 +140,11 @@ const ApiDevOutboxRoute = ApiDevOutboxRouteImport.update({
 const ApiDevSimulatePaymentRoute = ApiDevSimulatePaymentRouteImport.update({
   id: '/api/dev/simulate-payment',
   path: '/api/dev/simulate-payment',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ApiDevTickRoute = ApiDevTickRouteImport.update({
+  id: '/api/dev/tick',
+  path: '/api/dev/tick',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PortalInvoicesInvoiceIdRoute = PortalInvoicesInvoiceIdRouteImport.update({
@@ -173,11 +191,14 @@ export interface FileRoutesByFullPath {
   '/portal/login': typeof PortalLoginRoute
   '/portal/receipts': typeof PortalReceiptsRoute
   '/portal/': typeof PortalIndexRoute
+  '/app/policies': typeof StaffAppPoliciesRoute
+  '/app/review': typeof StaffAppReviewRoute
   '/app/settings': typeof StaffAppSettingsRoute
   '/api/dev/activate-domain': typeof ApiDevActivateDomainRoute
   '/api/dev/complete-onboarding': typeof ApiDevCompleteOnboardingRoute
   '/api/dev/outbox': typeof ApiDevOutboxRoute
   '/api/dev/simulate-payment': typeof ApiDevSimulatePaymentRoute
+  '/api/dev/tick': typeof ApiDevTickRoute
   '/portal/invoices/$invoiceId': typeof PortalInvoicesInvoiceIdRoute
   '/app/': typeof StaffAppIndexRoute
   '/app/clients/$clientId': typeof StaffAppClientsClientIdRoute
@@ -196,11 +217,14 @@ export interface FileRoutesByTo {
   '/portal/login': typeof PortalLoginRoute
   '/portal/receipts': typeof PortalReceiptsRoute
   '/portal': typeof PortalIndexRoute
+  '/app/policies': typeof StaffAppPoliciesRoute
+  '/app/review': typeof StaffAppReviewRoute
   '/app/settings': typeof StaffAppSettingsRoute
   '/api/dev/activate-domain': typeof ApiDevActivateDomainRoute
   '/api/dev/complete-onboarding': typeof ApiDevCompleteOnboardingRoute
   '/api/dev/outbox': typeof ApiDevOutboxRoute
   '/api/dev/simulate-payment': typeof ApiDevSimulatePaymentRoute
+  '/api/dev/tick': typeof ApiDevTickRoute
   '/portal/invoices/$invoiceId': typeof PortalInvoicesInvoiceIdRoute
   '/app': typeof StaffAppIndexRoute
   '/app/clients/$clientId': typeof StaffAppClientsClientIdRoute
@@ -224,11 +248,14 @@ export interface FileRoutesById {
   '/portal/login': typeof PortalLoginRoute
   '/portal/receipts': typeof PortalReceiptsRoute
   '/portal/': typeof PortalIndexRoute
+  '/_staff/app/policies': typeof StaffAppPoliciesRoute
+  '/_staff/app/review': typeof StaffAppReviewRoute
   '/_staff/app/settings': typeof StaffAppSettingsRoute
   '/api/dev/activate-domain': typeof ApiDevActivateDomainRoute
   '/api/dev/complete-onboarding': typeof ApiDevCompleteOnboardingRoute
   '/api/dev/outbox': typeof ApiDevOutboxRoute
   '/api/dev/simulate-payment': typeof ApiDevSimulatePaymentRoute
+  '/api/dev/tick': typeof ApiDevTickRoute
   '/portal/invoices/$invoiceId': typeof PortalInvoicesInvoiceIdRoute
   '/_staff/app/': typeof StaffAppIndexRoute
   '/_staff/app/clients/$clientId': typeof StaffAppClientsClientIdRoute
@@ -251,11 +278,14 @@ export interface FileRouteTypes {
     | '/portal/login'
     | '/portal/receipts'
     | '/portal/'
+    | '/app/policies'
+    | '/app/review'
     | '/app/settings'
     | '/api/dev/activate-domain'
     | '/api/dev/complete-onboarding'
     | '/api/dev/outbox'
     | '/api/dev/simulate-payment'
+    | '/api/dev/tick'
     | '/portal/invoices/$invoiceId'
     | '/app/'
     | '/app/clients/$clientId'
@@ -274,11 +304,14 @@ export interface FileRouteTypes {
     | '/portal/login'
     | '/portal/receipts'
     | '/portal'
+    | '/app/policies'
+    | '/app/review'
     | '/app/settings'
     | '/api/dev/activate-domain'
     | '/api/dev/complete-onboarding'
     | '/api/dev/outbox'
     | '/api/dev/simulate-payment'
+    | '/api/dev/tick'
     | '/portal/invoices/$invoiceId'
     | '/app'
     | '/app/clients/$clientId'
@@ -301,11 +334,14 @@ export interface FileRouteTypes {
     | '/portal/login'
     | '/portal/receipts'
     | '/portal/'
+    | '/_staff/app/policies'
+    | '/_staff/app/review'
     | '/_staff/app/settings'
     | '/api/dev/activate-domain'
     | '/api/dev/complete-onboarding'
     | '/api/dev/outbox'
     | '/api/dev/simulate-payment'
+    | '/api/dev/tick'
     | '/portal/invoices/$invoiceId'
     | '/_staff/app/'
     | '/_staff/app/clients/$clientId'
@@ -327,6 +363,7 @@ export interface RootRouteChildren {
   ApiDevCompleteOnboardingRoute: typeof ApiDevCompleteOnboardingRoute
   ApiDevOutboxRoute: typeof ApiDevOutboxRoute
   ApiDevSimulatePaymentRoute: typeof ApiDevSimulatePaymentRoute
+  ApiDevTickRoute: typeof ApiDevTickRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -429,6 +466,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StaffAppIndexRouteImport
       parentRoute: typeof StaffAppRouteRoute
     }
+    '/_staff/app/policies': {
+      id: '/_staff/app/policies'
+      path: '/policies'
+      fullPath: '/app/policies'
+      preLoaderRoute: typeof StaffAppPoliciesRouteImport
+      parentRoute: typeof StaffAppRouteRoute
+    }
+    '/_staff/app/review': {
+      id: '/_staff/app/review'
+      path: '/review'
+      fullPath: '/app/review'
+      preLoaderRoute: typeof StaffAppReviewRouteImport
+      parentRoute: typeof StaffAppRouteRoute
+    }
     '/_staff/app/settings': {
       id: '/_staff/app/settings'
       path: '/settings'
@@ -462,6 +513,13 @@ declare module '@tanstack/react-router' {
       path: '/api/dev/simulate-payment'
       fullPath: '/api/dev/simulate-payment'
       preLoaderRoute: typeof ApiDevSimulatePaymentRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/api/dev/tick': {
+      id: '/api/dev/tick'
+      path: '/api/dev/tick'
+      fullPath: '/api/dev/tick'
+      preLoaderRoute: typeof ApiDevTickRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/portal/invoices/$invoiceId': {
@@ -524,6 +582,8 @@ const GuestRouteRouteWithChildren = GuestRouteRoute._addFileChildren(
 )
 
 interface StaffAppRouteRouteChildren {
+  StaffAppPoliciesRoute: typeof StaffAppPoliciesRoute
+  StaffAppReviewRoute: typeof StaffAppReviewRoute
   StaffAppSettingsRoute: typeof StaffAppSettingsRoute
   StaffAppIndexRoute: typeof StaffAppIndexRoute
   StaffAppClientsClientIdRoute: typeof StaffAppClientsClientIdRoute
@@ -534,6 +594,8 @@ interface StaffAppRouteRouteChildren {
 }
 
 const StaffAppRouteRouteChildren: StaffAppRouteRouteChildren = {
+  StaffAppPoliciesRoute: StaffAppPoliciesRoute,
+  StaffAppReviewRoute: StaffAppReviewRoute,
   StaffAppSettingsRoute: StaffAppSettingsRoute,
   StaffAppIndexRoute: StaffAppIndexRoute,
   StaffAppClientsClientIdRoute: StaffAppClientsClientIdRoute,
@@ -589,6 +651,7 @@ const rootRouteChildren: RootRouteChildren = {
   ApiDevCompleteOnboardingRoute: ApiDevCompleteOnboardingRoute,
   ApiDevOutboxRoute: ApiDevOutboxRoute,
   ApiDevSimulatePaymentRoute: ApiDevSimulatePaymentRoute,
+  ApiDevTickRoute: ApiDevTickRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)

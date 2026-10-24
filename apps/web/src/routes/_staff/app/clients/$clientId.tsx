@@ -5,7 +5,7 @@ import { toast } from "@repo/ui/components/toast";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 
-import { Card, Page, StatusBadge } from "#/components/ui-bits.tsx";
+import { Card, fieldClass, Page, StatusBadge } from "#/components/ui-bits.tsx";
 import { field } from "#/lib/form.ts";
 import { trpcErrorInfo } from "#/lib/trpc/errors.ts";
 
@@ -39,6 +39,7 @@ function ClientPage() {
   const archive = useMutation(
     trpc.clients.archive.mutationOptions({ onSuccess: refresh, onError }),
   );
+  const { data: policies } = useSuspenseQuery(trpc.policies.list.queryOptions());
   const addContact = useMutation(
     trpc.contacts.add.mutationOptions({ onSuccess: refresh, onError }),
   );
@@ -98,6 +99,27 @@ function ClientPage() {
         </form>
       </Card>
 
+      <Card title="Reminders">
+        <div className="grid max-w-sm gap-1.5">
+          <Label htmlFor="policy">Follow-up plan</Label>
+          <select
+            id="policy"
+            className={fieldClass}
+            value={client.policyId ?? ""}
+            onChange={(e) => rename.mutate({ clientId, policyId: e.target.value || null })}
+          >
+            <option value="">Firm default</option>
+            {policies.map((p) => (
+              <option key={p.id} value={p.id}>
+                {p.name}
+                {p.isDefault ? " (default)" : ""}
+              </option>
+            ))}
+          </select>
+          <p className="text-xs text-muted-foreground">Applies to invoices sent from now on.</p>
+        </div>
+      </Card>
+
       <Card title="Contacts">
         <ul className="mb-4 divide-y">
           {client.contacts.map((c) => (
@@ -109,6 +131,16 @@ function ClientPage() {
                 {c.name} <span className="text-muted-foreground">&lt;{c.email}&gt;</span>
                 {c.isPrimary && (
                   <span className="ml-2 rounded bg-muted px-1.5 py-0.5 text-xs">primary</span>
+                )}
+                {c.emailStatus !== "ok" && (
+                  <span className="ml-2 rounded bg-red-100 px-1.5 py-0.5 text-xs text-red-900 dark:bg-red-950 dark:text-red-200">
+                    can't receive email
+                  </span>
+                )}
+                {c.emailStatus === "ok" && !c.receivesReminders && (
+                  <span className="ml-2 rounded bg-muted px-1.5 py-0.5 text-xs">
+                    stopped reminders
+                  </span>
                 )}
               </span>
               <span className="flex gap-1">

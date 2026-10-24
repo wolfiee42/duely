@@ -12,12 +12,15 @@ const NAV = [
   { to: "/app", label: "Home", exact: true },
   { to: "/app/invoices", label: "Invoices" },
   { to: "/app/clients", label: "Clients" },
+  { to: "/app/review", label: "Review" },
+  { to: "/app/policies", label: "Follow-ups" },
   { to: "/app/settings", label: "Settings" },
 ] as const;
 
 function AppLayout() {
   const { trpc } = Route.useRouteContext();
   const { data } = useSuspenseQuery(trpc.firm.get.queryOptions());
+  const { data: waiting } = useSuspenseQuery(trpc.review.count.queryOptions());
 
   return (
     <div className="mx-auto flex min-h-svh w-full max-w-4xl flex-col gap-4 px-4 py-6">
@@ -38,6 +41,14 @@ function AppLayout() {
             activeProps={{ className: "rounded-md px-3 py-1.5 bg-muted font-medium" }}
           >
             {item.label}
+            {item.to === "/app/review" && waiting > 0 && (
+              <span
+                className="ml-1.5 rounded-full bg-primary px-1.5 py-0.5 text-xs text-primary-foreground"
+                data-testid="review-count"
+              >
+                {waiting}
+              </span>
+            )}
           </Link>
         ))}
       </nav>

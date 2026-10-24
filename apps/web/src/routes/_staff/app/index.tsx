@@ -12,6 +12,7 @@ function Dashboard() {
   const { trpc, host } = Route.useRouteContext();
   const { data } = useSuspenseQuery(trpc.firm.get.queryOptions());
   const { data: invoices } = useSuspenseQuery(trpc.invoices.list.queryOptions());
+  const { data: waiting } = useSuspenseQuery(trpc.review.count.queryOptions());
   const portalHost = `${data.firm.platformSlug}.${host.rootHost}`;
 
   const open = invoices.filter((i) =>
@@ -30,6 +31,16 @@ function Dashboard() {
           </p>
           <Link to="/app/settings" className="text-sm underline underline-offset-4">
             Go to settings
+          </Link>
+        </Card>
+      )}
+      {waiting > 0 && (
+        <Card title="Waiting for you">
+          <p className="mb-3 text-sm text-muted-foreground">
+            {waiting === 1 ? "1 item needs" : `${waiting} items need`} your attention.
+          </p>
+          <Link to="/app/review" className="text-sm underline underline-offset-4">
+            Open review
           </Link>
         </Card>
       )}
