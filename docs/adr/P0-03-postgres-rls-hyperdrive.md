@@ -8,7 +8,7 @@ A throwaway Postgres 18 (Homebrew binaries, own data dir, port 54329, trust auth
 
 The dev Worker had two Hyperdrive bindings (`HYPERDRIVE_APP`, `HYPERDRIVE_SYSTEM`) with `localConnectionString`, and a spike route that builds `postgres()` + `drizzle()` **per request** from `env.<binding>.connectionString` and closes it in `finally` (SPEC 9.1). Tenant context is `set_config('app.tenant_id', $1, true)` inside a transaction (`SET LOCAL` semantics).
 
-Files are archived in `docs/adr/P0-03-spike/`: `setup.sql`, `spike-route.ts`, `wrangler.hyperdrive.jsonc`. The app tree is reverted; nothing from the spike is in `apps/web`.
+Files are archived in `docs/adr/P0-03-spike/`: `setup.sql`, `spike-route.ts.txt`, `wrangler.hyperdrive.jsonc`. The app tree is reverted; nothing from the spike is in `apps/web`.
 
 ## Evidence (all through `vp dev`, workerd)
 

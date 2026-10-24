@@ -1,0 +1,32 @@
+import { createIsomorphicFn } from "@tanstack/react-start";
+import { getRequest } from "@tanstack/react-start/server";
+import { createTRPCClient, httpBatchLink } from "@trpc/client";
+import { createTRPCOptionsProxy } from "@trpc/tanstack-react-query";
+import type { QueryClient } from "@tanstack/react-query";
+import { env, waitUntil } from "cloudflare:workers";
+
+import { staffRouter, type StaffRouter } from "./trpc";
+
+// Server: call the router in-process (no self-HTTP). Browser: batched HTTP to Hono.
+export const createStaffTrpc = createIsomorphicFn()
+  .server((queryClient: QueryClient) => {
+    getRequest(); // proves request access in SSR; real code reads the session from it
+    return createTRPCOptionsProxy<StaffRouter>({
+      router: staffRouter,
+      queryClient,
+      ctx: () => ({
+        requestId: crypto.randomUUID(),
+        spikeVar: (env as { SPIKE_VAR?: string }).SPIKE_VAR,
+        waitUntil,
+        via: "in-process" as const,
+      }),
+    });
+  })
+  .client((queryClient: QueryClient) =>
+    createTRPCOptionsProxy<StaffRouter>({
+      client: createTRPCClient<StaffRouter>({
+        links: [httpBatchLink({ url: "/api/trpc/staff" })],
+      }),
+      queryClient,
+    }),
+  );

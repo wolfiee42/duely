@@ -1,0 +1,47 @@
+diff --git a/apps/web/src/router.tsx b/apps/web/src/router.tsx
+index b25b51a..cc97ab5 100644
+--- a/apps/web/src/router.tsx
++++ b/apps/web/src/router.tsx
+@@ -5,6 +5,7 @@ import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query
+ import { DefaultCatchBoundary } from "#/components/default-catch-boundary.tsx";
+ import { DefaultNotFound } from "#/components/default-not-found.tsx";
+ 
++import { createStaffTrpc } from "./spike/trpc-client";
+ import { routeTree } from "./routeTree.gen";
+ 
+ export function getRouter() {
+@@ -19,7 +20,7 @@ export function getRouter() {
+ 
+   const router = createRouter({
+     routeTree,
+-    context: { queryClient },
++    context: { queryClient, trpc: createStaffTrpc(queryClient) },
+     defaultPreload: "intent",
+     // react-query will handle data fetching & caching
+     // https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#passing-all-loader-events-to-an-external-cache
+diff --git a/apps/web/src/routes/__root.tsx b/apps/web/src/routes/__root.tsx
+index 43a06b8..d5ce01b 100644
+--- a/apps/web/src/routes/__root.tsx
++++ b/apps/web/src/routes/__root.tsx
+@@ -10,7 +10,10 @@ import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
+ 
+ import appCss from "#/styles.css?url";
+ 
+-export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
++export const Route = createRootRouteWithContext<{
++  queryClient: QueryClient;
++  trpc: ReturnType<typeof import("#/spike/trpc-client.ts").createStaffTrpc>;
++}>()({
+   head: () => ({
+     meta: [
+       {
+diff --git a/apps/web/wrangler.jsonc b/apps/web/wrangler.jsonc
+index 6804bc0..d46060f 100644
+--- a/apps/web/wrangler.jsonc
++++ b/apps/web/wrangler.jsonc
+@@ -5,4 +5,5 @@
+   "compatibility_flags": ["nodejs_compat"],
+   "main": "@tanstack/react-start/server-entry",
+   "observability": { "enabled": true },
++  "vars": { "SPIKE_VAR": "from-wrangler-vars" },
+ }

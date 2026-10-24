@@ -174,7 +174,7 @@ export const Route = createFileRoute("/api/$")({
 });
 ```
 
-How `env` and `ctx` are obtained on Workers (for example `import { env } from "cloudflare:workers"`) is confirmed in spike P0-04.
+`env` and `ctx` (confirmed in spike P0-04, `docs/adr/P0-04-hono-trpc.md`): import `{ env, waitUntil }` from `cloudflare:workers`; Start handlers only receive `{ request }`. Pass `env` to `app.fetch` and build the third argument as `{ waitUntil, passThroughOnException() {} }`.
 
 ---
 

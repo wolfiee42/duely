@@ -1,0 +1,35 @@
+// P0-04 spike only. Archived under docs/adr/P0-04-spike/.
+import { initTRPC } from "@trpc/server";
+import { z } from "zod";
+
+export type SpikeContext = {
+  requestId: string;
+  // The spike var set in wrangler.jsonc `vars`; proves `env` reaches tRPC.
+  spikeVar: string | undefined;
+  waitUntil: (p: Promise<unknown>) => void;
+  via: "hono" | "in-process";
+};
+
+const t = initTRPC.context<SpikeContext>().create();
+
+export const staffRouter = t.router({
+  ping: t.procedure.input(z.object({ name: z.string().min(1) })).query(({ input, ctx }) => {
+    // Runs after the response is sent if ctx.waitUntil works.
+    ctx.waitUntil(
+      new Promise<void>((resolve) =>
+        setTimeout(() => {
+          console.log(`[spike] waitUntil ran after response for ${ctx.requestId}`);
+          resolve();
+        }, 200),
+      ),
+    );
+    return {
+      greeting: `hello ${input.name}`,
+      via: ctx.via,
+      spikeVar: ctx.spikeVar,
+      requestId: ctx.requestId,
+    };
+  }),
+});
+
+export type StaffRouter = typeof staffRouter;

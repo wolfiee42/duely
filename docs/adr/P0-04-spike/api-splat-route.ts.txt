@@ -1,0 +1,20 @@
+import { createFileRoute } from "@tanstack/react-router";
+import { env, waitUntil } from "cloudflare:workers";
+
+import { app } from "#/spike/hono.ts";
+
+// `ctx` is not handed to Start handlers; build the part Hono uses from the module-level helpers.
+const ctx = { waitUntil, passThroughOnException() {} } as unknown as ExecutionContext;
+const handle = ({ request }: { request: Request }) => app.fetch(request, env, ctx);
+
+export const Route = createFileRoute("/api/$")({
+  server: {
+    handlers: {
+      GET: handle,
+      POST: handle,
+      PUT: handle,
+      PATCH: handle,
+      DELETE: handle,
+    },
+  },
+});

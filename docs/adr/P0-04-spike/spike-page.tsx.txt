@@ -1,0 +1,25 @@
+import { noop, useQuery } from "@tanstack/react-query";
+import { createFileRoute } from "@tanstack/react-router";
+import { useState } from "react";
+
+export const Route = createFileRoute("/spike")({
+  loader: ({ context }) => {
+    // Warm on the server (in-process); the dehydrated result is reused on hydration.
+    void context.queryClient.query(context.trpc.ping.queryOptions({ name: "world" })).catch(noop);
+  },
+  component: Spike,
+});
+
+function Spike() {
+  const { trpc } = Route.useRouteContext();
+  const [name, setName] = useState("world");
+  const q = useQuery(trpc.ping.queryOptions({ name }));
+  return (
+    <>
+      <button id="again" onClick={() => setName("browser")}>
+        again
+      </button>
+      <pre id="out">{JSON.stringify(q.data ?? "pending")}</pre>
+    </>
+  );
+}
