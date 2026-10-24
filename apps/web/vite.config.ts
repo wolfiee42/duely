@@ -8,6 +8,12 @@ import { varlockVitePlugin } from "@varlock/vite-integration";
 import viteReact from "@vitejs/plugin-react";
 import { defineConfig } from "vite-plus";
 
+function withQueryInsensitiveIncludes(paths: string[]) {
+  return Object.assign([...paths], {
+    includes: (id: string) => paths.includes(id.split("?")[0]),
+  });
+}
+
 export default defineConfig({
   run: {
     // Vite Task
@@ -45,9 +51,12 @@ export default defineConfig({
       // https://varlock.dev/integrations/vite/#ssr-code-injection
       ssrInjectMode: "resolved-env",
       ssrEdgeRuntime: true,
-      // varlock does not detect the server entry under the Cloudflare plugin. This exact-path match
-      // works for builds but not `vp dev`, where Vite appends `?v=<hash>` to the module id (see P0-02).
-      ssrEntryModuleIds: [fileURLToPath(import.meta.resolve("@tanstack/react-start/server-entry"))],
+      // varlock does not detect the server entry under the Cloudflare plugin. It matches with
+      // `ssrEntryModuleIds.includes(id)`, but `vp dev` appends `?v=<hash>` to the module id, so we
+      // override `includes` to ignore the query string (see P0-02).
+      ssrEntryModuleIds: withQueryInsensitiveIncludes([
+        fileURLToPath(import.meta.resolve("@tanstack/react-start/server-entry")),
+      ]),
     }),
     cloudflare({ viteEnvironment: { name: "ssr" } }),
     tanstackStart(),
