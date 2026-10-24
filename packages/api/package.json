@@ -1,0 +1,29 @@
+{
+  "name": "@repo/api",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./hono": "./src/hono/index.ts",
+    "./trpc": "./src/trpc/index.ts",
+    "./usecases": "./src/usecases/index.ts"
+  },
+  "dependencies": {
+    "@hono/trpc-server": "catalog:",
+    "@repo/auth": "workspace:*",
+    "@repo/clock": "workspace:*",
+    "@repo/db": "workspace:*",
+    "@repo/domain": "workspace:*",
+    "@trpc/server": "catalog:",
+    "drizzle-orm": "catalog:",
+    "hono": "catalog:",
+    "zod": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/db": "workspace:*",
+    "@repo/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "typescript": "catalog:"
+  }
+}
