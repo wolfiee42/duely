@@ -1,3 +1,4 @@
+import { createFakeCloudflare, type FakeCloudflare } from "@repo/cloudflare/fake";
 import { createDb, type Db } from "@repo/db";
 import { adminExec, createTestDatabase, type TestDatabase } from "@repo/db/testing";
 import { createFakeEmail, type FakeEmail } from "@repo/email/fake";
@@ -14,6 +15,7 @@ export const APP = "https://app.duely.app";
 export const PASSWORD = "correct horse battery staple";
 
 export interface Fakes {
+  cloudflare: FakeCloudflare;
   stripe: FakeStripe;
   email: FakeEmail;
   files: ReturnType<typeof createMemoryFiles>;
@@ -25,6 +27,7 @@ export const WEBHOOK_SECRET = "whsec_test_secret";
 /** Everything `createApp` needs besides the database, with in-memory services. */
 export function testDeps(): Pick<AppDeps, "auth" | "services" | "config"> & { fakes: Fakes } {
   const fakes: Fakes = {
+    cloudflare: createFakeCloudflare(),
     stripe: createFakeStripe(),
     email: createFakeEmail(),
     files: createMemoryFiles(),
@@ -39,6 +42,7 @@ export function testDeps(): Pick<AppDeps, "auth" | "services" | "config"> & { fa
       appOrigin: APP,
       stripeWebhookSecret: WEBHOOK_SECRET,
       stripePublishableKey: "pk_test_fake",
+      cnameTarget: "customers.duely.app",
       emailFromAddress: "billing@duely.app",
       portalSessionSecret: "portal-secret-0123456789abcdef0123456789",
     },

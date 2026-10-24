@@ -27,6 +27,7 @@ const deliver = (id: string) =>
 const cfg = () => ({
   platformDomain: "duely.app",
   appOrigin: "https://app.duely.app",
+  cnameTarget: "customers.duely.app",
   stripeWebhookSecret: "x",
   stripePublishableKey: "pk",
   emailFromAddress: "billing@duely.app",

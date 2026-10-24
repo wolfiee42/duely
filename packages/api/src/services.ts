@@ -1,3 +1,4 @@
+import type { CloudflareClient } from "@repo/cloudflare";
 import type { EmailClient } from "@repo/email";
 import type { StripeClient } from "@repo/stripe";
 
@@ -26,6 +27,7 @@ export interface QueuePort {
 }
 
 export interface Services {
+  cloudflare: CloudflareClient;
   stripe: StripeClient;
   email: EmailClient;
   files: FilesPort;
@@ -42,6 +44,8 @@ export interface AppConfig {
   stripePublishableKey: string;
   /** Sender for every outbound email, e.g. `billing@duely.app`. */
   emailFromAddress: string;
+  /** Where a firm's custom domain CNAME must point, e.g. `customers.duely.app`. */
+  cnameTarget: string;
   /** Signs portal session cookies. */
   portalSessionSecret: string;
 }

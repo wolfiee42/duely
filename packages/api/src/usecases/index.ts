@@ -13,3 +13,4 @@ export * from "./stripe-webhook";
 export * from "./payments";
 export * from "./invoice-pdf";
 export * from "./promises-disputes";
+export * from "./domains";

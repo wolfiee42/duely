@@ -1,5 +1,6 @@
 import { router } from "../../init";
 import { clientsRouter, contactsRouter } from "./clients";
+import { domainsRouter } from "./domains";
 import { firmRouter } from "./firm";
 import { invoicesRouter } from "./invoices";
 import { membersRouter } from "./members";
@@ -10,6 +11,7 @@ export const staffRouter = router({
   clients: clientsRouter,
   contacts: contactsRouter,
   disputes: disputesRouter,
+  domains: domainsRouter,
   firm: firmRouter,
   invoices: invoicesRouter,
   members: membersRouter,

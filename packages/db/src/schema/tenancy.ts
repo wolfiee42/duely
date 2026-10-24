@@ -3,7 +3,6 @@ import {
   bigint,
   boolean,
   check,
-  index,
   integer,
   jsonb,
   pgTable,
@@ -95,7 +94,8 @@ export const firmDomains = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
-    index("firm_domains_tenant_idx").on(t.tenantId),
+    // v1: one custom domain per firm. Replacing means removing first, which also releases the hostname.
+    unique("firm_domains_tenant_key").on(t.tenantId),
     check(
       "firm_domains_status_check",
       sql`${t.status} in ('pending', 'verifying', 'active', 'failed')`,

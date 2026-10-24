@@ -29,6 +29,7 @@
     "PLATFORM_DOMAIN": "duely.app",
     "APP_ORIGIN": "https://app.duely.app",
     "EMAIL_FROM_ADDRESS": "billing@duely.app",
+    "CLOUDFLARE_ZONE_ID": "00000000000000000000000000000000",
   },
-  // Secrets: RESEND_API_KEY (`wrangler secret put RESEND_API_KEY`).
+  // Secrets: RESEND_API_KEY, CLOUDFLARE_API_TOKEN (`wrangler secret put <NAME>`).
 }

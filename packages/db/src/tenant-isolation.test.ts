@@ -228,11 +228,16 @@ describe("roles", () => {
 
 describe("pre-tenant resolvers", () => {
   beforeAll(async () => {
+    // One domain per firm (unique tenant_id), so the pending one belongs to the other firm.
     await withTenant(app, A, (tx) =>
-      tx.insert(firmDomains).values([
-        { tenantId: A, hostname: "Billing.Acme.test", status: "active" },
-        { tenantId: A, hostname: "pending.acme.test", status: "pending" },
-      ]),
+      tx
+        .insert(firmDomains)
+        .values({ tenantId: A, hostname: "Billing.Acme.test", status: "active" }),
+    );
+    await withTenant(app, B, (tx) =>
+      tx
+        .insert(firmDomains)
+        .values({ tenantId: B, hostname: "pending.globex.test", status: "pending" }),
     );
   });
 
@@ -258,7 +263,7 @@ describe("pre-tenant resolvers", () => {
       tenantId: A,
       source: "custom",
     });
-    expect(await resolveTenantByHost(app, "pending.acme.test", "duely.app")).toBeNull();
+    expect(await resolveTenantByHost(app, "pending.globex.test", "duely.app")).toBeNull();
   });
 
   it("finds a user's membership and nothing for a stranger", async () => {

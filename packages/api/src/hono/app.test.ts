@@ -11,6 +11,7 @@ import { hostScope, requestId, requireHostKind, type AppEnv } from "./middleware
 // host-kind suite (SPEC 8): wrong-kind and unknown hosts get a bare 404, never a hint.
 
 const ACME = "aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa";
+const GLOBEX = "bbbbbbbb-bbbb-4bbb-8bbb-bbbbbbbbbbbb";
 let testDb: TestDatabase;
 let close: () => Promise<unknown>;
 let db: Db;
@@ -24,10 +25,18 @@ beforeAll(async () => {
     await tx
       .insert(firms)
       .values({ id: ACME, platformSlug: "acme", legalName: "Acme", displayName: "Acme" });
-    await tx.insert(firmDomains).values([
-      { tenantId: ACME, hostname: "billing.acme.test", status: "active" },
-      { tenantId: ACME, hostname: "soon.acme.test", status: "pending" },
-    ]);
+    await tx
+      .insert(firmDomains)
+      .values({ tenantId: ACME, hostname: "billing.acme.test", status: "active" });
+  });
+  // One domain per firm, so the not-yet-active one belongs to a second firm.
+  await withTenant(db, GLOBEX, async (tx) => {
+    await tx
+      .insert(firms)
+      .values({ id: GLOBEX, platformSlug: "globex", legalName: "Globex", displayName: "Globex" });
+    await tx
+      .insert(firmDomains)
+      .values({ tenantId: GLOBEX, hostname: "soon.globex.test", status: "pending" });
   });
 }, 60_000);
 
@@ -76,7 +85,7 @@ describe("host-kind guard", () => {
       "nobody.duely.app", // valid slug, no such firm
       "admin.duely.app", // reserved
       "evil.example", // not a custom domain
-      "soon.acme.test", // custom domain not active yet
+      "soon.globex.test", // custom domain not active yet
     ];
     const wrongKind = await get(app, "acme.duely.app", "/staff");
     for (const host of unknown) {

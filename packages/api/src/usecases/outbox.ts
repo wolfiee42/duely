@@ -18,7 +18,8 @@ import {
 } from "@repo/email";
 import { and, eq, lt, sql } from "drizzle-orm";
 
-import { portalOrigin, type AppConfig, type QueuePort } from "../services";
+import { type AppConfig, type QueuePort } from "../services";
+import { firmPortalOrigin } from "./domains";
 import { LOGIN_LINK_MINUTES } from "./portal-auth";
 import { newToken, sha256Hex } from "./tokens";
 
@@ -118,7 +119,7 @@ export async function deliverMessage(
         ),
       });
 
-      const origin = portalOrigin(deps.config.appOrigin, firm.platformSlug);
+      const origin = await firmPortalOrigin(tx, deps.config.appOrigin, firm);
       const brand = { firmName: firm.displayName, brandColor: firm.brandPrimary };
       const render = (url: string) =>
         isLogin

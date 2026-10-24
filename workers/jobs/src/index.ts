@@ -1,4 +1,11 @@
-import { deliverMessage, requeueStaleMessages, type AppConfig, type QueueMessage } from "@repo/api";
+import {
+  deliverMessage,
+  pollDomains,
+  requeueStaleMessages,
+  type AppConfig,
+  type QueueMessage,
+} from "@repo/api";
+import { createCloudflareClient } from "@repo/cloudflare";
 import { createDb } from "@repo/db";
 import { createResendClient } from "@repo/email";
 
@@ -13,6 +20,8 @@ interface Env {
   PLATFORM_DOMAIN: string;
   APP_ORIGIN: string;
   EMAIL_FROM_ADDRESS: string;
+  CLOUDFLARE_API_TOKEN: string;
+  CLOUDFLARE_ZONE_ID: string;
 }
 
 // Only what delivering email needs; the rest of the app config belongs to the web Worker.
@@ -20,6 +29,7 @@ const configOf = (env: Env): AppConfig => ({
   platformDomain: env.PLATFORM_DOMAIN,
   appOrigin: env.APP_ORIGIN,
   emailFromAddress: env.EMAIL_FROM_ADDRESS,
+  cnameTarget: "",
   stripeWebhookSecret: "",
   stripePublishableKey: "",
   portalSessionSecret: "",
@@ -48,15 +58,29 @@ export default {
     });
   },
 
-  // Every minute: re-enqueue anything that committed but never reached the queue (crash between commit and enqueue).
+  // Every minute (SPEC 4.2). Each step is independent: one failing must not starve the next.
   async scheduled(_controller: ScheduledController, env: Env) {
-    const requeued = await withSystemDb(env, (db) =>
+    // Re-enqueue anything that committed but never reached the queue (crash between commit and enqueue).
+    const requeue = withSystemDb(env, (db) =>
       requeueStaleMessages(db, {
         send: async (message) => {
           await env.QUEUE_MAIN.send(message);
         },
       }),
-    );
-    if (requeued) console.warn("jobs.requeued_stale_messages", { count: requeued });
+    ).then((count) => {
+      if (count) console.warn("jobs.requeued_stale_messages", { count });
+    });
+
+    // Custom domains still waiting on DNS or a certificate.
+    const cloudflare = createCloudflareClient(env.CLOUDFLARE_API_TOKEN, env.CLOUDFLARE_ZONE_ID);
+    const domains = withSystemDb(env, (db) => pollDomains(db, cloudflare)).then((result) => {
+      if (result.failures) console.warn("jobs.domain_poll_failures", result);
+    });
+
+    const results = await Promise.allSettled([requeue, domains]);
+    for (const r of results) {
+      if (r.status === "rejected")
+        console.warn("jobs.tick_step_failed", { error: String(r.reason) });
+    }
   },
 };

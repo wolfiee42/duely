@@ -214,6 +214,7 @@ export default defineConfig({
             "@repo/email",
             "@repo/ai",
             "@repo/stripe",
+            "@repo/cloudflare",
             "@repo/api",
             "@repo/logger",
           ),
@@ -221,7 +222,7 @@ export default defineConfig({
           "@repo/api/trpc",
           ...DB_DRIVERS,
         ],
-        "jobs may import db, domain, clock, email, ai, stripe and api/usecases only (SPEC 1.2)",
+        "jobs may import db, domain, clock, email, ai, stripe, cloudflare and api/usecases only (SPEC 1.2)",
       ),
       boundary(
         ["apps/web/**"],

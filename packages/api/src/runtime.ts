@@ -1,3 +1,5 @@
+import { createCloudflareClient } from "@repo/cloudflare";
+import { createFakeCloudflare } from "@repo/cloudflare/fake";
 import { createDb } from "@repo/db";
 import { createResendClient } from "@repo/email";
 import { createFakeEmail, type FakeEmail } from "@repo/email/fake";
@@ -18,6 +20,8 @@ export interface BuildServicesOptions {
   /** `fake` keeps everything in memory and delivers the outbox inline. For local dev and E2E only. */
   mode: "live" | "fake";
   stripeSecretKey: string;
+  cloudflareApiToken: string;
+  cloudflareZoneId: string;
   resendApiKey: string;
   /** Real bindings, used in `live` mode. */
   files: FilesPort;
@@ -32,6 +36,8 @@ export interface FakeControls {
   outbox(): FakeEmail["sent"];
   /** Stands in for the hosted Stripe onboarding form. */
   completeOnboarding(accountId: string): void;
+  /** Stands in for DNS and certificate issuance finishing. */
+  activateDomain(hostname: string): void;
 }
 
 /** Wires the ports to real providers, or to in-memory fakes. */
@@ -42,6 +48,7 @@ export function buildServices(opts: BuildServicesOptions): {
   if (opts.mode === "live") {
     return {
       services: {
+        cloudflare: createCloudflareClient(opts.cloudflareApiToken, opts.cloudflareZoneId),
         stripe: createStripeClient(opts.stripeSecretKey),
         email: createResendClient(opts.resendApiKey),
         files: opts.files,
@@ -56,6 +63,7 @@ export function buildServices(opts: BuildServicesOptions): {
   }
   const email = createFakeEmail();
   const stripe = createFakeStripe();
+  const cloudflare = createFakeCloudflare();
   const memory = createMemoryQueue();
   const queue: QueuePort = {
     async send(message) {
@@ -75,7 +83,12 @@ export function buildServices(opts: BuildServicesOptions): {
     },
   };
   return {
-    services: { stripe, email, files: createMemoryFiles(), queue },
-    fake: { outbox: () => email.sent, completeOnboarding: (id) => stripe.completeOnboarding(id) },
+    services: { cloudflare, stripe, email, files: createMemoryFiles(), queue },
+    fake: {
+      outbox: () => email.sent,
+      completeOnboarding: (id) => stripe.completeOnboarding(id),
+      activateDomain: (hostname) =>
+        cloudflare.set(hostname, { status: "active", sslStatus: "active", errors: [] }),
+    },
   };
 }

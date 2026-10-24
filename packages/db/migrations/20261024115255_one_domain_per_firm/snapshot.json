@@ -1,0 +1,72 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "90c6f00b-5971-466e-a844-ea73936063ca",
+  "prevIds": [
+    "77011c30-5705-42f3-80e4-6a11484afd59"
+  ],
+  "footprints": [
+    {
+      "statementType": "drop_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "firm_domains",
+        "firm_domains_tenant_idx"
+      ],
+      "writes": [
+        "s|idx|public.firm_domains_tenant_idx",
+        "n|idx|public.firm_domains_tenant_idx",
+        "e|idx|public.firm_domains_tenant_idx",
+        "n|rel|public.firm_domains_tenant_idx"
+      ],
+      "reads": [
+        "e|tbl|public.firm_domains",
+        "n|sch|public",
+        "e|col|public.firm_domains.tenant_id"
+      ],
+      "sharedWrites": []
+    },
+    {
+      "statementType": "add_unique",
+      "statementTarget": [
+        "table",
+        "public",
+        "firm_domains"
+      ],
+      "writes": [
+        "s|uq|public.firm_domains.firm_domains_tenant_key",
+        "n|uq|public.firm_domains.firm_domains_tenant_key",
+        "e|uq|public.firm_domains.firm_domains_tenant_key",
+        "n|con|public.firm_domains.firm_domains_tenant_key",
+        "n|rel|public.firm_domains_tenant_key"
+      ],
+      "reads": [
+        "n|tbl|public.firm_domains",
+        "n|sch|public",
+        "n|col|public.firm_domains.tenant_id"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "firm_domains",
+        "name": "firm_domains_tenant_key",
+        "nameExplicit": true,
+        "columns": [
+          "tenant_id"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "drop",
+      "key": "indexes\u0000[\"public\",\"firm_domains_tenant_idx\"]"
+    }
+  ]
+}

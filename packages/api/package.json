@@ -15,6 +15,7 @@
     "@hono/trpc-server": "catalog:",
     "@repo/auth": "workspace:*",
     "@repo/clock": "workspace:*",
+    "@repo/cloudflare": "workspace:*",
     "@repo/db": "workspace:*",
     "@repo/domain": "workspace:*",
     "@repo/email": "workspace:*",
