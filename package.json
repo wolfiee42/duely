@@ -18,7 +18,7 @@
     "env:audit": "cd apps/web && varlock audit . ../../packages/auth ../../packages/db",
     "env:load": "varlock load --path apps/web",
     "env:codegen": "varlock codegen --path apps/web",
-    "prepare": "vp config && vp run env:codegen",
+    "prepare": "vp config && vp run env:codegen && vp run cf-typegen",
     "deps": "vpx taze@latest -Ilwr --maturity-period 3",
     "fallow": "vpx fallow@latest --skip health",
     "tanstack": "vpx @tanstack/cli@latest",
@@ -28,7 +28,8 @@
     "auth:secret": "vpx auth@latest secret",
     "auth:generate": "vp run --filter=@repo/db auth:generate",
     "skills": "vpx skills@latest",
-    "intent": "vpx @tanstack/intent@latest"
+    "intent": "vpx @tanstack/intent@latest",
+    "cf-typegen": "vp run --recursive cf-typegen"
   },
   "devDependencies": {
     "@tanstack/eslint-plugin-query": "catalog:",

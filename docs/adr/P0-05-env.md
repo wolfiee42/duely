@@ -41,7 +41,7 @@ I did not run a real deploy: it needs your Cloudflare login and would publish a 
 2. **Bindings** (Hyperdrive, R2, Queues, KV, Durable Objects, service bindings): declare in `wrangler.jsonc`, read with `env` from `cloudflare:workers` (see ADR P0-04). They are objects and Varlock cannot represent them.
 3. `DATABASE_URL` is for local tools and migrations only. The Worker reaches Postgres through the Hyperdrive binding (ADR P0-03).
 4. Do not create a `.dev.vars` file; the plugin throws if one exists.
-5. Use `varlock-wrangler` instead of `wrangler` for deploy and type generation (`varlock-wrangler types` in place of the `wrangler types` step noted in P0-04).
+5. Use `varlock-wrangler` instead of `wrangler` for deploy. Type generation stays plain `wrangler types` (bindings only; it must not require real secrets, so CI can run it). Secrets and vars are typed by the Varlock `env.d.ts`.
 
 ## Risks
 

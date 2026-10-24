@@ -1,5 +1,37 @@
 import { defineConfig } from "vite-plus";
 
+// Import boundaries from SPEC 1.2. Each entry lists what the files must not import.
+// Only `packages/db` may touch a database driver, so `withTenant` stays the one DB entry point.
+const DB_DRIVERS = [
+  "postgres",
+  "postgres/*",
+  "drizzle-orm/postgres-js",
+  "drizzle-orm/node-postgres",
+];
+const ALL_REPO = [
+  "@repo/ai",
+  "@repo/api",
+  "@repo/auth",
+  "@repo/clock",
+  "@repo/cloudflare",
+  "@repo/db",
+  "@repo/domain",
+  "@repo/email",
+  "@repo/jobs",
+  "@repo/logger",
+  "@repo/stripe",
+  "@repo/ui",
+  "@repo/web",
+];
+const without = (...keep: string[]) => ALL_REPO.filter((p) => !keep.includes(p));
+const boundary = (files: string[], banned: string[], message: string) => {
+  const rule: ["error", { patterns: { group: string[]; message: string }[] }] = [
+    "error",
+    { patterns: [{ group: banned.flatMap((p) => [p, `${p}/*`]), message }] },
+  ];
+  return { files, rules: { "no-restricted-imports": rule } };
+};
+
 // https://viteplus.dev/config/
 export default defineConfig({
   // Git hooks for staged files - https://viteplus.dev/guide/commit-hooks
@@ -84,12 +116,16 @@ export default defineConfig({
         specifier: "@tanstack/eslint-plugin-query",
       },
       { name: "vite-plus", specifier: "vite-plus/oxlint-plugin" },
+      { name: "duely", specifier: "./tools/lint-plugin/index.js" },
     ],
     categories: {
       correctness: "warn",
     },
     rules: {
       "vite-plus/prefer-vite-plus-imports": "warn",
+
+      // FR-14.2: time comes from @repo/clock
+      "duely/no-raw-date": "error",
 
       "no-deprecated": "warn",
       "typescript/no-floating-promises": "off",
@@ -107,6 +143,96 @@ export default defineConfig({
       "eslint-tanstack-query/no-void-query-fn": "warn",
       "eslint-tanstack-query/mutation-property-order": "warn",
     },
+    overrides: [
+      {
+        files: [
+          "packages/clock/**",
+          "packages/db/src/schema/auth.schema.ts",
+          "**/*.test.ts",
+          "**/*.test.tsx",
+          "**/*.spec.ts",
+        ],
+        rules: { "duely/no-raw-date": "off" },
+      },
+      boundary(
+        ["packages/domain/**", "packages/clock/**"],
+        [...without("@repo/domain", "@repo/clock"), ...DB_DRIVERS, "node:*"],
+        "domain and clock are pure: no IO, and no imports besides each other (SPEC 1.2)",
+      ),
+      boundary(
+        ["packages/db/**"],
+        [...without("@repo/db", "@repo/domain"), "@tanstack/*"],
+        "db may import domain types only, and nothing Start-specific (SPEC 1.2)",
+      ),
+      boundary(
+        ["packages/email/**", "packages/stripe/**", "packages/cloudflare/**", "packages/ai/**"],
+        [
+          ...without(
+            "@repo/email",
+            "@repo/stripe",
+            "@repo/cloudflare",
+            "@repo/ai",
+            "@repo/domain",
+            "@repo/clock",
+          ),
+          ...DB_DRIVERS,
+        ],
+        "adapter packages may import domain and clock only (SPEC 1.2)",
+      ),
+      boundary(
+        ["packages/auth/**"],
+        [...without("@repo/auth", "@repo/db"), ...DB_DRIVERS],
+        "auth may import db only (SPEC 1.2)",
+      ),
+      boundary(
+        ["packages/api/**"],
+        [
+          ...without(
+            "@repo/api",
+            "@repo/ai",
+            "@repo/auth",
+            "@repo/clock",
+            "@repo/cloudflare",
+            "@repo/db",
+            "@repo/domain",
+            "@repo/email",
+            "@repo/stripe",
+            "@repo/logger",
+          ),
+          ...DB_DRIVERS,
+        ],
+        "api must not import apps or workers (SPEC 1.2)",
+      ),
+      boundary(
+        ["workers/jobs/**"],
+        [
+          ...without(
+            "@repo/jobs",
+            "@repo/db",
+            "@repo/domain",
+            "@repo/clock",
+            "@repo/email",
+            "@repo/ai",
+            "@repo/stripe",
+            "@repo/api",
+            "@repo/logger",
+          ),
+          "@repo/api/hono",
+          "@repo/api/trpc",
+          ...DB_DRIVERS,
+        ],
+        "jobs may import db, domain, clock, email, ai, stripe and api/usecases only (SPEC 1.2)",
+      ),
+      boundary(
+        ["apps/web/**"],
+        [
+          ...without("@repo/web", "@repo/api", "@repo/auth", "@repo/ui", "@repo/logger"),
+          ...DB_DRIVERS,
+        ],
+        "web may import api, auth, ui and logger only (SPEC 1.2)",
+      ),
+      boundary(["packages/ui/**"], without("@repo/ui"), "ui has no domain knowledge (SPEC 1.2)"),
+    ],
     ignorePatterns: [
       "dist",
       ".wrangler",
