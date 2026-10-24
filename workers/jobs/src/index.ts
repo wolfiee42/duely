@@ -1,7 +1,10 @@
 import {
   deliverMessage,
   pollDomains,
+  processJob,
+  recordJobFailure,
   requeueStaleMessages,
+  runTick,
   type AppConfig,
   type QueueMessage,
 } from "@repo/api";
@@ -30,6 +33,7 @@ const configOf = (env: Env): AppConfig => ({
   appOrigin: env.APP_ORIGIN,
   emailFromAddress: env.EMAIL_FROM_ADDRESS,
   cnameTarget: "",
+  resendWebhookSecret: "",
   stripeWebhookSecret: "",
   stripePublishableKey: "",
   portalSessionSecret: "",
@@ -54,6 +58,15 @@ export default {
     await handleBatch(batch.messages, {
       deliver: (messageId) =>
         withSystemDb(env, (db) => deliverMessage(db, { email, config: configOf(env) }, messageId)),
+      processJob: async (jobId) => {
+        const result = await withSystemDb(env, (db) => processJob(db, jobId));
+        return result.outcome === "queued" ? { messageId: result.messageId } : {};
+      },
+      recordJobFailure: (jobId, error) =>
+        withSystemDb(env, (db) => recordJobFailure(db, jobId, error)),
+      enqueue: async (message) => {
+        await env.QUEUE_MAIN.send(message);
+      },
       log: (event, data) => console.warn(event, data),
     });
   },
@@ -71,13 +84,24 @@ export default {
       if (count) console.warn("jobs.requeued_stale_messages", { count });
     });
 
+    // Claim due reminder jobs, reap stuck ones, run the overdue and broken-promise sweeps (SPEC 4.2).
+    const tick = withSystemDb(env, (db) =>
+      runTick(db, {
+        send: async (message) => {
+          await env.QUEUE_MAIN.send(message);
+        },
+      }),
+    ).then((result) => {
+      if (result.claimed || result.reaped.dead) console.warn("jobs.tick", result);
+    });
+
     // Custom domains still waiting on DNS or a certificate.
     const cloudflare = createCloudflareClient(env.CLOUDFLARE_API_TOKEN, env.CLOUDFLARE_ZONE_ID);
     const domains = withSystemDb(env, (db) => pollDomains(db, cloudflare)).then((result) => {
       if (result.failures) console.warn("jobs.domain_poll_failures", result);
     });
 
-    const results = await Promise.allSettled([requeue, domains]);
+    const results = await Promise.allSettled([requeue, tick, domains]);
     for (const r of results) {
       if (r.status === "rejected")
         console.warn("jobs.tick_step_failed", { error: String(r.reason) });
