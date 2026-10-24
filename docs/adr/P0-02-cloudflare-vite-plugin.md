@@ -1,6 +1,6 @@
 # P0-02: Cloudflare Vite plugin with Cove's aliased Vite
 
-**Result: partial. Build, local Worker runtime and deploy dry-run pass. `vp dev` fails because Varlock never initialises `ENV` in the dev Worker. Waiting for a decision.**
+**Result: pass.** Build, local Worker runtime, deploy dry-run and `vp dev` all work. Dev needed one workaround for Varlock's entry detection (option 3 below, applied in `b1bc95b`). The runtime env decision (D23) is still open for P0-05.
 
 ## What I tried
 
@@ -19,7 +19,8 @@
 | `vp preview` (built Worker in workerd)                                         | `/` and `/login` return 200, SSR renders the page                                           |
 | `wrangler deploy --dry-run`                                                    | Passes. 46 modules, 2.5 MiB, 728 KiB gzip. No bindings yet                                  |
 | `vpr lint`                                                                     | Passes (one pre-existing template warning)                                                  |
-| `vp dev`                                                                       | Starts, workerd boots, **every request returns 500**: `Error: varlock ENV not initialized`  |
+| `vp dev` (before the workaround)                                               | Starts, workerd boots, every request returns 500: `Error: varlock ENV not initialized`      |
+| `vp dev` (with option 3, `b1bc95b`)                                            | `/` and `/login` return 200, SSR renders the page                                           |
 
 I did not run a real `wrangler deploy`: it needs the developer's Cloudflare login and would publish a Worker. Say so if you want that done.
 
@@ -46,14 +47,15 @@ This is the Varlock-on-Workers question that D23 assigns to P0-05. The Cloudflar
 
 ## Decision / options
 
-D17 and D26 hold: the plugin works with Cove's aliased Vite, so the "plain Vite" fallback is **not** needed and would not fix this. Options for the dev gap, none applied yet:
+D17 and D26 hold: the plugin works with Cove's aliased Vite, so the "plain Vite" fallback is **not** needed and would not fix this. **Chosen: option 3** (D30). Options considered for the dev gap:
 
 1. **Varlock's Cloudflare integration** (`@varlock/cloudflare-integration` is referenced in the plugin's types). Adds a dependency; needs checking in P0-05.
 2. **Worker `env` plus a Zod-validated module** (D23 fallback). Varlock stays for local/CI validation and codegen; runtime reads bindings. Larger change to `packages/auth` and `packages/db`, which Phase 1 reshapes anyway (P1-03, P1-07).
-3. **Make Varlock's matcher accept the dev id** with a small wrapper, for example an array whose `includes` ignores the `?v=` query. Works today but couples to a plugin internal.
+3. **Make Varlock's matcher accept the dev id** with a small wrapper, for example an array whose `includes` ignores the `?v=` query. Works today but couples to a plugin internal. **Applied** as `withQueryInsensitiveIncludes` in `apps/web/vite.config.ts`; `vp dev` then returns 200. Risk: a Varlock upgrade that changes how it matches entry ids breaks dev and the build silently; re-test after any Varlock bump. P0-05 may still replace this with option 1 or 2.
 
 ## Side effects to know about
 
 - Nitro removal leaves `start:e2e` in `apps/web/package.json` and `playwright.config.ts` pointing at `.output/server/index.mjs`, which no longer exists. There are no E2E specs yet; fix when P2-17 adds the first one.
 - Request logging: evlog's Nitro integration is gone. Replacement is SPEC open item 5 (Phase 1).
+- Verification gotcha: if port 3000 is already taken, Vite silently moves to 3001, so a curl on 3000 can hit someone else's server. Use `--port N --strictPort` when testing.
 - `vp run build` strips env vars not declared in the task, so a missing `BETTER_AUTH_SECRET` fails the build in a local shell. Real values go in `apps/web/.env.local`; I used a throwaway process-only value and wrote no secrets.
