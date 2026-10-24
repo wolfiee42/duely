@@ -1,0 +1,20 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "duely-web",
+  "compatibility_date": "2026-10-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": "@tanstack/react-start/server-entry",
+  "observability": { "enabled": true },
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE_APP",
+      "id": "00000000000000000000000000000001",
+      "localConnectionString": "postgresql://duely_app:spike@127.0.0.1:54329/duely_p003",
+    },
+    {
+      "binding": "HYPERDRIVE_SYSTEM",
+      "id": "00000000000000000000000000000002",
+      "localConnectionString": "postgresql://duely_system:spike@127.0.0.1:54329/duely_p003",
+    },
+  ],
+}
