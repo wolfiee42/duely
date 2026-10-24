@@ -24,6 +24,7 @@ import { Route as PortalLoginRouteImport } from './routes/portal/login'
 import { Route as PortalReceiptsRouteImport } from './routes/portal/receipts'
 import { Route as StaffAppIndexRouteImport } from './routes/_staff/app/index'
 import { Route as StaffAppSettingsRouteImport } from './routes/_staff/app/settings'
+import { Route as ApiDevActivateDomainRouteImport } from './routes/api/dev/activate-domain'
 import { Route as ApiDevCompleteOnboardingRouteImport } from './routes/api/dev/complete-onboarding'
 import { Route as ApiDevOutboxRouteImport } from './routes/api/dev/outbox'
 import { Route as ApiDevSimulatePaymentRouteImport } from './routes/api/dev/simulate-payment'
@@ -107,6 +108,11 @@ const StaffAppSettingsRoute = StaffAppSettingsRouteImport.update({
   path: '/settings',
   getParentRoute: () => StaffAppRouteRoute,
 } as any)
+const ApiDevActivateDomainRoute = ApiDevActivateDomainRouteImport.update({
+  id: '/api/dev/activate-domain',
+  path: '/api/dev/activate-domain',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ApiDevCompleteOnboardingRoute =
   ApiDevCompleteOnboardingRouteImport.update({
     id: '/api/dev/complete-onboarding',
@@ -168,6 +174,7 @@ export interface FileRoutesByFullPath {
   '/portal/receipts': typeof PortalReceiptsRoute
   '/portal/': typeof PortalIndexRoute
   '/app/settings': typeof StaffAppSettingsRoute
+  '/api/dev/activate-domain': typeof ApiDevActivateDomainRoute
   '/api/dev/complete-onboarding': typeof ApiDevCompleteOnboardingRoute
   '/api/dev/outbox': typeof ApiDevOutboxRoute
   '/api/dev/simulate-payment': typeof ApiDevSimulatePaymentRoute
@@ -190,6 +197,7 @@ export interface FileRoutesByTo {
   '/portal/receipts': typeof PortalReceiptsRoute
   '/portal': typeof PortalIndexRoute
   '/app/settings': typeof StaffAppSettingsRoute
+  '/api/dev/activate-domain': typeof ApiDevActivateDomainRoute
   '/api/dev/complete-onboarding': typeof ApiDevCompleteOnboardingRoute
   '/api/dev/outbox': typeof ApiDevOutboxRoute
   '/api/dev/simulate-payment': typeof ApiDevSimulatePaymentRoute
@@ -217,6 +225,7 @@ export interface FileRoutesById {
   '/portal/receipts': typeof PortalReceiptsRoute
   '/portal/': typeof PortalIndexRoute
   '/_staff/app/settings': typeof StaffAppSettingsRoute
+  '/api/dev/activate-domain': typeof ApiDevActivateDomainRoute
   '/api/dev/complete-onboarding': typeof ApiDevCompleteOnboardingRoute
   '/api/dev/outbox': typeof ApiDevOutboxRoute
   '/api/dev/simulate-payment': typeof ApiDevSimulatePaymentRoute
@@ -243,6 +252,7 @@ export interface FileRouteTypes {
     | '/portal/receipts'
     | '/portal/'
     | '/app/settings'
+    | '/api/dev/activate-domain'
     | '/api/dev/complete-onboarding'
     | '/api/dev/outbox'
     | '/api/dev/simulate-payment'
@@ -265,6 +275,7 @@ export interface FileRouteTypes {
     | '/portal/receipts'
     | '/portal'
     | '/app/settings'
+    | '/api/dev/activate-domain'
     | '/api/dev/complete-onboarding'
     | '/api/dev/outbox'
     | '/api/dev/simulate-payment'
@@ -291,6 +302,7 @@ export interface FileRouteTypes {
     | '/portal/receipts'
     | '/portal/'
     | '/_staff/app/settings'
+    | '/api/dev/activate-domain'
     | '/api/dev/complete-onboarding'
     | '/api/dev/outbox'
     | '/api/dev/simulate-payment'
@@ -311,6 +323,7 @@ export interface RootRouteChildren {
   JoinRoute: typeof JoinRoute
   OnboardingRoute: typeof OnboardingRoute
   ApiSplatRoute: typeof ApiSplatRoute
+  ApiDevActivateDomainRoute: typeof ApiDevActivateDomainRoute
   ApiDevCompleteOnboardingRoute: typeof ApiDevCompleteOnboardingRoute
   ApiDevOutboxRoute: typeof ApiDevOutboxRoute
   ApiDevSimulatePaymentRoute: typeof ApiDevSimulatePaymentRoute
@@ -422,6 +435,13 @@ declare module '@tanstack/react-router' {
       fullPath: '/app/settings'
       preLoaderRoute: typeof StaffAppSettingsRouteImport
       parentRoute: typeof StaffAppRouteRoute
+    }
+    '/api/dev/activate-domain': {
+      id: '/api/dev/activate-domain'
+      path: '/api/dev/activate-domain'
+      fullPath: '/api/dev/activate-domain'
+      preLoaderRoute: typeof ApiDevActivateDomainRouteImport
+      parentRoute: typeof rootRouteImport
     }
     '/api/dev/complete-onboarding': {
       id: '/api/dev/complete-onboarding'
@@ -565,6 +585,7 @@ const rootRouteChildren: RootRouteChildren = {
   JoinRoute: JoinRoute,
   OnboardingRoute: OnboardingRoute,
   ApiSplatRoute: ApiSplatRoute,
+  ApiDevActivateDomainRoute: ApiDevActivateDomainRoute,
   ApiDevCompleteOnboardingRoute: ApiDevCompleteOnboardingRoute,
   ApiDevOutboxRoute: ApiDevOutboxRoute,
   ApiDevSimulatePaymentRoute: ApiDevSimulatePaymentRoute,

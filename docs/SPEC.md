@@ -97,16 +97,16 @@ duely/
 
 ### 1.2 Dependency rules
 
-| Package                               | May import                                                       | Must not import                        |
-| ------------------------------------- | ---------------------------------------------------------------- | -------------------------------------- |
-| `domain`, `clock`                     | each other (types only)                                          | everything else; no IO                 |
-| `db`                                  | `domain` (types)                                                 | `api`, `auth`, anything Start-specific |
-| `email`, `stripe`, `cloudflare`, `ai` | `domain`, `clock`                                                | `api`, `apps/*`                        |
-| `auth`                                | `db`                                                             | `apps/*`                               |
-| `api`                                 | all packages above                                               | `apps/*`, `workers/*`                  |
-| `workers/jobs`                        | `db`, `domain`, `clock`, `email`, `ai`, `stripe`, `api/usecases` | `api/hono`, `api/trpc`, `apps/*`       |
-| `apps/web`                            | `api`, `auth`, `ui`, `logger`                                    | `workers/*`                            |
-| `ui`                                  | nothing from the domain                                          | domain packages                        |
+| Package                               | May import                                                                     | Must not import                        |
+| ------------------------------------- | ------------------------------------------------------------------------------ | -------------------------------------- |
+| `domain`, `clock`                     | each other (types only)                                                        | everything else; no IO                 |
+| `db`                                  | `domain` (types)                                                               | `api`, `auth`, anything Start-specific |
+| `email`, `stripe`, `cloudflare`, `ai` | `domain`, `clock`                                                              | `api`, `apps/*`                        |
+| `auth`                                | `db`                                                                           | `apps/*`                               |
+| `api`                                 | all packages above                                                             | `apps/*`, `workers/*`                  |
+| `workers/jobs`                        | `db`, `domain`, `clock`, `email`, `ai`, `stripe`, `cloudflare`, `api/usecases` | `api/hono`, `api/trpc`, `apps/*`       |
+| `apps/web`                            | `api`, `auth`, `ui`, `logger`                                                  | `workers/*`                            |
+| `ui`                                  | nothing from the domain                                                        | domain packages                        |
 
 Enforced with import-restriction lint rules (P1-01). `packages/domain` stays pure so state machines and the planner are unit-testable without infrastructure.
 
@@ -1058,12 +1058,12 @@ Each spike ends with a written result in `docs/adr/`. A failed spike means the a
 
 ### Phase 3: Custom domains
 
-- [ ] P3-01 · Cloudflare API client (create/get/delete custom hostname) · M · 7.2
-- [ ] P3-02 · Add-domain flow + CNAME instructions UI · M · 7.1, 7.2
-- [ ] P3-03 · Status tracking, poller, manual re-check, status badge · M · 7.3, 7.4
-- [ ] P3-04 · Host resolution honors `active` only; link generation prefers active domain · S · 7.5, 7.6
-- [ ] P3-05 · Remove/replace domain · S · 7.7
-- [ ] P3-06 · Troubleshooting hints (P2) · S · 7.8
+- [x] P3-01 · Cloudflare API client (create/get/delete custom hostname) · M · 7.2
+- [x] P3-02 · Add-domain flow + CNAME instructions UI · M · 7.1, 7.2
+- [x] P3-03 · Status tracking, poller, manual re-check, status badge · M · 7.3, 7.4
+- [x] P3-04 · Host resolution honors `active` only; link generation prefers active domain · S · 7.5, 7.6
+- [x] P3-05 · Remove/replace domain · S · 7.7
+- [x] P3-06 · Troubleshooting hints (P2) · S · 7.8
 
 ### Phase 4: Collections engine
 

@@ -512,6 +512,9 @@ importers:
       '@repo/clock':
         specifier: workspace:*
         version: link:../clock
+      '@repo/cloudflare':
+        specifier: workspace:*
+        version: link:../cloudflare
       '@repo/db':
         specifier: workspace:*
         version: link:../db
@@ -743,6 +746,9 @@ importers:
       '@repo/api':
         specifier: workspace:*
         version: link:../../packages/api
+      '@repo/cloudflare':
+        specifier: workspace:*
+        version: link:../../packages/cloudflare
       '@repo/db':
         specifier: workspace:*
         version: link:../../packages/db

@@ -6,6 +6,7 @@ import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-q
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
+import { DomainCard } from "#/components/domain-card.tsx";
 import { Card, fieldClass, Page } from "#/components/ui-bits.tsx";
 import { field } from "#/lib/form.ts";
 import { trpcErrorInfo } from "#/lib/trpc/errors.ts";
@@ -236,6 +237,12 @@ function Settings() {
           </div>
         )}
       </Card>
+
+      {isOwner && (
+        <Card title="Custom domain">
+          <DomainCard />
+        </Card>
+      )}
 
       <Card title="Team">
         <ul className="mb-3 divide-y text-sm">

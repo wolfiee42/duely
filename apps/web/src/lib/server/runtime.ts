@@ -25,6 +25,7 @@ export const authConfig = { baseURL: ENV.VITE_BASE_URL, secret: ENV.BETTER_AUTH_
 export const config: AppConfig = {
   platformDomain,
   appOrigin: ENV.VITE_BASE_URL,
+  cnameTarget: ENV.CLOUDFLARE_CNAME_TARGET ?? `customers.${platformDomain}`,
   stripeWebhookSecret: ENV.STRIPE_CONNECT_WEBHOOK_SECRET ?? "",
   stripePublishableKey: ENV.STRIPE_PUBLISHABLE_KEY ?? "",
   emailFromAddress: ENV.EMAIL_FROM_ADDRESS ?? "billing@duely.app",
@@ -58,6 +59,8 @@ const queueProducer: QueuePort = {
 const built = buildServices({
   mode: ENV.SERVICES_MODE === "fake" ? "fake" : "live",
   stripeSecretKey: ENV.STRIPE_SECRET_KEY ?? "",
+  cloudflareApiToken: ENV.CLOUDFLARE_API_TOKEN ?? "",
+  cloudflareZoneId: ENV.CLOUDFLARE_ZONE_ID ?? "",
   resendApiKey: ENV.RESEND_API_KEY ?? "",
   files: r2Files(),
   queue: queueProducer,

@@ -40,12 +40,16 @@ const STATUS_STYLES: Record<string, string> = {
   disputed: "bg-orange-100 text-orange-900 dark:bg-orange-950 dark:text-orange-200",
   paid: "bg-green-100 text-green-900 dark:bg-green-950 dark:text-green-200",
   void: "bg-muted text-muted-foreground line-through",
+  pending: "bg-muted text-muted-foreground",
+  verifying: "bg-blue-100 text-blue-900 dark:bg-blue-950 dark:text-blue-200",
+  active: "bg-green-100 text-green-900 dark:bg-green-950 dark:text-green-200",
+  failed: "bg-red-100 text-red-900 dark:bg-red-950 dark:text-red-200",
 };
 
-export function StatusBadge({ status }: { status: string }) {
+export function StatusBadge({ status, label }: { status: string; label?: string }) {
   return (
     <span className={`rounded-full px-2 py-0.5 text-xs font-medium ${STATUS_STYLES[status] ?? ""}`}>
-      {status}
+      {label ?? status}
     </span>
   );
 }
