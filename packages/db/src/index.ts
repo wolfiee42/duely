@@ -43,3 +43,20 @@ export function withTenant<T>(db: Db, tenantId: string, fn: (tx: Tx) => Promise<
     return fn(tx);
   });
 }
+
+/**
+ * For the jobs worker and webhook ingress (D4). The connection is `duely_system` (BYPASSRLS); this drops to
+ * `duely_app` for the transaction so one unit of work is confined to one tenant like any request.
+ */
+export function withSystemTenant<T>(
+  db: Db,
+  tenantId: string,
+  fn: (tx: Tx) => Promise<T>,
+): Promise<T> {
+  if (!UUID.test(tenantId)) throw new Error("withSystemTenant: tenantId must be a uuid");
+  return db.transaction(async (tx) => {
+    await tx.execute(sql`set local role duely_app`);
+    await tx.execute(sql`select set_config('app.tenant_id', ${tenantId}, true)`);
+    return fn(tx);
+  });
+}

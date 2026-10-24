@@ -24,4 +24,7 @@ suites in `packages/db/src/tenant-isolation.test.ts` and `packages/api` prove it
 - A new tenant table needs `tenant_id uuid not null references firms(id)`, the `tenant_isolation` policy,
   `enable` + `force` row level security, explicit grants, and a case in the tenant-isolation suite.
   Write these in a custom migration (`vpr db generate --custom --name=...`); `audit_log` stays append-only.
+- Child tables reference their parent with a composite `(tenant_id, parent_id)` foreign key (the parent has
+  `unique (tenant_id, id)`). FK checks bypass RLS, so a plain `parent_id` FK would let one tenant attach rows to
+  another tenant's parent and probe its unique keys.
 - Better Auth tables (`user`, `session`, `account`, `verification`) are outside RLS (D27).

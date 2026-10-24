@@ -1,0 +1,3401 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "d01489b9-c9e0-4105-94ed-b8419127c0a6",
+  "prevIds": [
+    "eaedafc4-ee3c-4012-b7be-cba30431fd83"
+  ],
+  "footprints": [
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "clients"
+      ],
+      "writes": [
+        "s|tbl|public.clients",
+        "n|tbl|public.clients",
+        "e|tbl|public.clients",
+        "n|rel|public.clients",
+        "n|type|public.clients",
+        "n|rel|public.clients_pkey",
+        "n|rel|public.clients_tenant_id_external_ref_unique",
+        "n|rel|public.clients_tenant_id_id"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "contacts"
+      ],
+      "writes": [
+        "s|tbl|public.contacts",
+        "n|tbl|public.contacts",
+        "e|tbl|public.contacts",
+        "n|rel|public.contacts",
+        "n|type|public.contacts",
+        "n|rel|public.contacts_pkey",
+        "n|rel|public.contacts_tenant_id_client_id_email_unique"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "documents"
+      ],
+      "writes": [
+        "s|tbl|public.documents",
+        "n|tbl|public.documents",
+        "e|tbl|public.documents",
+        "n|rel|public.documents",
+        "n|type|public.documents",
+        "n|rel|public.documents_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "invoice_items"
+      ],
+      "writes": [
+        "s|tbl|public.invoice_items",
+        "n|tbl|public.invoice_items",
+        "e|tbl|public.invoice_items",
+        "n|rel|public.invoice_items",
+        "n|type|public.invoice_items",
+        "n|rel|public.invoice_items_pkey",
+        "n|rel|public.invoice_items_invoice_id_position_unique"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "invoice_sequences"
+      ],
+      "writes": [
+        "s|tbl|public.invoice_sequences",
+        "n|tbl|public.invoice_sequences",
+        "e|tbl|public.invoice_sequences",
+        "n|rel|public.invoice_sequences",
+        "n|type|public.invoice_sequences",
+        "n|rel|public.invoice_sequences_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "invoices"
+      ],
+      "writes": [
+        "s|tbl|public.invoices",
+        "n|tbl|public.invoices",
+        "e|tbl|public.invoices",
+        "n|rel|public.invoices",
+        "n|type|public.invoices",
+        "n|rel|public.invoices_pkey",
+        "n|rel|public.invoices_tenant_id_id",
+        "n|rel|public.invoices_tenant_id_number_unique",
+        "n|rel|public.invoices_tenant_id_external_ref_unique"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "payments"
+      ],
+      "writes": [
+        "s|tbl|public.payments",
+        "n|tbl|public.payments",
+        "e|tbl|public.payments",
+        "n|rel|public.payments",
+        "n|type|public.payments",
+        "n|rel|public.payments_pkey",
+        "n|rel|public.payments_tenant_id_id",
+        "n|rel|public.payments_stripe_payment_intent_id_key"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "refunds"
+      ],
+      "writes": [
+        "s|tbl|public.refunds",
+        "n|tbl|public.refunds",
+        "e|tbl|public.refunds",
+        "n|rel|public.refunds",
+        "n|type|public.refunds",
+        "n|rel|public.refunds_pkey",
+        "n|rel|public.refunds_stripe_refund_id_key"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "stripe_events"
+      ],
+      "writes": [
+        "s|tbl|public.stripe_events",
+        "n|tbl|public.stripe_events",
+        "e|tbl|public.stripe_events",
+        "n|rel|public.stripe_events",
+        "n|type|public.stripe_events",
+        "n|rel|public.stripe_events_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "drop_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "member_invites"
+      ],
+      "writes": [
+        "s|fk|public.member_invites.member_invites_invited_by_members_id_fkey",
+        "n|fk|public.member_invites.member_invites_invited_by_members_id_fkey",
+        "e|fk|public.member_invites.member_invites_invited_by_members_id_fkey",
+        "n|con|public.member_invites.member_invites_invited_by_members_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.member_invites",
+        "n|sch|public",
+        "e|col|public.member_invites.invited_by"
+      ]
+    },
+    {
+      "statementType": "add_unique",
+      "statementTarget": [
+        "table",
+        "public",
+        "members"
+      ],
+      "writes": [
+        "s|uq|public.members.members_tenant_id_id",
+        "n|uq|public.members.members_tenant_id_id",
+        "e|uq|public.members.members_tenant_id_id",
+        "n|con|public.members.members_tenant_id_id",
+        "n|rel|public.members_tenant_id_id"
+      ],
+      "reads": [
+        "n|tbl|public.members",
+        "n|sch|public",
+        "n|col|public.members.tenant_id",
+        "n|col|public.members.id"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "clients",
+        "clients_tenant_idx"
+      ],
+      "writes": [
+        "s|idx|public.clients_tenant_idx",
+        "n|idx|public.clients_tenant_idx",
+        "e|idx|public.clients_tenant_idx",
+        "n|rel|public.clients_tenant_idx"
+      ],
+      "reads": [
+        "n|tbl|public.clients",
+        "n|sch|public",
+        "n|col|public.clients.tenant_id"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "contacts",
+        "one_primary_contact"
+      ],
+      "writes": [
+        "s|idx|public.one_primary_contact",
+        "n|idx|public.one_primary_contact",
+        "e|idx|public.one_primary_contact",
+        "n|rel|public.one_primary_contact"
+      ],
+      "reads": [
+        "n|tbl|public.contacts",
+        "n|sch|public",
+        "n|col|public.contacts.client_id"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "documents",
+        "documents_tenant_invoice_idx"
+      ],
+      "writes": [
+        "s|idx|public.documents_tenant_invoice_idx",
+        "n|idx|public.documents_tenant_invoice_idx",
+        "e|idx|public.documents_tenant_invoice_idx",
+        "n|rel|public.documents_tenant_invoice_idx"
+      ],
+      "reads": [
+        "n|tbl|public.documents",
+        "n|sch|public",
+        "n|col|public.documents.tenant_id",
+        "n|col|public.documents.invoice_id"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "invoice_items",
+        "invoice_items_tenant_idx"
+      ],
+      "writes": [
+        "s|idx|public.invoice_items_tenant_idx",
+        "n|idx|public.invoice_items_tenant_idx",
+        "e|idx|public.invoice_items_tenant_idx",
+        "n|rel|public.invoice_items_tenant_idx"
+      ],
+      "reads": [
+        "n|tbl|public.invoice_items",
+        "n|sch|public",
+        "n|col|public.invoice_items.tenant_id"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "invoices",
+        "invoices_tenant_status_due"
+      ],
+      "writes": [
+        "s|idx|public.invoices_tenant_status_due",
+        "n|idx|public.invoices_tenant_status_due",
+        "e|idx|public.invoices_tenant_status_due",
+        "n|rel|public.invoices_tenant_status_due"
+      ],
+      "reads": [
+        "n|tbl|public.invoices",
+        "n|sch|public",
+        "n|col|public.invoices.tenant_id",
+        "n|col|public.invoices.status",
+        "n|col|public.invoices.due_date"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "invoices",
+        "invoices_client"
+      ],
+      "writes": [
+        "s|idx|public.invoices_client",
+        "n|idx|public.invoices_client",
+        "e|idx|public.invoices_client",
+        "n|rel|public.invoices_client"
+      ],
+      "reads": [
+        "n|tbl|public.invoices",
+        "n|sch|public",
+        "n|col|public.invoices.tenant_id",
+        "n|col|public.invoices.client_id"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "payments",
+        "payments_invoice_idx"
+      ],
+      "writes": [
+        "s|idx|public.payments_invoice_idx",
+        "n|idx|public.payments_invoice_idx",
+        "e|idx|public.payments_invoice_idx",
+        "n|rel|public.payments_invoice_idx"
+      ],
+      "reads": [
+        "n|tbl|public.payments",
+        "n|sch|public",
+        "n|col|public.payments.tenant_id",
+        "n|col|public.payments.invoice_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "clients"
+      ],
+      "writes": [
+        "s|fk|public.clients.clients_tenant_id_firms_id_fkey",
+        "n|fk|public.clients.clients_tenant_id_firms_id_fkey",
+        "e|fk|public.clients.clients_tenant_id_firms_id_fkey",
+        "n|con|public.clients.clients_tenant_id_firms_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.clients",
+        "n|sch|public",
+        "n|tbl|public.firms",
+        "n|sch|public",
+        "n|col|public.clients.tenant_id",
+        "n|col|public.firms.id",
+        "e|uniqueness|public.firms.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "contacts"
+      ],
+      "writes": [
+        "s|fk|public.contacts.contacts_tenant_id_firms_id_fkey",
+        "n|fk|public.contacts.contacts_tenant_id_firms_id_fkey",
+        "e|fk|public.contacts.contacts_tenant_id_firms_id_fkey",
+        "n|con|public.contacts.contacts_tenant_id_firms_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.contacts",
+        "n|sch|public",
+        "n|tbl|public.firms",
+        "n|sch|public",
+        "n|col|public.contacts.tenant_id",
+        "n|col|public.firms.id",
+        "e|uniqueness|public.firms.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "contacts"
+      ],
+      "writes": [
+        "s|fk|public.contacts.contacts_tenant_id_client_id_clients_tenant_id_id_fkey",
+        "n|fk|public.contacts.contacts_tenant_id_client_id_clients_tenant_id_id_fkey",
+        "e|fk|public.contacts.contacts_tenant_id_client_id_clients_tenant_id_id_fkey",
+        "n|con|public.contacts.contacts_tenant_id_client_id_clients_tenant_id_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.contacts",
+        "n|sch|public",
+        "n|tbl|public.clients",
+        "n|sch|public",
+        "n|col|public.contacts.tenant_id",
+        "n|col|public.contacts.client_id",
+        "n|col|public.clients.tenant_id",
+        "n|col|public.clients.id",
+        "e|uniqueness|public.clients.id.tenant_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "documents"
+      ],
+      "writes": [
+        "s|fk|public.documents.documents_tenant_id_firms_id_fkey",
+        "n|fk|public.documents.documents_tenant_id_firms_id_fkey",
+        "e|fk|public.documents.documents_tenant_id_firms_id_fkey",
+        "n|con|public.documents.documents_tenant_id_firms_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.documents",
+        "n|sch|public",
+        "n|tbl|public.firms",
+        "n|sch|public",
+        "n|col|public.documents.tenant_id",
+        "n|col|public.firms.id",
+        "e|uniqueness|public.firms.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "documents"
+      ],
+      "writes": [
+        "s|fk|public.documents.documents_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "n|fk|public.documents.documents_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "e|fk|public.documents.documents_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "n|con|public.documents.documents_tenant_id_invoice_id_invoices_tenant_id_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.documents",
+        "n|sch|public",
+        "n|tbl|public.invoices",
+        "n|sch|public",
+        "n|col|public.documents.tenant_id",
+        "n|col|public.documents.invoice_id",
+        "n|col|public.invoices.tenant_id",
+        "n|col|public.invoices.id",
+        "e|uniqueness|public.invoices.id.tenant_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "invoice_items"
+      ],
+      "writes": [
+        "s|fk|public.invoice_items.invoice_items_tenant_id_firms_id_fkey",
+        "n|fk|public.invoice_items.invoice_items_tenant_id_firms_id_fkey",
+        "e|fk|public.invoice_items.invoice_items_tenant_id_firms_id_fkey",
+        "n|con|public.invoice_items.invoice_items_tenant_id_firms_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.invoice_items",
+        "n|sch|public",
+        "n|tbl|public.firms",
+        "n|sch|public",
+        "n|col|public.invoice_items.tenant_id",
+        "n|col|public.firms.id",
+        "e|uniqueness|public.firms.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "invoice_items"
+      ],
+      "writes": [
+        "s|fk|public.invoice_items.invoice_items_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "n|fk|public.invoice_items.invoice_items_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "e|fk|public.invoice_items.invoice_items_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "n|con|public.invoice_items.invoice_items_tenant_id_invoice_id_invoices_tenant_id_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.invoice_items",
+        "n|sch|public",
+        "n|tbl|public.invoices",
+        "n|sch|public",
+        "n|col|public.invoice_items.tenant_id",
+        "n|col|public.invoice_items.invoice_id",
+        "n|col|public.invoices.tenant_id",
+        "n|col|public.invoices.id",
+        "e|uniqueness|public.invoices.id.tenant_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "invoice_sequences"
+      ],
+      "writes": [
+        "s|fk|public.invoice_sequences.invoice_sequences_tenant_id_firms_id_fkey",
+        "n|fk|public.invoice_sequences.invoice_sequences_tenant_id_firms_id_fkey",
+        "e|fk|public.invoice_sequences.invoice_sequences_tenant_id_firms_id_fkey",
+        "n|con|public.invoice_sequences.invoice_sequences_tenant_id_firms_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.invoice_sequences",
+        "n|sch|public",
+        "n|tbl|public.firms",
+        "n|sch|public",
+        "n|col|public.invoice_sequences.tenant_id",
+        "n|col|public.firms.id",
+        "e|uniqueness|public.firms.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "invoices"
+      ],
+      "writes": [
+        "s|fk|public.invoices.invoices_tenant_id_firms_id_fkey",
+        "n|fk|public.invoices.invoices_tenant_id_firms_id_fkey",
+        "e|fk|public.invoices.invoices_tenant_id_firms_id_fkey",
+        "n|con|public.invoices.invoices_tenant_id_firms_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.invoices",
+        "n|sch|public",
+        "n|tbl|public.firms",
+        "n|sch|public",
+        "n|col|public.invoices.tenant_id",
+        "n|col|public.firms.id",
+        "e|uniqueness|public.firms.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "invoices"
+      ],
+      "writes": [
+        "s|fk|public.invoices.invoices_tenant_id_client_id_clients_tenant_id_id_fkey",
+        "n|fk|public.invoices.invoices_tenant_id_client_id_clients_tenant_id_id_fkey",
+        "e|fk|public.invoices.invoices_tenant_id_client_id_clients_tenant_id_id_fkey",
+        "n|con|public.invoices.invoices_tenant_id_client_id_clients_tenant_id_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.invoices",
+        "n|sch|public",
+        "n|tbl|public.clients",
+        "n|sch|public",
+        "n|col|public.invoices.tenant_id",
+        "n|col|public.invoices.client_id",
+        "n|col|public.clients.tenant_id",
+        "n|col|public.clients.id",
+        "e|uniqueness|public.clients.id.tenant_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "payments"
+      ],
+      "writes": [
+        "s|fk|public.payments.payments_tenant_id_firms_id_fkey",
+        "n|fk|public.payments.payments_tenant_id_firms_id_fkey",
+        "e|fk|public.payments.payments_tenant_id_firms_id_fkey",
+        "n|con|public.payments.payments_tenant_id_firms_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.payments",
+        "n|sch|public",
+        "n|tbl|public.firms",
+        "n|sch|public",
+        "n|col|public.payments.tenant_id",
+        "n|col|public.firms.id",
+        "e|uniqueness|public.firms.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "payments"
+      ],
+      "writes": [
+        "s|fk|public.payments.payments_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "n|fk|public.payments.payments_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "e|fk|public.payments.payments_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "n|con|public.payments.payments_tenant_id_invoice_id_invoices_tenant_id_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.payments",
+        "n|sch|public",
+        "n|tbl|public.invoices",
+        "n|sch|public",
+        "n|col|public.payments.tenant_id",
+        "n|col|public.payments.invoice_id",
+        "n|col|public.invoices.tenant_id",
+        "n|col|public.invoices.id",
+        "e|uniqueness|public.invoices.id.tenant_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "refunds"
+      ],
+      "writes": [
+        "s|fk|public.refunds.refunds_tenant_id_firms_id_fkey",
+        "n|fk|public.refunds.refunds_tenant_id_firms_id_fkey",
+        "e|fk|public.refunds.refunds_tenant_id_firms_id_fkey",
+        "n|con|public.refunds.refunds_tenant_id_firms_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.refunds",
+        "n|sch|public",
+        "n|tbl|public.firms",
+        "n|sch|public",
+        "n|col|public.refunds.tenant_id",
+        "n|col|public.firms.id",
+        "e|uniqueness|public.firms.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "refunds"
+      ],
+      "writes": [
+        "s|fk|public.refunds.refunds_tenant_id_payment_id_payments_tenant_id_id_fkey",
+        "n|fk|public.refunds.refunds_tenant_id_payment_id_payments_tenant_id_id_fkey",
+        "e|fk|public.refunds.refunds_tenant_id_payment_id_payments_tenant_id_id_fkey",
+        "n|con|public.refunds.refunds_tenant_id_payment_id_payments_tenant_id_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.refunds",
+        "n|sch|public",
+        "n|tbl|public.payments",
+        "n|sch|public",
+        "n|col|public.refunds.tenant_id",
+        "n|col|public.refunds.payment_id",
+        "n|col|public.payments.tenant_id",
+        "n|col|public.payments.id",
+        "e|uniqueness|public.payments.id.tenant_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "refunds"
+      ],
+      "writes": [
+        "s|fk|public.refunds.refunds_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "n|fk|public.refunds.refunds_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "e|fk|public.refunds.refunds_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "n|con|public.refunds.refunds_tenant_id_invoice_id_invoices_tenant_id_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.refunds",
+        "n|sch|public",
+        "n|tbl|public.invoices",
+        "n|sch|public",
+        "n|col|public.refunds.tenant_id",
+        "n|col|public.refunds.invoice_id",
+        "n|col|public.invoices.tenant_id",
+        "n|col|public.invoices.id",
+        "e|uniqueness|public.invoices.id.tenant_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "stripe_events"
+      ],
+      "writes": [
+        "s|fk|public.stripe_events.stripe_events_tenant_id_firms_id_fkey",
+        "n|fk|public.stripe_events.stripe_events_tenant_id_firms_id_fkey",
+        "e|fk|public.stripe_events.stripe_events_tenant_id_firms_id_fkey",
+        "n|con|public.stripe_events.stripe_events_tenant_id_firms_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.stripe_events",
+        "n|sch|public",
+        "n|tbl|public.firms",
+        "n|sch|public",
+        "n|col|public.stripe_events.tenant_id",
+        "n|col|public.firms.id",
+        "e|uniqueness|public.firms.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "member_invites"
+      ],
+      "writes": [
+        "s|fk|public.member_invites.member_invites_tenant_id_invited_by_members_tenant_id_id_fkey",
+        "n|fk|public.member_invites.member_invites_tenant_id_invited_by_members_tenant_id_id_fkey",
+        "e|fk|public.member_invites.member_invites_tenant_id_invited_by_members_tenant_id_id_fkey",
+        "n|con|public.member_invites.member_invites_tenant_id_invited_by_members_tenant_id_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.member_invites",
+        "n|sch|public",
+        "n|tbl|public.members",
+        "n|sch|public",
+        "n|col|public.member_invites.tenant_id",
+        "n|col|public.member_invites.invited_by",
+        "n|col|public.members.tenant_id",
+        "n|col|public.members.id",
+        "e|uniqueness|public.members.id.tenant_id"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "clients",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "contacts",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "documents",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "invoice_items",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "invoice_sequences",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "invoices",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "payments",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "refunds",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "stripe_events",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "clients",
+        "name": "id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "gen_random_uuid()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "clients",
+        "name": "tenant_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "clients",
+        "name": "name",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "clients",
+        "name": "billing_address",
+        "type": "jsonb",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "clients",
+        "name": "timezone",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "clients",
+        "name": "notes",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "clients",
+        "name": "policy_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "clients",
+        "name": "external_ref",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "clients",
+        "name": "archived_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "clients",
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "clients",
+        "name": "updated_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "contacts",
+        "name": "id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "gen_random_uuid()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "contacts",
+        "name": "tenant_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "contacts",
+        "name": "client_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "contacts",
+        "name": "name",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "contacts",
+        "name": "email",
+        "type": "citext",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "contacts",
+        "name": "role",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "contacts",
+        "name": "is_primary",
+        "type": "boolean",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "false",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "contacts",
+        "name": "receives_invoices",
+        "type": "boolean",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "true",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "contacts",
+        "name": "receives_reminders",
+        "type": "boolean",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "true",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "contacts",
+        "name": "email_status",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "'ok'",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "contacts",
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "documents",
+        "name": "id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "gen_random_uuid()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "documents",
+        "name": "tenant_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "documents",
+        "name": "invoice_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "documents",
+        "name": "kind",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "documents",
+        "name": "storage_key",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "documents",
+        "name": "content_type",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "documents",
+        "name": "size_bytes",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "documents",
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoice_items",
+        "name": "id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "gen_random_uuid()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoice_items",
+        "name": "tenant_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoice_items",
+        "name": "invoice_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoice_items",
+        "name": "position",
+        "type": "integer",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoice_items",
+        "name": "description",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoice_items",
+        "name": "quantity",
+        "type": "numeric(12,3)",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoice_items",
+        "name": "unit_amount_minor",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoice_items",
+        "name": "amount_minor",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoice_sequences",
+        "name": "tenant_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoice_sequences",
+        "name": "next_number",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "1",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "gen_random_uuid()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "tenant_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "client_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "number",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "status",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "'draft'",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "currency",
+        "type": "char(3)",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "'USD'",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "issue_date",
+        "type": "date",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "due_date",
+        "type": "date",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "subtotal_minor",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "0",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "total_minor",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "0",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "paid_minor",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "0",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "refunded_minor",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "0",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "notes",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "sent_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "first_viewed_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "paid_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "voided_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "void_reason",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "payment_processing",
+        "type": "boolean",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "false",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "risk_level",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "risk_factors",
+        "type": "jsonb",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "risk_explanation",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "source",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "'manual'",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "external_ref",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "updated_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "payments",
+        "name": "id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "gen_random_uuid()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "payments",
+        "name": "tenant_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "payments",
+        "name": "invoice_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "payments",
+        "name": "stripe_payment_intent_id",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "payments",
+        "name": "stripe_charge_id",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "payments",
+        "name": "method",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "payments",
+        "name": "status",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "payments",
+        "name": "amount_minor",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "payments",
+        "name": "application_fee_minor",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "0",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "payments",
+        "name": "failure_reason",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "payments",
+        "name": "succeeded_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "payments",
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "refunds",
+        "name": "id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "gen_random_uuid()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "refunds",
+        "name": "tenant_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "refunds",
+        "name": "payment_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "refunds",
+        "name": "invoice_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "refunds",
+        "name": "stripe_refund_id",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "refunds",
+        "name": "amount_minor",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "refunds",
+        "name": "reason",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "refunds",
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "stripe_events",
+        "name": "id",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "stripe_events",
+        "name": "type",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "stripe_events",
+        "name": "stripe_account_id",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "stripe_events",
+        "name": "tenant_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "stripe_events",
+        "name": "payload",
+        "type": "jsonb",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "stripe_events",
+        "name": "received_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "stripe_events",
+        "name": "processed_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "stripe_events",
+        "name": "error",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "stripe_events",
+        "name": "attempts",
+        "type": "integer",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "0",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "clients",
+        "name": "clients_tenant_idx",
+        "nameExplicit": true,
+        "columns": [
+          {
+            "value": "tenant_id",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": false,
+        "where": null,
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "contacts",
+        "name": "one_primary_contact",
+        "nameExplicit": true,
+        "columns": [
+          {
+            "value": "client_id",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": true,
+        "where": "\"is_primary\"",
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "documents",
+        "name": "documents_tenant_invoice_idx",
+        "nameExplicit": true,
+        "columns": [
+          {
+            "value": "tenant_id",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          },
+          {
+            "value": "invoice_id",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": false,
+        "where": null,
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoice_items",
+        "name": "invoice_items_tenant_idx",
+        "nameExplicit": true,
+        "columns": [
+          {
+            "value": "tenant_id",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": false,
+        "where": null,
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "invoices_tenant_status_due",
+        "nameExplicit": true,
+        "columns": [
+          {
+            "value": "tenant_id",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          },
+          {
+            "value": "status",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          },
+          {
+            "value": "due_date",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": false,
+        "where": null,
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "invoices_client",
+        "nameExplicit": true,
+        "columns": [
+          {
+            "value": "tenant_id",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          },
+          {
+            "value": "client_id",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": false,
+        "where": null,
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "payments",
+        "name": "payments_invoice_idx",
+        "nameExplicit": true,
+        "columns": [
+          {
+            "value": "tenant_id",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          },
+          {
+            "value": "invoice_id",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": false,
+        "where": null,
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "clients",
+        "name": "clients_tenant_id_firms_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "firms",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "contacts",
+        "name": "contacts_tenant_id_firms_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "firms",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "contacts",
+        "name": "contacts_tenant_id_client_id_clients_tenant_id_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id",
+          "client_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "clients",
+        "columnsTo": [
+          "tenant_id",
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "documents",
+        "name": "documents_tenant_id_firms_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "firms",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "documents",
+        "name": "documents_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id",
+          "invoice_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "invoices",
+        "columnsTo": [
+          "tenant_id",
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoice_items",
+        "name": "invoice_items_tenant_id_firms_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "firms",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoice_items",
+        "name": "invoice_items_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id",
+          "invoice_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "invoices",
+        "columnsTo": [
+          "tenant_id",
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "CASCADE",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoice_sequences",
+        "name": "invoice_sequences_tenant_id_firms_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "firms",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "invoices_tenant_id_firms_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "firms",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "invoices_tenant_id_client_id_clients_tenant_id_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id",
+          "client_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "clients",
+        "columnsTo": [
+          "tenant_id",
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "payments",
+        "name": "payments_tenant_id_firms_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "firms",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "payments",
+        "name": "payments_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id",
+          "invoice_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "invoices",
+        "columnsTo": [
+          "tenant_id",
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "refunds",
+        "name": "refunds_tenant_id_firms_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "firms",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "refunds",
+        "name": "refunds_tenant_id_payment_id_payments_tenant_id_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id",
+          "payment_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "payments",
+        "columnsTo": [
+          "tenant_id",
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "refunds",
+        "name": "refunds_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id",
+          "invoice_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "invoices",
+        "columnsTo": [
+          "tenant_id",
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "stripe_events",
+        "name": "stripe_events_tenant_id_firms_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "firms",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "member_invites",
+        "name": "member_invites_tenant_id_invited_by_members_tenant_id_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id",
+          "invited_by"
+        ],
+        "schemaTo": "public",
+        "tableTo": "members",
+        "columnsTo": [
+          "tenant_id",
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "clients",
+        "name": "clients_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "contacts",
+        "name": "contacts_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "documents",
+        "name": "documents_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoice_items",
+        "name": "invoice_items_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoice_sequences",
+        "name": "invoice_sequences_pkey",
+        "columns": [
+          "tenant_id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "invoices_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "payments",
+        "name": "payments_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "refunds",
+        "name": "refunds_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "stripe_events",
+        "name": "stripe_events_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "clients",
+        "name": "clients_tenant_id_external_ref_unique",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id",
+          "external_ref"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "clients",
+        "name": "clients_tenant_id_id",
+        "nameExplicit": true,
+        "columns": [
+          "tenant_id",
+          "id"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "contacts",
+        "name": "contacts_tenant_id_client_id_email_unique",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id",
+          "client_id",
+          "email"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoice_items",
+        "name": "invoice_items_invoice_id_position_unique",
+        "nameExplicit": false,
+        "columns": [
+          "invoice_id",
+          "position"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "invoices_tenant_id_id",
+        "nameExplicit": true,
+        "columns": [
+          "tenant_id",
+          "id"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "invoices_tenant_id_number_unique",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id",
+          "number"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "invoices_tenant_id_external_ref_unique",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id",
+          "external_ref"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "payments",
+        "name": "payments_tenant_id_id",
+        "nameExplicit": true,
+        "columns": [
+          "tenant_id",
+          "id"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "members",
+        "name": "members_tenant_id_id",
+        "nameExplicit": true,
+        "columns": [
+          "tenant_id",
+          "id"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "payments",
+        "name": "payments_stripe_payment_intent_id_key",
+        "nameExplicit": false,
+        "columns": [
+          "stripe_payment_intent_id"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "refunds",
+        "name": "refunds_stripe_refund_id_key",
+        "nameExplicit": false,
+        "columns": [
+          "stripe_refund_id"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "contacts",
+        "name": "contacts_email_status_check",
+        "value": "\"email_status\" in ('ok', 'bounced', 'complained', 'unsubscribed')",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "documents",
+        "name": "documents_kind_check",
+        "value": "\"kind\" in ('extraction_source', 'attachment', 'invoice_pdf')",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoice_items",
+        "name": "invoice_items_quantity_check",
+        "value": "\"quantity\" > 0",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoice_items",
+        "name": "invoice_items_unit_check",
+        "value": "\"unit_amount_minor\" >= 0",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoice_items",
+        "name": "invoice_items_amount_check",
+        "value": "\"amount_minor\" >= 0",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "invoices_status_check",
+        "value": "\"status\" in ('draft', 'sent', 'viewed', 'overdue', 'promised', 'disputed', 'paid', 'void')",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "invoices_currency_check",
+        "value": "\"currency\" = 'USD'",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "invoices_subtotal_check",
+        "value": "\"subtotal_minor\" >= 0",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "invoices_total_check",
+        "value": "\"total_minor\" >= 0",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "invoices_paid_check",
+        "value": "\"paid_minor\" >= 0",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "invoices_refunded_check",
+        "value": "\"refunded_minor\" >= 0",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "invoices_source_check",
+        "value": "\"source\" in ('manual', 'ai_extraction', 'csv_import')",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "invoices",
+        "name": "invoices_risk_level_check",
+        "value": "\"risk_level\" in ('low', 'medium', 'high')",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "payments",
+        "name": "payments_method_check",
+        "value": "\"method\" in ('card', 'ach')",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "payments",
+        "name": "payments_status_check",
+        "value": "\"status\" in ('processing', 'succeeded', 'failed')",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "payments",
+        "name": "payments_amount_check",
+        "value": "\"amount_minor\" > 0",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "refunds",
+        "name": "refunds_amount_check",
+        "value": "\"amount_minor\" > 0",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "drop",
+      "key": "fks\u0000[\"public\",\"member_invites\",\"member_invites_invited_by_members_id_fkey\"]"
+    }
+  ]
+}

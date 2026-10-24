@@ -31,8 +31,8 @@ export interface TestDatabase {
 }
 
 /** Creates a fresh, fully migrated database with the real roles. Integration tests only. */
-export async function createTestDatabase(): Promise<TestDatabase> {
-  const name = `duely_test_${randomBytes(6).toString("hex")}`;
+export async function createTestDatabase(fixedName?: string): Promise<TestDatabase> {
+  const name = fixedName ?? `duely_test_${randomBytes(6).toString("hex")}`;
   const admin = postgres(ADMIN_URL, { max: 1, onnotice: () => {} });
   try {
     // Roles are cluster-wide and test files run in parallel, so serialize their creation.
@@ -40,6 +40,7 @@ export async function createTestDatabase(): Promise<TestDatabase> {
     await admin.unsafe(readFileSync(new URL("roles.sql", sqlDir), "utf8"));
     await admin.unsafe(readFileSync(new URL("dev-passwords.sql", sqlDir), "utf8"));
     await admin`select pg_advisory_unlock(7000001)`;
+    if (fixedName) await admin.unsafe(`drop database if exists ${name} with (force)`);
     await admin.unsafe(`create database ${name} owner duely_owner`);
   } finally {
     await admin.end();
@@ -70,4 +71,14 @@ export async function createTestDatabase(): Promise<TestDatabase> {
       }
     },
   };
+}
+
+/** Runs SQL as a superuser against a test database, for setup that must bypass roles and RLS. */
+export async function adminExec(testDb: TestDatabase, statement: string) {
+  const conn = postgres(testDb.adminUrl, { max: 1, onnotice: () => {} });
+  try {
+    await conn.unsafe(statement);
+  } finally {
+    await conn.end();
+  }
 }

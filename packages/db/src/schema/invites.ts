@@ -1,5 +1,14 @@
 import { sql } from "drizzle-orm";
-import { check, index, pgTable, text, timestamp, uniqueIndex, uuid } from "drizzle-orm/pg-core";
+import {
+  check,
+  foreignKey,
+  index,
+  pgTable,
+  text,
+  timestamp,
+  uniqueIndex,
+  uuid,
+} from "drizzle-orm/pg-core";
 
 import { citext } from "./citext";
 import { firms, members } from "./tenancy";
@@ -16,15 +25,17 @@ export const memberInvites = pgTable(
     email: citext("email").notNull(),
     role: text("role").$type<MemberRole>().notNull().default("member"),
     tokenHash: text("token_hash").notNull().unique(),
-    invitedBy: uuid("invited_by")
-      .notNull()
-      .references(() => members.id),
+    invitedBy: uuid("invited_by").notNull(),
     expiresAt: timestamp("expires_at", { withTimezone: true }).notNull(),
     acceptedAt: timestamp("accepted_at", { withTimezone: true }),
     acceptedByUserId: text("accepted_by_user_id"),
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
+    foreignKey({
+      columns: [t.tenantId, t.invitedBy],
+      foreignColumns: [members.tenantId, members.id],
+    }),
     index("member_invites_tenant_idx").on(t.tenantId),
     // One open invite per address per firm; re-inviting replaces it.
     uniqueIndex("member_invites_pending_email")

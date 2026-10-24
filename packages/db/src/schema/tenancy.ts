@@ -69,6 +69,7 @@ export const members = pgTable(
     createdAt: timestamp("created_at", { withTimezone: true }).notNull().defaultNow(),
   },
   (t) => [
+    unique("members_tenant_id_id").on(t.tenantId, t.id),
     unique().on(t.tenantId, t.userId),
     unique().on(t.tenantId, t.email),
     // v1: a user belongs to exactly one firm (D27), and membership lookup is by user.
