@@ -27,3 +27,23 @@ export type PromiseSource = "portal" | "ai_reply" | "manual";
 export type PromiseStatus = "active" | "kept" | "broken" | "cancelled";
 export type DisputeSource = "portal" | "ai_reply" | "manual" | "stripe";
 export type DisputeStatus = "open" | "resolved" | "upheld";
+export type { StepSendMode, StepTone, TemplateKey } from "@repo/domain";
+export type JobStatus =
+  | "scheduled"
+  | "claimed"
+  | "enqueued"
+  | "awaiting_approval"
+  | "sent"
+  | "failed"
+  | "dead"
+  | "cancelled"
+  | "skipped";
+export type JobPauseReason = "promise" | "dispute" | "already_paid_review";
+export type ReviewKind =
+  | "draft_approval"
+  | "low_confidence_reply"
+  | "unmatched_inbound"
+  | "already_paid_claim"
+  | "dead_job"
+  | "extraction_review";
+export type ReviewStatus = "open" | "approved" | "edited" | "rejected" | "dismissed";

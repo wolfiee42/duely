@@ -14,6 +14,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { clients, contacts, invoices } from "./billing";
+import { reminderJobs } from "./collections";
 import { firms, members } from "./tenancy";
 import type {
   DisputeSource,
@@ -35,7 +36,7 @@ const tenantId = () =>
 const createdAt = () => timestamp("created_at", { withTimezone: true }).notNull().defaultNow();
 
 // The outbox (D22): a row is inserted `queued` in the same transaction as the change that causes it,
-// and the queue is told only after commit. `job_id` references reminder_jobs, which arrives in Phase 4.
+// and the queue is told only after commit.
 export const messages = pgTable(
   "messages",
   {
@@ -76,6 +77,11 @@ export const messages = pgTable(
     foreignKey({
       columns: [t.tenantId, t.approvedBy],
       foreignColumns: [members.tenantId, members.id],
+    }),
+    // Both modules reference each other; the FK is only read lazily, after both have loaded.
+    foreignKey({
+      columns: [t.tenantId, t.jobId],
+      foreignColumns: [reminderJobs.tenantId, reminderJobs.id],
     }),
     unique("messages_tenant_id_id").on(t.tenantId, t.id),
     index("messages_invoice").on(t.tenantId, t.invoiceId, t.createdAt),

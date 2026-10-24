@@ -1,0 +1,1846 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "703968c1-4ed2-4cf8-bd96-bb93f4e49426",
+  "prevIds": [
+    "90c6f00b-5971-466e-a844-ea73936063ca"
+  ],
+  "footprints": [
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "reminder_jobs"
+      ],
+      "writes": [
+        "s|tbl|public.reminder_jobs",
+        "n|tbl|public.reminder_jobs",
+        "e|tbl|public.reminder_jobs",
+        "n|rel|public.reminder_jobs",
+        "n|type|public.reminder_jobs",
+        "n|rel|public.reminder_jobs_pkey",
+        "n|rel|public.reminder_jobs_tenant_id_id",
+        "n|rel|public.reminder_jobs_invoice_id_step_id_unique"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "review_items"
+      ],
+      "writes": [
+        "s|tbl|public.review_items",
+        "n|tbl|public.review_items",
+        "e|tbl|public.review_items",
+        "n|rel|public.review_items",
+        "n|type|public.review_items",
+        "n|rel|public.review_items_pkey"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "collection_policies"
+      ],
+      "writes": [
+        "s|tbl|public.collection_policies",
+        "n|tbl|public.collection_policies",
+        "e|tbl|public.collection_policies",
+        "n|rel|public.collection_policies",
+        "n|type|public.collection_policies",
+        "n|rel|public.collection_policies_pkey",
+        "n|rel|public.collection_policies_tenant_id_id"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "policy_steps"
+      ],
+      "writes": [
+        "s|tbl|public.policy_steps",
+        "n|tbl|public.policy_steps",
+        "e|tbl|public.policy_steps",
+        "n|rel|public.policy_steps",
+        "n|type|public.policy_steps",
+        "n|rel|public.policy_steps_pkey",
+        "n|rel|public.policy_steps_tenant_id_id",
+        "n|rel|public.policy_steps_policy_id_position_unique",
+        "n|rel|public.policy_steps_policy_id_offset_days_unique"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "reminder_jobs",
+        "reminder_jobs_due"
+      ],
+      "writes": [
+        "s|idx|public.reminder_jobs_due",
+        "n|idx|public.reminder_jobs_due",
+        "e|idx|public.reminder_jobs_due",
+        "n|rel|public.reminder_jobs_due"
+      ],
+      "reads": [
+        "n|tbl|public.reminder_jobs",
+        "n|sch|public",
+        "n|col|public.reminder_jobs.next_run_at"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "reminder_jobs",
+        "reminder_jobs_invoice"
+      ],
+      "writes": [
+        "s|idx|public.reminder_jobs_invoice",
+        "n|idx|public.reminder_jobs_invoice",
+        "e|idx|public.reminder_jobs_invoice",
+        "n|rel|public.reminder_jobs_invoice"
+      ],
+      "reads": [
+        "n|tbl|public.reminder_jobs",
+        "n|sch|public",
+        "n|col|public.reminder_jobs.tenant_id",
+        "n|col|public.reminder_jobs.invoice_id"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "review_items",
+        "review_open"
+      ],
+      "writes": [
+        "s|idx|public.review_open",
+        "n|idx|public.review_open",
+        "e|idx|public.review_open",
+        "n|rel|public.review_open"
+      ],
+      "reads": [
+        "n|tbl|public.review_items",
+        "n|sch|public",
+        "n|col|public.review_items.tenant_id",
+        "n|col|public.review_items.status",
+        "n|col|public.review_items.created_at"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "collection_policies",
+        "one_default_policy"
+      ],
+      "writes": [
+        "s|idx|public.one_default_policy",
+        "n|idx|public.one_default_policy",
+        "e|idx|public.one_default_policy",
+        "n|rel|public.one_default_policy"
+      ],
+      "reads": [
+        "n|tbl|public.collection_policies",
+        "n|sch|public",
+        "n|col|public.collection_policies.tenant_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "clients"
+      ],
+      "writes": [
+        "s|fk|public.clients.clients_bb8F8A0i6Eor_fkey",
+        "n|fk|public.clients.clients_bb8F8A0i6Eor_fkey",
+        "e|fk|public.clients.clients_bb8F8A0i6Eor_fkey",
+        "n|con|public.clients.clients_bb8F8A0i6Eor_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.clients",
+        "n|sch|public",
+        "n|tbl|public.collection_policies",
+        "n|sch|public",
+        "n|col|public.clients.tenant_id",
+        "n|col|public.clients.policy_id",
+        "n|col|public.collection_policies.tenant_id",
+        "n|col|public.collection_policies.id",
+        "e|uniqueness|public.collection_policies.id.tenant_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "reminder_jobs"
+      ],
+      "writes": [
+        "s|fk|public.reminder_jobs.reminder_jobs_tenant_id_firms_id_fkey",
+        "n|fk|public.reminder_jobs.reminder_jobs_tenant_id_firms_id_fkey",
+        "e|fk|public.reminder_jobs.reminder_jobs_tenant_id_firms_id_fkey",
+        "n|con|public.reminder_jobs.reminder_jobs_tenant_id_firms_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.reminder_jobs",
+        "n|sch|public",
+        "n|tbl|public.firms",
+        "n|sch|public",
+        "n|col|public.reminder_jobs.tenant_id",
+        "n|col|public.firms.id",
+        "e|uniqueness|public.firms.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "reminder_jobs"
+      ],
+      "writes": [
+        "s|fk|public.reminder_jobs.reminder_jobs_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "n|fk|public.reminder_jobs.reminder_jobs_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "e|fk|public.reminder_jobs.reminder_jobs_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "n|con|public.reminder_jobs.reminder_jobs_tenant_id_invoice_id_invoices_tenant_id_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.reminder_jobs",
+        "n|sch|public",
+        "n|tbl|public.invoices",
+        "n|sch|public",
+        "n|col|public.reminder_jobs.tenant_id",
+        "n|col|public.reminder_jobs.invoice_id",
+        "n|col|public.invoices.tenant_id",
+        "n|col|public.invoices.id",
+        "e|uniqueness|public.invoices.id.tenant_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "reminder_jobs"
+      ],
+      "writes": [
+        "s|fk|public.reminder_jobs.reminder_jobs_tenant_id_step_id_policy_steps_tenant_id_id_fkey",
+        "n|fk|public.reminder_jobs.reminder_jobs_tenant_id_step_id_policy_steps_tenant_id_id_fkey",
+        "e|fk|public.reminder_jobs.reminder_jobs_tenant_id_step_id_policy_steps_tenant_id_id_fkey",
+        "n|con|public.reminder_jobs.reminder_jobs_tenant_id_step_id_policy_steps_tenant_id_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.reminder_jobs",
+        "n|sch|public",
+        "n|tbl|public.policy_steps",
+        "n|sch|public",
+        "n|col|public.reminder_jobs.tenant_id",
+        "n|col|public.reminder_jobs.step_id",
+        "n|col|public.policy_steps.tenant_id",
+        "n|col|public.policy_steps.id",
+        "e|uniqueness|public.policy_steps.id.tenant_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "review_items"
+      ],
+      "writes": [
+        "s|fk|public.review_items.review_items_tenant_id_firms_id_fkey",
+        "n|fk|public.review_items.review_items_tenant_id_firms_id_fkey",
+        "e|fk|public.review_items.review_items_tenant_id_firms_id_fkey",
+        "n|con|public.review_items.review_items_tenant_id_firms_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.review_items",
+        "n|sch|public",
+        "n|tbl|public.firms",
+        "n|sch|public",
+        "n|col|public.review_items.tenant_id",
+        "n|col|public.firms.id",
+        "e|uniqueness|public.firms.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "review_items"
+      ],
+      "writes": [
+        "s|fk|public.review_items.review_items_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "n|fk|public.review_items.review_items_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "e|fk|public.review_items.review_items_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "n|con|public.review_items.review_items_tenant_id_invoice_id_invoices_tenant_id_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.review_items",
+        "n|sch|public",
+        "n|tbl|public.invoices",
+        "n|sch|public",
+        "n|col|public.review_items.tenant_id",
+        "n|col|public.review_items.invoice_id",
+        "n|col|public.invoices.tenant_id",
+        "n|col|public.invoices.id",
+        "e|uniqueness|public.invoices.id.tenant_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "review_items"
+      ],
+      "writes": [
+        "s|fk|public.review_items.review_items_tenant_id_message_id_messages_tenant_id_id_fkey",
+        "n|fk|public.review_items.review_items_tenant_id_message_id_messages_tenant_id_id_fkey",
+        "e|fk|public.review_items.review_items_tenant_id_message_id_messages_tenant_id_id_fkey",
+        "n|con|public.review_items.review_items_tenant_id_message_id_messages_tenant_id_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.review_items",
+        "n|sch|public",
+        "n|tbl|public.messages",
+        "n|sch|public",
+        "n|col|public.review_items.tenant_id",
+        "n|col|public.review_items.message_id",
+        "n|col|public.messages.tenant_id",
+        "n|col|public.messages.id",
+        "e|uniqueness|public.messages.id.tenant_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "review_items"
+      ],
+      "writes": [
+        "s|fk|public.review_items.review_items_tenant_id_job_id_reminder_jobs_tenant_id_id_fkey",
+        "n|fk|public.review_items.review_items_tenant_id_job_id_reminder_jobs_tenant_id_id_fkey",
+        "e|fk|public.review_items.review_items_tenant_id_job_id_reminder_jobs_tenant_id_id_fkey",
+        "n|con|public.review_items.review_items_tenant_id_job_id_reminder_jobs_tenant_id_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.review_items",
+        "n|sch|public",
+        "n|tbl|public.reminder_jobs",
+        "n|sch|public",
+        "n|col|public.review_items.tenant_id",
+        "n|col|public.review_items.job_id",
+        "n|col|public.reminder_jobs.tenant_id",
+        "n|col|public.reminder_jobs.id",
+        "e|uniqueness|public.reminder_jobs.id.tenant_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "review_items"
+      ],
+      "writes": [
+        "s|fk|public.review_items.review_items_tenant_id_resolved_by_members_tenant_id_id_fkey",
+        "n|fk|public.review_items.review_items_tenant_id_resolved_by_members_tenant_id_id_fkey",
+        "e|fk|public.review_items.review_items_tenant_id_resolved_by_members_tenant_id_id_fkey",
+        "n|con|public.review_items.review_items_tenant_id_resolved_by_members_tenant_id_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.review_items",
+        "n|sch|public",
+        "n|tbl|public.members",
+        "n|sch|public",
+        "n|col|public.review_items.tenant_id",
+        "n|col|public.review_items.resolved_by",
+        "n|col|public.members.tenant_id",
+        "n|col|public.members.id",
+        "e|uniqueness|public.members.id.tenant_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "collection_policies"
+      ],
+      "writes": [
+        "s|fk|public.collection_policies.collection_policies_tenant_id_firms_id_fkey",
+        "n|fk|public.collection_policies.collection_policies_tenant_id_firms_id_fkey",
+        "e|fk|public.collection_policies.collection_policies_tenant_id_firms_id_fkey",
+        "n|con|public.collection_policies.collection_policies_tenant_id_firms_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.collection_policies",
+        "n|sch|public",
+        "n|tbl|public.firms",
+        "n|sch|public",
+        "n|col|public.collection_policies.tenant_id",
+        "n|col|public.firms.id",
+        "e|uniqueness|public.firms.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "policy_steps"
+      ],
+      "writes": [
+        "s|fk|public.policy_steps.policy_steps_tenant_id_firms_id_fkey",
+        "n|fk|public.policy_steps.policy_steps_tenant_id_firms_id_fkey",
+        "e|fk|public.policy_steps.policy_steps_tenant_id_firms_id_fkey",
+        "n|con|public.policy_steps.policy_steps_tenant_id_firms_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.policy_steps",
+        "n|sch|public",
+        "n|tbl|public.firms",
+        "n|sch|public",
+        "n|col|public.policy_steps.tenant_id",
+        "n|col|public.firms.id",
+        "e|uniqueness|public.firms.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "policy_steps"
+      ],
+      "writes": [
+        "s|fk|public.policy_steps.policy_steps_LlmlFcZXtwg7_fkey",
+        "n|fk|public.policy_steps.policy_steps_LlmlFcZXtwg7_fkey",
+        "e|fk|public.policy_steps.policy_steps_LlmlFcZXtwg7_fkey",
+        "n|con|public.policy_steps.policy_steps_LlmlFcZXtwg7_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.policy_steps",
+        "n|sch|public",
+        "n|tbl|public.collection_policies",
+        "n|sch|public",
+        "n|col|public.policy_steps.tenant_id",
+        "n|col|public.policy_steps.policy_id",
+        "n|col|public.collection_policies.tenant_id",
+        "n|col|public.collection_policies.id",
+        "e|uniqueness|public.collection_policies.id.tenant_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "messages"
+      ],
+      "writes": [
+        "s|fk|public.messages.messages_tenant_id_job_id_reminder_jobs_tenant_id_id_fkey",
+        "n|fk|public.messages.messages_tenant_id_job_id_reminder_jobs_tenant_id_id_fkey",
+        "e|fk|public.messages.messages_tenant_id_job_id_reminder_jobs_tenant_id_id_fkey",
+        "n|con|public.messages.messages_tenant_id_job_id_reminder_jobs_tenant_id_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.messages",
+        "n|sch|public",
+        "n|tbl|public.reminder_jobs",
+        "n|sch|public",
+        "n|col|public.messages.tenant_id",
+        "n|col|public.messages.job_id",
+        "n|col|public.reminder_jobs.tenant_id",
+        "n|col|public.reminder_jobs.id",
+        "e|uniqueness|public.reminder_jobs.id.tenant_id"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "reminder_jobs",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "review_items",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "collection_policies",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "policy_steps",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reminder_jobs",
+        "name": "id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "gen_random_uuid()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reminder_jobs",
+        "name": "tenant_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reminder_jobs",
+        "name": "invoice_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reminder_jobs",
+        "name": "step_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reminder_jobs",
+        "name": "status",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "'scheduled'",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reminder_jobs",
+        "name": "planned_for",
+        "type": "date",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reminder_jobs",
+        "name": "next_run_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reminder_jobs",
+        "name": "attempts",
+        "type": "integer",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "0",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reminder_jobs",
+        "name": "last_error",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reminder_jobs",
+        "name": "claimed_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reminder_jobs",
+        "name": "message_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reminder_jobs",
+        "name": "pause_reason",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reminder_jobs",
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reminder_jobs",
+        "name": "updated_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "review_items",
+        "name": "id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "gen_random_uuid()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "review_items",
+        "name": "tenant_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "review_items",
+        "name": "kind",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "review_items",
+        "name": "invoice_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "review_items",
+        "name": "message_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "review_items",
+        "name": "job_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "review_items",
+        "name": "payload",
+        "type": "jsonb",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "'{}'",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "review_items",
+        "name": "status",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "'open'",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "review_items",
+        "name": "resolved_by",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "review_items",
+        "name": "resolved_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "review_items",
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "collection_policies",
+        "name": "id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "gen_random_uuid()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "collection_policies",
+        "name": "tenant_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "collection_policies",
+        "name": "name",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "collection_policies",
+        "name": "is_default",
+        "type": "boolean",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "false",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "collection_policies",
+        "name": "quiet_start",
+        "type": "time",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "'08:00'",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "collection_policies",
+        "name": "quiet_end",
+        "type": "time",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "'19:00'",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "collection_policies",
+        "name": "send_weekends",
+        "type": "boolean",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "false",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "collection_policies",
+        "name": "promise_grace_days",
+        "type": "integer",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "1",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "collection_policies",
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "policy_steps",
+        "name": "id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "gen_random_uuid()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "policy_steps",
+        "name": "tenant_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "policy_steps",
+        "name": "policy_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "policy_steps",
+        "name": "position",
+        "type": "integer",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "policy_steps",
+        "name": "offset_days",
+        "type": "integer",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "policy_steps",
+        "name": "template_key",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "policy_steps",
+        "name": "tone",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "policy_steps",
+        "name": "send_mode",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "'draft'",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "policy_steps",
+        "name": "escalate_notify_firm",
+        "type": "boolean",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "false",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reminder_jobs",
+        "name": "reminder_jobs_due",
+        "nameExplicit": true,
+        "columns": [
+          {
+            "value": "next_run_at",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": false,
+        "where": "\"status\" = 'scheduled'",
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reminder_jobs",
+        "name": "reminder_jobs_invoice",
+        "nameExplicit": true,
+        "columns": [
+          {
+            "value": "tenant_id",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          },
+          {
+            "value": "invoice_id",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": false,
+        "where": null,
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "review_items",
+        "name": "review_open",
+        "nameExplicit": true,
+        "columns": [
+          {
+            "value": "tenant_id",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          },
+          {
+            "value": "status",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          },
+          {
+            "value": "created_at",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": false,
+        "where": null,
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "collection_policies",
+        "name": "one_default_policy",
+        "nameExplicit": true,
+        "columns": [
+          {
+            "value": "tenant_id",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": true,
+        "where": "\"is_default\"",
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "clients",
+        "name": "clients_bb8F8A0i6Eor_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id",
+          "policy_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "collection_policies",
+        "columnsTo": [
+          "tenant_id",
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reminder_jobs",
+        "name": "reminder_jobs_tenant_id_firms_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "firms",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reminder_jobs",
+        "name": "reminder_jobs_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id",
+          "invoice_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "invoices",
+        "columnsTo": [
+          "tenant_id",
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reminder_jobs",
+        "name": "reminder_jobs_tenant_id_step_id_policy_steps_tenant_id_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id",
+          "step_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "policy_steps",
+        "columnsTo": [
+          "tenant_id",
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "review_items",
+        "name": "review_items_tenant_id_firms_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "firms",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "review_items",
+        "name": "review_items_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id",
+          "invoice_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "invoices",
+        "columnsTo": [
+          "tenant_id",
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "review_items",
+        "name": "review_items_tenant_id_message_id_messages_tenant_id_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id",
+          "message_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "messages",
+        "columnsTo": [
+          "tenant_id",
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "review_items",
+        "name": "review_items_tenant_id_job_id_reminder_jobs_tenant_id_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id",
+          "job_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "reminder_jobs",
+        "columnsTo": [
+          "tenant_id",
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "review_items",
+        "name": "review_items_tenant_id_resolved_by_members_tenant_id_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id",
+          "resolved_by"
+        ],
+        "schemaTo": "public",
+        "tableTo": "members",
+        "columnsTo": [
+          "tenant_id",
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "collection_policies",
+        "name": "collection_policies_tenant_id_firms_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "firms",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "policy_steps",
+        "name": "policy_steps_tenant_id_firms_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "firms",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "policy_steps",
+        "name": "policy_steps_LlmlFcZXtwg7_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id",
+          "policy_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "collection_policies",
+        "columnsTo": [
+          "tenant_id",
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "CASCADE",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "messages",
+        "name": "messages_tenant_id_job_id_reminder_jobs_tenant_id_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id",
+          "job_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "reminder_jobs",
+        "columnsTo": [
+          "tenant_id",
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reminder_jobs",
+        "name": "reminder_jobs_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "review_items",
+        "name": "review_items_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "collection_policies",
+        "name": "collection_policies_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "policy_steps",
+        "name": "policy_steps_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reminder_jobs",
+        "name": "reminder_jobs_tenant_id_id",
+        "nameExplicit": true,
+        "columns": [
+          "tenant_id",
+          "id"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reminder_jobs",
+        "name": "reminder_jobs_invoice_id_step_id_unique",
+        "nameExplicit": false,
+        "columns": [
+          "invoice_id",
+          "step_id"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "collection_policies",
+        "name": "collection_policies_tenant_id_id",
+        "nameExplicit": true,
+        "columns": [
+          "tenant_id",
+          "id"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "policy_steps",
+        "name": "policy_steps_tenant_id_id",
+        "nameExplicit": true,
+        "columns": [
+          "tenant_id",
+          "id"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "policy_steps",
+        "name": "policy_steps_policy_id_position_unique",
+        "nameExplicit": false,
+        "columns": [
+          "policy_id",
+          "position"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "policy_steps",
+        "name": "policy_steps_policy_id_offset_days_unique",
+        "nameExplicit": false,
+        "columns": [
+          "policy_id",
+          "offset_days"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reminder_jobs",
+        "name": "reminder_jobs_status_check",
+        "value": "\"status\" in ('scheduled', 'claimed', 'enqueued', 'awaiting_approval', 'sent', 'failed', 'dead', 'cancelled', 'skipped')",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "reminder_jobs",
+        "name": "reminder_jobs_pause_check",
+        "value": "\"pause_reason\" in ('promise', 'dispute', 'already_paid_review')",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "review_items",
+        "name": "review_items_kind_check",
+        "value": "\"kind\" in ('draft_approval', 'low_confidence_reply', 'unmatched_inbound', 'already_paid_claim', 'dead_job', 'extraction_review')",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "review_items",
+        "name": "review_items_status_check",
+        "value": "\"status\" in ('open', 'approved', 'edited', 'rejected', 'dismissed')",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "collection_policies",
+        "name": "policies_quiet_check",
+        "value": "\"quiet_start\" < \"quiet_end\"",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "collection_policies",
+        "name": "policies_grace_check",
+        "value": "\"promise_grace_days\" between 0 and 30",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "policy_steps",
+        "name": "policy_steps_tone_check",
+        "value": "\"tone\" in ('friendly', 'neutral', 'firm')",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "policy_steps",
+        "name": "policy_steps_send_mode_check",
+        "value": "\"send_mode\" in ('draft', 'auto')",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "policy_steps",
+        "name": "policy_steps_offset_check",
+        "value": "\"offset_days\" between -60 and 365",
+        "entityType": "checks"
+      }
+    }
+  ]
+}

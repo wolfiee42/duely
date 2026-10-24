@@ -1,0 +1,207 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "20cd1057-3e06-4f21-bb2d-3bcb82c162ec",
+  "prevIds": [
+    "20124793-6857-4d56-9e83-482867d4eb2f"
+  ],
+  "footprints": [
+    {
+      "statementType": "drop_unique",
+      "statementTarget": [
+        "table",
+        "public",
+        "policy_steps"
+      ],
+      "writes": [
+        "s|uq|public.policy_steps.policy_steps_policy_id_position_unique",
+        "n|uq|public.policy_steps.policy_steps_policy_id_position_unique",
+        "e|uq|public.policy_steps.policy_steps_policy_id_position_unique",
+        "n|con|public.policy_steps.policy_steps_policy_id_position_unique",
+        "n|rel|public.policy_steps_policy_id_position_unique"
+      ],
+      "reads": [
+        "n|tbl|public.policy_steps",
+        "n|sch|public",
+        "e|col|public.policy_steps.policy_id",
+        "e|col|public.policy_steps.position"
+      ],
+      "sharedWrites": [
+        "e|uniqueness|public.policy_steps.policy_id.position"
+      ]
+    },
+    {
+      "statementType": "drop_unique",
+      "statementTarget": [
+        "table",
+        "public",
+        "policy_steps"
+      ],
+      "writes": [
+        "s|uq|public.policy_steps.policy_steps_policy_id_offset_days_unique",
+        "n|uq|public.policy_steps.policy_steps_policy_id_offset_days_unique",
+        "e|uq|public.policy_steps.policy_steps_policy_id_offset_days_unique",
+        "n|con|public.policy_steps.policy_steps_policy_id_offset_days_unique",
+        "n|rel|public.policy_steps_policy_id_offset_days_unique"
+      ],
+      "reads": [
+        "n|tbl|public.policy_steps",
+        "n|sch|public",
+        "e|col|public.policy_steps.policy_id",
+        "e|col|public.policy_steps.offset_days"
+      ],
+      "sharedWrites": [
+        "e|uniqueness|public.policy_steps.offset_days.policy_id"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "policy_steps",
+        "archived_at"
+      ],
+      "writes": [
+        "s|col|public.policy_steps.archived_at",
+        "n|col|public.policy_steps.archived_at",
+        "e|col|public.policy_steps.archived_at"
+      ],
+      "reads": [
+        "n|tbl|public.policy_steps",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "policy_steps",
+        "policy_steps_position"
+      ],
+      "writes": [
+        "s|idx|public.policy_steps_position",
+        "n|idx|public.policy_steps_position",
+        "e|idx|public.policy_steps_position",
+        "n|rel|public.policy_steps_position"
+      ],
+      "reads": [
+        "n|tbl|public.policy_steps",
+        "n|sch|public",
+        "n|col|public.policy_steps.policy_id",
+        "n|col|public.policy_steps.position"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "policy_steps",
+        "policy_steps_offset"
+      ],
+      "writes": [
+        "s|idx|public.policy_steps_offset",
+        "n|idx|public.policy_steps_offset",
+        "e|idx|public.policy_steps_offset",
+        "n|rel|public.policy_steps_offset"
+      ],
+      "reads": [
+        "n|tbl|public.policy_steps",
+        "n|sch|public",
+        "n|col|public.policy_steps.policy_id",
+        "n|col|public.policy_steps.offset_days"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "policy_steps",
+        "name": "archived_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "policy_steps",
+        "name": "policy_steps_position",
+        "nameExplicit": true,
+        "columns": [
+          {
+            "value": "policy_id",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          },
+          {
+            "value": "position",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": true,
+        "where": "\"archived_at\" is null",
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "policy_steps",
+        "name": "policy_steps_offset",
+        "nameExplicit": true,
+        "columns": [
+          {
+            "value": "policy_id",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          },
+          {
+            "value": "offset_days",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": true,
+        "where": "\"archived_at\" is null",
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "drop",
+      "key": "uniques\u0000[\"public\",\"policy_steps\",\"policy_steps_policy_id_position_unique\"]"
+    },
+    {
+      "op": "drop",
+      "key": "uniques\u0000[\"public\",\"policy_steps\",\"policy_steps_policy_id_offset_days_unique\"]"
+    }
+  ]
+}

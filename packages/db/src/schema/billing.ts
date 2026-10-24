@@ -19,6 +19,7 @@ import {
 } from "drizzle-orm/pg-core";
 
 import { citext } from "./citext";
+import { collectionPolicies } from "./policies";
 import { firms } from "./tenancy";
 import type {
   DocumentKind,
@@ -49,7 +50,6 @@ export const clients = pgTable(
     billingAddress: jsonb("billing_address"),
     timezone: text("timezone"),
     notes: text("notes"),
-    // References collection_policies, which arrives in Phase 4 (the FK is added there).
     policyId: uuid("policy_id"),
     externalRef: text("external_ref"),
     archivedAt: timestamp("archived_at", { withTimezone: true }),
@@ -57,6 +57,10 @@ export const clients = pgTable(
     updatedAt: updatedAt(),
   },
   (t) => [
+    foreignKey({
+      columns: [t.tenantId, t.policyId],
+      foreignColumns: [collectionPolicies.tenantId, collectionPolicies.id],
+    }),
     unique().on(t.tenantId, t.externalRef),
     unique("clients_tenant_id_id").on(t.tenantId, t.id),
     index("clients_tenant_idx").on(t.tenantId),
