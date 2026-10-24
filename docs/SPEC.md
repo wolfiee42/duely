@@ -1025,16 +1025,16 @@ Each spike ends with a written result in `docs/adr/`. A failed spike means the a
 
 ### Phase 1: Foundation
 
-- [ ] P1-01 · Add `workers/jobs` and `packages/{api,domain,clock,ai,email,stripe,cloudflare}` skeletons; import-boundary lint rules; CI skeleton (`vp check`, tests, Postgres service) · M
-- [ ] P1-02 · `packages/clock` + lint ban on raw `Date.now()` / `new Date()` · S · 14.2
-- [ ] P1-03 · `packages/db`: remove the Start coupling, `createDb()` factory, roles (`duely_app`, `duely_system`, migration owner), `withTenant`, migration tooling (drizzle-kit plus custom SQL for RLS) · M · 1.4
-- [ ] P1-04 · Migration 001: `firms`, `members`, `audit_log`, `firm_domains`, `idempotency_keys`; RLS template; better-auth tables stay outside RLS · M · 1.2
-- [ ] P1-05 · `resolveHostKind`, `resolve_tenant_by_host` SQL function, Start request middleware, Hono host-kind guard, reserved slugs, 404 on unknown host · M · 1.3
-- [ ] P1-06 · **Tenant-isolation + host-kind test suites** (gate in CI) · M · 1.4
-- [ ] P1-07 · `packages/auth` `createAuth()` factory mounted in Hono; Cove's `_guest` and `_staff` routes on the app host; signup creates a firm and its owner member · L · 1.1, 1.5
-- [ ] P1-08 · tRPC init: contexts, procedure builders, error mapping, idempotency middleware, Query integration, `firm.get` end to end · M
-- [ ] P1-09 · Audit helper `audit(actor, action, entity)` used by all mutations · S · 15.1
-- [ ] P1-10 · Member invites · S · 1.6
+- [x] P1-01 · Add `workers/jobs` and `packages/{api,domain,clock,ai,email,stripe,cloudflare}` skeletons; import-boundary lint rules; CI skeleton (`vp check`, tests, Postgres service) · M
+- [x] P1-02 · `packages/clock` + lint ban on raw `Date.now()` / `new Date()` · S · 14.2
+- [x] P1-03 · `packages/db`: remove the Start coupling, `createDb()` factory, roles (`duely_app`, `duely_system`, migration owner), `withTenant`, migration tooling (drizzle-kit plus custom SQL for RLS) · M · 1.4
+- [x] P1-04 · Migration 001: `firms`, `members`, `audit_log`, `firm_domains`, `idempotency_keys`; RLS template; better-auth tables stay outside RLS · M · 1.2
+- [x] P1-05 · `resolveHostKind`, `resolve_tenant_by_host` SQL function, Start request middleware, Hono host-kind guard, reserved slugs, 404 on unknown host · M · 1.3
+- [x] P1-06 · **Tenant-isolation + host-kind test suites** (gate in CI) · M · 1.4
+- [x] P1-07 · `packages/auth` `createAuth()` factory mounted in Hono; Cove's `_guest` and `_staff` routes on the app host; signup creates a firm and its owner member · L · 1.1, 1.5
+- [x] P1-08 · tRPC init: contexts, procedure builders, error mapping, idempotency middleware, Query integration, `firm.get` end to end · M
+- [x] P1-09 · Audit helper `audit(actor, action, entity)` used by all mutations · S · 15.1
+- [x] P1-10 · Member invites · S · 1.6
 
 ### Phase 2: Money path
 
