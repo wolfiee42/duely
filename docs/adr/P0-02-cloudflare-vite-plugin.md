@@ -59,3 +59,7 @@ D17 and D26 hold: the plugin works with Cove's aliased Vite, so the "plain Vite"
 - Request logging: evlog's Nitro integration is gone. Replacement is SPEC open item 5 (Phase 1).
 - Verification gotcha: if port 3000 is already taken, Vite silently moves to 3001, so a curl on 3000 can hit someone else's server. Use `--port N --strictPort` when testing.
 - `vp run build` strips env vars not declared in the task, so a missing `BETTER_AUTH_SECRET` fails the build in a local shell. Real values go in `apps/web/.env.local`; I used a throwaway process-only value and wrote no secrets.
+
+## Update (P0-05)
+
+The `withQueryInsensitiveIncludes` workaround (D30) has been removed. P0-05 found that `@varlock/vite-integration` bakes secrets into the Worker and replaced it with `@varlock/cloudflare-integration`, which needs no entry-id workaround. See `docs/adr/P0-05-env.md`.
