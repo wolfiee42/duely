@@ -50,7 +50,7 @@ export default defineConfig({
 
   // Vitest (via Vite+) - https://viteplus.dev/guide/test
   test: {
-    include: ["{apps,packages,tools}/**/*.test.{ts,tsx}"],
+    include: ["{apps,packages,tools,workers}/**/*.test.{ts,tsx}"],
     passWithNoTests: true,
   },
 

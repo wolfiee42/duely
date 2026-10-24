@@ -9,7 +9,6 @@
     "dev": "vp dev",
     "preview": "vp preview",
     "deploy": "vp run build && varlock-wrangler deploy",
-    "start:e2e": "varlock run -- node .output/server/index.mjs",
     "test:e2e": "playwright test --pass-with-no-tests",
     "ui": "vpx shadcn@latest",
     "cf-typegen": "wrangler types"
@@ -21,6 +20,8 @@
     "@repo/auth": "workspace:*",
     "@repo/logger": "workspace:*",
     "@repo/ui": "workspace:*",
+    "@stripe/react-stripe-js": "catalog:",
+    "@stripe/stripe-js": "catalog:",
     "@tanstack/react-form": "catalog:",
     "@tanstack/react-query": "catalog:",
     "@tanstack/react-router": "catalog:",
@@ -35,7 +36,8 @@
     "nanoid": "catalog:",
     "react": "catalog:",
     "react-dom": "catalog:",
-    "varlock": "catalog:"
+    "varlock": "catalog:",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "catalog:",

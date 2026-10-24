@@ -52,3 +52,31 @@ jobs:
           cache: true
       # Core gate suites (SPEC 8): tenant-isolation, host-kind, state-machines, money, ...
       - run: vp test
+
+  e2e:
+    name: End-to-end (built Worker)
+    runs-on: ubuntu-latest
+    needs: [check]
+    services:
+      postgres:
+        image: postgres:18
+        env:
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 10
+    env:
+      TEST_ADMIN_DATABASE_URL: postgresql://postgres:postgres@localhost:5432/postgres
+    steps:
+      - uses: actions/checkout@v7.0.1
+      - uses: voidzero-dev/setup-vp@v1.22.0
+        with:
+          node-version: "24"
+          cache: true
+      - run: vpx playwright install --with-deps chromium
+      # Builds the Worker and runs it with fake services (no real email or payments).
+      - run: vp run test:e2e

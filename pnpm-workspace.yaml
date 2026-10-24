@@ -26,6 +26,8 @@ catalog:
   "@tailwindcss/vite": 4.3.3
   "@tanstack/devtools-a11y": 0.2.2
   "@tanstack/devtools-vite": 0.8.5
+  "@stripe/react-stripe-js": 7.0.0
+  "@stripe/stripe-js": 10.1.0
   "@tanstack/eslint-plugin-query": 5.104.5
   "@tanstack/eslint-plugin-router": 1.162.0
   "@tanstack/react-devtools": 0.10.13
@@ -55,6 +57,7 @@ catalog:
   hono: 4.13.13
   lucide-react: 1.61.0
   nanoid: 6.0.2
+  pdf-lib: 1.17.1
   postgres: 3.4.9
   react: 19.3.1
   react-dom: 19.3.1

@@ -1038,23 +1038,23 @@ Each spike ends with a written result in `docs/adr/`. A failed spike means the a
 
 ### Phase 2: Money path
 
-- [ ] P2-01 · Migration 002: clients, contacts, invoices, items, sequences, payments, refunds, stripe_events, documents · M
-- [ ] P2-02 · `packages/domain`: money + invoice state machine + table-driven tests · M · 4.2, 4.5
-- [ ] P2-03 · Clients and contacts CRUD + UI · M · 3.x
-- [ ] P2-04 · Invoice draft CRUD + line items + totals · L · 4.1, 4.2
-- [ ] P2-05 · Branding settings (logo upload via the Hono upload route to R2, colors) · M · 2.4
-- [ ] P2-06 · Stripe Connect Express onboarding + `account.updated` · M · 2.2, 2.3
-- [ ] P2-07 · Send invoice (numbering, freeze, outbox message, `send_message` consumer, portal link) · L · 4.3, 4.4, 8.1
-- [ ] P2-08 · Portal auth: magic link + sessions + rate limit · L · 6.1
-- [ ] P2-09 · Portal: invoice list and detail, first-view tracking · M · 6.2, 6.3
-- [ ] P2-10 · Pay flow: PaymentIntent on connected account with application fee · L · 5.1, 5.2
-- [ ] P2-11 · Stripe webhook route in Hono + dedupe + handlers (succeeded, failed, processing) with outbox receipts · L · 5.3 to 5.5, 5.7
-- [ ] P2-12 · Refund and dispute handlers · M · 5.8, 5.9
-- [ ] P2-13 · **Webhook-replay + out-of-order tests** (gate) · M · 5.5
-- [ ] P2-14 · Receipts email + portal receipts · S · 6.7
-- [ ] P2-15 · Invoice PDF · M · 4.7
-- [ ] P2-16 · Portal promise and dispute actions (manual path, without AI) · M · 6.5, 6.6, 10.x
-- [ ] P2-17 · E2E: sign-up → connect → invoice → pay → paid · M
+- [x] P2-01 · Migration 002: clients, contacts, invoices, items, sequences, payments, refunds, stripe_events, documents · M
+- [x] P2-02 · `packages/domain`: money + invoice state machine + table-driven tests · M · 4.2, 4.5
+- [x] P2-03 · Clients and contacts CRUD + UI · M · 3.x
+- [x] P2-04 · Invoice draft CRUD + line items + totals · L · 4.1, 4.2
+- [x] P2-05 · Branding settings (logo upload via the Hono upload route to R2, colors) · M · 2.4
+- [x] P2-06 · Stripe Connect Express onboarding + `account.updated` · M · 2.2, 2.3
+- [x] P2-07 · Send invoice (numbering, freeze, outbox message, `send_message` consumer, portal link) · L · 4.3, 4.4, 8.1
+- [x] P2-08 · Portal auth: magic link + sessions + rate limit · L · 6.1
+- [x] P2-09 · Portal: invoice list and detail, first-view tracking · M · 6.2, 6.3
+- [x] P2-10 · Pay flow: PaymentIntent on connected account with application fee · L · 5.1, 5.2
+- [x] P2-11 · Stripe webhook route in Hono + dedupe + handlers (succeeded, failed, processing) with outbox receipts · L · 5.3 to 5.5, 5.7
+- [x] P2-12 · Refund and dispute handlers · M · 5.8, 5.9
+- [x] P2-13 · **Webhook-replay + out-of-order tests** (gate) · M · 5.5
+- [x] P2-14 · Receipts email + portal receipts · S · 6.7
+- [x] P2-15 · Invoice PDF · M · 4.7
+- [x] P2-16 · Portal promise and dispute actions (manual path, without AI) · M · 6.5, 6.6, 10.x
+- [x] P2-17 · E2E: sign-up → connect → invoice → pay → paid · M
 
 ### Phase 3: Custom domains
 

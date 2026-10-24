@@ -5,13 +5,22 @@
   "compatibility_flags": ["nodejs_compat"],
   "main": "@tanstack/react-start/server-entry",
   "observability": { "enabled": true },
-  // D4, D28: the app role only, with query caching disabled on the Hyperdrive config.
-  // Replace the id with the real Hyperdrive config id before deploying (`wrangler hyperdrive create`).
+  // D4, D28: one Hyperdrive config per role, query caching disabled on both.
+  // Replace the ids with the real configs before deploying (`wrangler hyperdrive create`).
   "hyperdrive": [
     {
       "binding": "HYPERDRIVE_APP",
       "id": "00000000000000000000000000000001",
       "localConnectionString": "postgresql://duely_app:duely_app@localhost:5432/duely",
     },
+    {
+      // Webhook ingress only (D4); never used for a request that has a tenant.
+      "binding": "HYPERDRIVE_SYSTEM",
+      "id": "00000000000000000000000000000002",
+      "localConnectionString": "postgresql://duely_system:duely_system@localhost:5432/duely",
+    },
   ],
+  // D24: the web Worker only produces; workers/jobs consumes.
+  "queues": { "producers": [{ "binding": "QUEUE_MAIN", "queue": "duely-main" }] },
+  "r2_buckets": [{ "binding": "FILES", "bucket_name": "duely-files" }],
 }

@@ -9,11 +9,16 @@ import { createRootRouteWithContext, HeadContent, Scripts } from "@tanstack/reac
 import { TanStackRouterDevtoolsPanel } from "@tanstack/react-router-devtools";
 
 import { $getHostContext } from "#/lib/host.ts";
+import type { PortalTrpc } from "#/lib/trpc/portal.ts";
 import type { StaffTrpc } from "#/lib/trpc/staff.ts";
 
 import appCss from "#/styles.css?url";
 
-export const Route = createRootRouteWithContext<{ queryClient: QueryClient; trpc: StaffTrpc }>()({
+export const Route = createRootRouteWithContext<{
+  queryClient: QueryClient;
+  trpc: StaffTrpc;
+  portalTrpc: PortalTrpc;
+}>()({
   // The host never changes within a session, so it is fetched once and cached.
   beforeLoad: async ({ context }) => ({
     host: await context.queryClient.query({
