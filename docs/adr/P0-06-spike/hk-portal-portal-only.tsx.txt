@@ -1,0 +1,8 @@
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/_hk-portal/portal-only")({
+  component: function PortalOnly() {
+    const { host } = Route.useRouteContext();
+    return <h1 id="page">portal-only:{host.slug}</h1>;
+  },
+});

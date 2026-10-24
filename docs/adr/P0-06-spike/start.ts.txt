@@ -1,0 +1,7 @@
+import { createStart } from "@tanstack/react-start";
+
+import { hostMiddleware } from "./spike/host-middleware.ts";
+
+export const startInstance = createStart(() => ({
+  requestMiddleware: [hostMiddleware],
+}));

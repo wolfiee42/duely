@@ -1,0 +1,11 @@
+import { createFileRoute } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/api/spike-cookie")({
+  server: {
+    handlers: {
+      // No Domain attribute, so the cookie is host-only.
+      GET: () =>
+        new Response("ok", { headers: { "set-cookie": "spike_staff=1; Path=/; HttpOnly; SameSite=Lax" } }),
+    },
+  },
+});

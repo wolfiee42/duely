@@ -1,0 +1,10 @@
+import { createFileRoute, Link } from "@tanstack/react-router";
+
+export const Route = createFileRoute("/spike-links")({
+  component: () => (
+    <nav>
+      <Link id="to-staff" to="/staff-only">staff</Link>
+      <Link id="to-portal" to="/portal-only">portal</Link>
+    </nav>
+  ),
+});

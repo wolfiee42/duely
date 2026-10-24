@@ -1,0 +1,20 @@
+// P0-06 spike only. Archived under docs/adr/P0-06-spike/.
+export type HostKind = "marketing" | "app" | "portal";
+export type HostContext = { hostKind: HostKind; slug: string | null };
+
+const RESERVED = new Set(["app", "www", "api", "inbound", "mail", "admin", "status", "docs", "assets"]);
+const SLUG = /^[a-z0-9](?:[a-z0-9-]{1,28})[a-z0-9]$/; // 3 to 30 characters
+
+// `rootDomain` is `duely.app` in production and `localhost` in dev, so `acme.localhost`
+// takes the same path as `acme.duely.app`. Custom domains need a DB lookup and are out of scope here.
+export function resolveHostKind(hostHeader: string | null, rootDomain: string): HostContext | null {
+  if (!hostHeader) return null;
+  const host = hostHeader.toLowerCase().replace(/:\d+$/, "").replace(/\.$/, "");
+  if (host === rootDomain || host === `www.${rootDomain}`) return { hostKind: "marketing", slug: null };
+  if (host === `app.${rootDomain}`) return { hostKind: "app", slug: null };
+  const suffix = `.${rootDomain}`;
+  if (!host.endsWith(suffix)) return null;
+  const slug = host.slice(0, -suffix.length);
+  if (RESERVED.has(slug) || !SLUG.test(slug)) return null;
+  return { hostKind: "portal", slug };
+}

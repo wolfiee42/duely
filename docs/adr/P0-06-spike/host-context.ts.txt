@@ -1,0 +1,19 @@
+import { createServerFn } from "@tanstack/react-start";
+import { notFound } from "@tanstack/react-router";
+
+import type { HostKind } from "./host-kind.ts";
+import { hostMiddleware } from "./host-middleware.ts";
+
+export const $getHostContext = createServerFn()
+  .middleware([hostMiddleware])
+  .handler(({ context }) => ({
+  hostKind: context.hostKind,
+  slug: context.slug,
+}));
+
+// 404, never a redirect: a wrong-kind host must not reveal that the route exists.
+export async function requireHostKind(kind: HostKind) {
+  const host = await $getHostContext();
+  if (host.hostKind !== kind) throw notFound();
+  return { host };
+}

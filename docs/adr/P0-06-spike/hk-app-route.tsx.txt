@@ -1,0 +1,8 @@
+import { createFileRoute, Outlet } from "@tanstack/react-router";
+
+import { requireHostKind } from "#/spike/host-context.ts";
+
+export const Route = createFileRoute("/_hk-app")({
+  beforeLoad: () => requireHostKind("app"),
+  component: Outlet,
+});

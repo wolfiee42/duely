@@ -1,0 +1,13 @@
+import { createMiddleware } from "@tanstack/react-start";
+
+import { resolveHostKind } from "./host-kind.ts";
+
+const ROOT_DOMAIN = import.meta.env.DEV ? "localhost" : "duely.app";
+
+export const hostMiddleware = createMiddleware().server(({ next, request }) => {
+  console.log("[spike] hostMiddleware", new URL(request.url).pathname);
+  const resolved = resolveHostKind(request.headers.get("host"), ROOT_DOMAIN);
+  // Unknown hosts get a generic 404 before anything else runs.
+  if (!resolved) return new Response("Not Found", { status: 404 });
+  return next({ context: resolved });
+});
