@@ -6,4 +6,29 @@
   "main": "src/index.ts",
   "observability": { "enabled": true },
   "triggers": { "crons": ["* * * * *"] },
+  // D4: the jobs worker uses the system role, then drops into one tenant per unit of work.
+  "hyperdrive": [
+    {
+      "binding": "HYPERDRIVE_SYSTEM",
+      "id": "00000000000000000000000000000002",
+      "localConnectionString": "postgresql://duely_system:duely_system@localhost:5432/duely",
+    },
+  ],
+  "queues": {
+    "producers": [{ "binding": "QUEUE_MAIN", "queue": "duely-main" }],
+    "consumers": [
+      {
+        "queue": "duely-main",
+        "max_batch_size": 10,
+        "max_retries": 5,
+        "dead_letter_queue": "duely-dead",
+      },
+    ],
+  },
+  "vars": {
+    "PLATFORM_DOMAIN": "duely.app",
+    "APP_ORIGIN": "https://app.duely.app",
+    "EMAIL_FROM_ADDRESS": "billing@duely.app",
+  },
+  // Secrets: RESEND_API_KEY (`wrangler secret put RESEND_API_KEY`).
 }

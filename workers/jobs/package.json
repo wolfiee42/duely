@@ -8,6 +8,11 @@
     "deploy": "wrangler deploy",
     "cf-typegen": "wrangler types"
   },
+  "dependencies": {
+    "@repo/api": "workspace:*",
+    "@repo/db": "workspace:*",
+    "@repo/email": "workspace:*"
+  },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",
     "@types/node": "catalog:",
