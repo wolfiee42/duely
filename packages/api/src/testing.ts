@@ -1,3 +1,4 @@
+import { realNow } from "@repo/clock";
 import { createFakeCloudflare, type FakeCloudflare } from "@repo/cloudflare/fake";
 import { createDb, type Db } from "@repo/db";
 import { adminExec, createTestDatabase, type TestDatabase } from "@repo/db/testing";
@@ -23,6 +24,7 @@ export interface Fakes {
 }
 
 export const WEBHOOK_SECRET = "whsec_test_secret";
+export const RESEND_WEBHOOK_SECRET = `whsec_${btoa("resend-test-secret-bytes")}`;
 
 /** Everything `createApp` needs besides the database, with in-memory services. */
 export function testDeps(): Pick<AppDeps, "auth" | "services" | "config"> & { fakes: Fakes } {
@@ -41,6 +43,7 @@ export function testDeps(): Pick<AppDeps, "auth" | "services" | "config"> & { fa
       platformDomain: "duely.app",
       appOrigin: APP,
       stripeWebhookSecret: WEBHOOK_SECRET,
+      resendWebhookSecret: RESEND_WEBHOOK_SECRET,
       stripePublishableKey: "pk_test_fake",
       cnameTarget: "customers.duely.app",
       emailFromAddress: "billing@duely.app",
@@ -186,3 +189,77 @@ export async function createHarness(extra: Partial<AppDeps> = {}): Promise<Harne
 
 /** Shared by portal suites: the fake outbox, drained as the jobs worker would. */
 export { deliverMessage } from "./usecases/outbox";
+
+// Scenario helpers shared by the collections suites.
+
+/** Connects the firm's payments (fake) so invoices can be sent. */
+export async function connectPayments(h: Harness, cookie: string) {
+  await h.staff("stripe.connectLink", { cookie, body: {} });
+  const accountId = (await h.staff("firm.get", { cookie })).data.firm.stripeAccountId;
+  h.fakes.stripe.completeOnboarding(accountId);
+  await h.staff("stripe.status", { cookie });
+}
+
+export async function addClient(h: Harness, cookie: string, email = "bill@initech.test") {
+  return (
+    await h.staff("clients.create", {
+      cookie,
+      body: { client: { name: "Initech" }, contact: { name: "Bill", email } },
+    })
+  ).data.id as string;
+}
+
+/** Drafts and sends an invoice due `dueDate`, returning its id. */
+export async function sendInvoiceTo(
+  h: Harness,
+  cookie: string,
+  clientId: string,
+  dueDate: string,
+  amountMinor = 10_000,
+) {
+  const id = (
+    await h.staff("invoices.createDraft", {
+      cookie,
+      body: {
+        clientId,
+        dueDate,
+        items: [{ description: "Work", quantity: "1", unitAmountMinor: amountMinor }],
+      },
+    })
+  ).data.id as string;
+  const sent = await h.staff("invoices.send", {
+    cookie,
+    body: { invoiceId: id, idempotencyKey: crypto.randomUUID() },
+  });
+  expect(sent.status).toBe(200);
+  return id;
+}
+
+/** Posts a Resend-signed webhook (Svix headers) to the app host and returns the status. */
+export async function postResend(
+  h: Harness,
+  path: "/api/webhooks/resend" | "/api/inbound/email",
+  event: unknown,
+  over: { host?: string; signature?: string | null } = {},
+) {
+  const raw = JSON.stringify(event);
+  const id = `msg_${crypto.randomUUID()}`;
+  const timestamp = Math.floor(realNow().getTime() / 1000);
+  const { signSvix } = await import("@repo/email");
+  const signature =
+    over.signature === undefined
+      ? await signSvix(id, timestamp, raw, RESEND_WEBHOOK_SECRET)
+      : over.signature;
+  const res = await h.app.request(`${over.host ?? APP}${path}`, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+      "svix-id": id,
+      "svix-timestamp": String(timestamp),
+      ...(signature ? { "svix-signature": signature } : {}),
+    },
+    body: raw,
+  });
+  const json = (await res.json().catch(() => ({}))) as { status?: string };
+  return { status: res.status, outcome: json.status };
+}

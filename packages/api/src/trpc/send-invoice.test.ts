@@ -29,6 +29,7 @@ const cfg = () => ({
   appOrigin: "https://app.duely.app",
   cnameTarget: "customers.duely.app",
   stripeWebhookSecret: "x",
+  resendWebhookSecret: "x",
   stripePublishableKey: "pk",
   emailFromAddress: "billing@duely.app",
   portalSessionSecret: "x",

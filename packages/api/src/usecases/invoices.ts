@@ -21,6 +21,7 @@ import { and, asc, desc, eq, sql } from "drizzle-orm";
 
 import { audit, type Actor } from "./audit";
 import { firmClock } from "./firm-clock";
+import { applyJobEffects } from "./reminders";
 
 export interface ItemInput {
   description: string;
@@ -270,11 +271,12 @@ export async function voidInvoice(db: Db, actor: Actor, invoiceId: string, reaso
       .for("update");
     if (!invoice) throw notFound();
     const { now, today } = await firmClock(tx, actor.tenantId);
-    transition({ status: invoice.status }, "VOID", baseContext(invoice, today));
+    const next = transition({ status: invoice.status }, "VOID", baseContext(invoice, today));
     await tx
       .update(invoices)
       .set({ status: "void", voidedAt: now, voidReason: reason, updatedAt: sql`now()` })
       .where(eq(invoices.id, invoiceId));
+    await applyJobEffects(tx, actor.tenantId, invoiceId, next.effects);
     await audit(
       tx,
       actor,

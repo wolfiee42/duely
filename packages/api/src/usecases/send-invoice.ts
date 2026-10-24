@@ -8,6 +8,7 @@ import { and, count, eq, sql } from "drizzle-orm";
 import { audit, type Actor } from "./audit";
 import { firmClock } from "./firm-clock";
 import { baseContext } from "./invoices";
+import { applyJobEffects } from "./reminders";
 import { newToken } from "./tokens";
 
 /**
@@ -41,7 +42,7 @@ export async function sendInvoice(db: Db, actor: Actor, invoiceId: string) {
       .where(eq(invoiceItems.invoiceId, invoiceId));
 
     // Throws invoice.invalid_transition (409) or a guard failure (422).
-    transition({ status: invoice.status }, "SEND", {
+    const next = transition({ status: invoice.status }, "SEND", {
       ...baseContext(invoice, today),
       itemCount,
       chargesEnabled: firm.stripeChargesEnabled,
@@ -68,6 +69,8 @@ export async function sendInvoice(db: Db, actor: Actor, invoiceId: string) {
         updatedAt: sql`now()`,
       })
       .where(eq(invoices.id, invoiceId));
+
+    await applyJobEffects(tx, actor.tenantId, invoiceId, next.effects);
 
     const messageIds: string[] = [];
     for (const contact of recipients) {

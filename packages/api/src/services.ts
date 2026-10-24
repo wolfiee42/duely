@@ -40,6 +40,8 @@ export interface AppConfig {
   /** Public origin of the app host, e.g. `https://app.duely.app`. */
   appOrigin: string;
   stripeWebhookSecret: string;
+  /** Verifies Resend delivery webhooks. */
+  resendWebhookSecret: string;
   /** Public key the payer's browser uses with Stripe Elements. */
   stripePublishableKey: string;
   /** Sender for every outbound email, e.g. `billing@duely.app`. */
@@ -54,6 +56,11 @@ export interface AppConfig {
 export function portalOrigin(appOrigin: string, slug: string): string {
   const url = new URL(appOrigin);
   return `${url.protocol}//${slug}.${url.host.replace(/^app\./, "")}`;
+}
+
+/** The tokenized Reply-To of an outbound reminder; replies to it arrive at the inbound webhook (FR-8.5). */
+export function replyAddress(platformDomain: string, replyToken: string): string {
+  return `reply+${replyToken}@inbound.${platformDomain}`;
 }
 
 export function createMemoryFiles(): FilesPort & {

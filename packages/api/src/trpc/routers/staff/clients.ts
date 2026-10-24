@@ -33,6 +33,10 @@ const clientFields = {
     .transform((v) => v || null),
   notes: optionalText(4000),
 };
+const policyField = z
+  .uuid()
+  .nullish()
+  .transform((v) => v ?? null);
 const contactFields = {
   name: text(160),
   email: z.email().max(254),
@@ -63,7 +67,9 @@ export const clientsRouter = router({
     ),
 
   update: staffProcedure
-    .input(z.object(clientFields).partial().extend({ clientId: id }))
+    .input(
+      z.object(clientFields).partial().extend({ clientId: id, policyId: policyField.optional() }),
+    )
     .mutation(({ ctx, input }) => {
       const { clientId, ...rest } = input;
       return ctx.withDb((db) => updateClient(db, actorOf(ctx), clientId, rest));

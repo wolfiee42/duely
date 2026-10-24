@@ -8,6 +8,7 @@ import type { AppConfig, Services } from "../services";
 import { createStaffContext, staffRouter, type AuthConfig } from "../trpc";
 import { createPortalContext } from "../trpc/portal-context";
 import { portalRouter } from "../trpc/routers/portal";
+import { emailRoutes } from "./email";
 import { fileRoutes } from "./files";
 import { hostScope, requestId, requireHostKind, type AppEnv } from "./middleware";
 import { portalRoutes } from "./portal";
@@ -44,6 +45,14 @@ export function createApp(deps: AppDeps) {
   app.route(
     "/",
     webhookRoutes({
+      withSystemDb: deps.withSystemDb,
+      queue: deps.services.queue,
+      config: deps.config,
+    }),
+  );
+  app.route(
+    "/",
+    emailRoutes({
       withSystemDb: deps.withSystemDb,
       queue: deps.services.queue,
       config: deps.config,

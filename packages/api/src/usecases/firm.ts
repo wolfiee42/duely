@@ -6,6 +6,7 @@ import { eq, sql } from "drizzle-orm";
 
 import { isValidPlatformSlug } from "../host/host";
 import { audit, type Actor } from "./audit";
+import { ensureDefaultPolicy } from "./policies";
 
 export interface NewFirmUser {
   id: string;
@@ -42,6 +43,7 @@ export async function createFirm(
         .insert(members)
         .values({ tenantId, userId: user.id, email: user.email, name: user.name, role: "owner" })
         .returning({ id: members.id });
+      await ensureDefaultPolicy(tx, tenantId);
       await audit(
         tx,
         { tenantId, type: "member", id: member!.id, requestId },

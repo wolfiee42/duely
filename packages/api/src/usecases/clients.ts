@@ -1,6 +1,6 @@
 import { realNow } from "@repo/clock";
 import { uniqueViolation, withTenant, type Db } from "@repo/db";
-import { clients, contacts } from "@repo/db/schema";
+import { clients, collectionPolicies, contacts } from "@repo/db/schema";
 import { DomainError } from "@repo/domain";
 import { and, asc, eq, ilike, isNull } from "drizzle-orm";
 
@@ -19,6 +19,8 @@ export interface ClientInput {
   timezone?: string | null;
   notes?: string | null;
   billingAddress?: Record<string, string> | null;
+  /** A policy override; `null` follows the firm default (FR-9.3). Only settable on update. */
+  policyId?: string | null;
 }
 
 const notFound = () => new DomainError("client.not_found", "not_found", "Client not found.");
@@ -112,6 +114,13 @@ export async function updateClient(
   await withTenant(db, actor.tenantId, async (tx) => {
     const [before] = await tx.select().from(clients).where(eq(clients.id, clientId));
     if (!before) throw notFound();
+    if (input.policyId) {
+      const [policy] = await tx
+        .select({ id: collectionPolicies.id })
+        .from(collectionPolicies)
+        .where(eq(collectionPolicies.id, input.policyId));
+      if (!policy) throw new DomainError("policy.not_found", "not_found", "Policy not found.");
+    }
     await tx
       .update(clients)
       .set({ ...input, updatedAt: realNow() })
@@ -122,7 +131,12 @@ export async function updateClient(
       "client.updated",
       { type: "client", id: clientId },
       {
-        before: { name: before.name, timezone: before.timezone, notes: before.notes },
+        before: {
+          name: before.name,
+          timezone: before.timezone,
+          notes: before.notes,
+          policyId: before.policyId,
+        },
         after: input,
       },
     );

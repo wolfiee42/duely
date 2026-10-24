@@ -3,27 +3,35 @@ import { withSystemTenant, type Db } from "@repo/db";
 import {
   clients,
   contacts,
+  disputes,
   firms,
   invoices,
   messages,
   payments,
   portalTokens,
+  promises,
+  reminderJobs,
 } from "@repo/db/schema";
+import type { MessageStatus } from "@repo/db/schema";
 import {
   EmailSendError,
   invoiceEmail,
   magicLinkEmail,
   receiptEmail,
+  renderReminder,
   type EmailClient,
 } from "@repo/email";
-import { and, eq, lt, sql } from "drizzle-orm";
+import { and, eq, inArray, lt, sql } from "drizzle-orm";
 
-import { type AppConfig, type QueuePort } from "../services";
+import { replyAddress, type AppConfig, type QueuePort } from "../services";
 import { firmPortalOrigin } from "./domains";
 import { LOGIN_LINK_MINUTES } from "./portal-auth";
 import { newToken, sha256Hex } from "./tokens";
 
 const INVOICE_LINK_DAYS = 7;
+const SENDABLE: MessageStatus[] = ["queued", "approved"];
+/** Invoice states in which a reminder still makes sense. */
+const REMINDABLE = ["sent", "viewed", "overdue"];
 
 export type DeliverResult = "sent" | "noop" | "cancelled" | "retry";
 
@@ -37,8 +45,8 @@ interface Prepared {
   replyTo: string | undefined;
   isDemo: boolean;
   idempotencyKey: string;
-  /** Rendered with a placeholder link so no live token is kept in the message row. */
-  record: { html: string; text: string };
+  /** Rendered with a placeholder link so no live token is kept in the message row. `text` is kept as stored for reminders. */
+  record: { html: string; text?: string };
 }
 
 /**
@@ -70,7 +78,8 @@ export async function deliverMessage(
         .from(messages)
         .where(eq(messages.id, messageId))
         .for("update");
-      if (!message || message.status !== "queued") return "noop"; // duplicate delivery of the queue message
+      // `approved` is a reminder draft a person signed off. Anything else was already handled (duplicate delivery).
+      if (!message || !SENDABLE.includes(message.status)) return "noop";
 
       const [firm] = await tx.select().from(firms).where(eq(firms.id, tenantId));
       const [contact] = message.contactId
@@ -92,17 +101,44 @@ export async function deliverMessage(
         : [];
 
       // FR-9.9: re-check at send time. A void invoice or an address that bounced since queueing is dropped.
+      const isReminder = message.kind === "reminder";
+      let hold: "promise" | "dispute" | null = null;
+      if (isReminder && invoice) {
+        const [promise] = await tx
+          .select({ id: promises.id })
+          .from(promises)
+          .where(and(eq(promises.invoiceId, invoice.id), eq(promises.status, "active")));
+        const [dispute] = await tx
+          .select({ id: disputes.id })
+          .from(disputes)
+          .where(and(eq(disputes.invoiceId, invoice.id), eq(disputes.status, "open")));
+        hold = dispute ? "dispute" : promise ? "promise" : null;
+      }
       const stale =
         !firm ||
         !contact ||
         contact.emailStatus !== "ok" ||
+        (isReminder && !contact?.receivesReminders) ||
         (message.kind === "receipt" && !payment) ||
+        (isReminder && invoice && (!REMINDABLE.includes(invoice.status) || hold !== null)) ||
         (!isLogin &&
           (!invoice ||
             invoice.status === "void" ||
             (message.kind !== "receipt" && invoice.status === "paid")));
       if (stale) {
         await tx.update(messages).set({ status: "cancelled" }).where(eq(messages.id, messageId));
+        if (message.jobId) {
+          // A paid or void invoice ends the job; a hold only pauses it (replan wakes it).
+          const ended = !invoice || !REMINDABLE.includes(invoice.status);
+          await tx
+            .update(reminderJobs)
+            .set(
+              hold && !ended
+                ? { status: "skipped", pauseReason: hold }
+                : { status: "cancelled", pauseReason: null },
+            )
+            .where(eq(reminderJobs.id, message.jobId));
+        }
         return "cancelled";
       }
 
@@ -140,8 +176,18 @@ export async function deliverMessage(
                 dueDate: invoice!.dueDate,
                 portalUrl: url,
               });
-      const live = render(`${origin}/api/portal/auth/${token}`);
-      const redacted = render(
+      const unsubscribeUrl = `${deps.config.appOrigin}/api/unsubscribe/${message.replyToken}`;
+      const reminder = (url: string) =>
+        renderReminder({
+          ...brand,
+          subject: message.subject ?? "",
+          body: message.bodyText ?? "",
+          portalUrl: url,
+          unsubscribeUrl,
+        });
+      const draw = isReminder ? reminder : render;
+      const live = draw(`${origin}/api/portal/auth/${token}`);
+      const redacted = draw(
         isLogin ? `${origin}/portal/login` : `${origin}/portal/invoices/${invoice!.id}`,
       );
 
@@ -152,10 +198,14 @@ export async function deliverMessage(
         text: live.text,
         to: contact.email,
         from: `${firm.displayName.replace(/[<>"\r\n]/g, "")} <${deps.config.emailFromAddress}>`,
-        replyTo: firm.replyToEmail ?? undefined,
+        // Replies to a reminder come back through the tokenized inbound address (FR-8.5).
+        replyTo:
+          isReminder && message.replyToken
+            ? replyAddress(deps.config.platformDomain, message.replyToken)
+            : (firm.replyToEmail ?? undefined),
         isDemo: firm.isDemo,
         idempotencyKey: message.dedupeKey ?? message.id,
-        record: { html: redacted.html, text: redacted.text },
+        record: { html: redacted.html, text: isReminder ? undefined : redacted.text },
       };
     },
   );
@@ -182,7 +232,7 @@ export async function deliverMessage(
           tx
             .update(messages)
             .set({ status: "bounced" })
-            .where(and(eq(messages.id, messageId), eq(messages.status, "queued"))),
+            .where(and(eq(messages.id, messageId), inArray(messages.status, SENDABLE))),
         );
         return "cancelled";
       }
@@ -190,8 +240,8 @@ export async function deliverMessage(
     }
   }
 
-  await withSystemTenant(systemDb, tenantId, (tx) =>
-    tx
+  await withSystemTenant(systemDb, tenantId, async (tx) => {
+    const [sent] = await tx
       .update(messages)
       .set({
         status: "sent",
@@ -199,10 +249,23 @@ export async function deliverMessage(
         providerMessageId,
         subject: prepared.subject,
         bodyHtml: prepared.record.html,
-        bodyText: prepared.record.text,
+        ...(prepared.record.text === undefined ? {} : { bodyText: prepared.record.text }),
       })
-      .where(and(eq(messages.id, messageId), eq(messages.status, "queued"))),
-  );
+      .where(and(eq(messages.id, messageId), inArray(messages.status, SENDABLE)))
+      .returning({ jobId: messages.jobId });
+    // The job is done only once its email is (SPEC 3.2 step 3).
+    if (sent?.jobId) {
+      await tx
+        .update(reminderJobs)
+        .set({ status: "sent" })
+        .where(
+          and(
+            eq(reminderJobs.id, sent.jobId),
+            inArray(reminderJobs.status, ["claimed", "enqueued"]),
+          ),
+        );
+    }
+  });
   return "sent";
 }
 

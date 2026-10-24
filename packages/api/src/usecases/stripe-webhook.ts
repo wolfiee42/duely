@@ -18,6 +18,7 @@ import { and, eq, sql } from "drizzle-orm";
 import { audit, type Actor } from "./audit";
 import { firmClock } from "./firm-clock";
 import { baseContext } from "./invoices";
+import { applyJobEffects } from "./reminders";
 
 /** Thrown when an event depends on one that has not arrived yet. Stripe will retry, and it converges. */
 export class EventNotReady extends Error {}
@@ -243,7 +244,7 @@ async function paymentSucceeded(tx: Tx, actor: Actor, pi: Record<string, any>) {
     .select({ id: promises.id })
     .from(promises)
     .where(and(eq(promises.invoiceId, invoice.id), eq(promises.status, "active")));
-  transition({ status: invoice.status }, "PAYMENT_SUCCEEDED", {
+  const next = transition({ status: invoice.status }, "PAYMENT_SUCCEEDED", {
     ...baseContext(invoice, today),
     paidMinor,
     hasActivePromise: Boolean(promise),
@@ -252,6 +253,7 @@ async function paymentSucceeded(tx: Tx, actor: Actor, pi: Record<string, any>) {
     .update(invoices)
     .set({ status: "paid", paidAt: firmNow })
     .where(eq(invoices.id, invoice.id));
+  await applyJobEffects(tx, actor.tenantId, invoice.id, next.effects);
   if (promise)
     await tx
       .update(promises)

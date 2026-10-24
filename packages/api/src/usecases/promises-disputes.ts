@@ -7,6 +7,7 @@ import { and, eq, sql } from "drizzle-orm";
 import { audit, type Actor } from "./audit";
 import { firmClock } from "./firm-clock";
 import { baseContext } from "./invoices";
+import { applyJobEffects } from "./reminders";
 
 const MAX_PROMISE_DAYS = 90;
 
@@ -89,6 +90,7 @@ export async function createPromise(
       .update(invoices)
       .set({ status: next.state.status, updatedAt: sql`now()` })
       .where(eq(invoices.id, invoiceId));
+    await applyJobEffects(tx, origin.actor.tenantId, invoiceId, next.effects, "promise");
     await audit(
       tx,
       origin.actor,
@@ -128,6 +130,7 @@ export async function cancelPromise(db: Db, actor: Actor, promiseId: string) {
       .update(invoices)
       .set({ status: next.state.status, updatedAt: sql`now()` })
       .where(eq(invoices.id, invoice!.id));
+    await applyJobEffects(tx, actor.tenantId, invoice!.id, next.effects);
     await audit(
       tx,
       actor,
@@ -178,6 +181,7 @@ export async function openDispute(
       .update(invoices)
       .set({ status: next.state.status, updatedAt: sql`now()` })
       .where(eq(invoices.id, invoiceId));
+    await applyJobEffects(tx, origin.actor.tenantId, invoiceId, next.effects, "dispute");
     await audit(
       tx,
       origin.actor,
@@ -224,6 +228,7 @@ export async function resolveDispute(
       .update(invoices)
       .set({ status: next.state.status, updatedAt: sql`now()` })
       .where(eq(invoices.id, invoice!.id));
+    await applyJobEffects(tx, actor.tenantId, invoice!.id, next.effects);
     await audit(
       tx,
       actor,
