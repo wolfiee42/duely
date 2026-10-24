@@ -4,6 +4,7 @@ import { createTestDatabase, type TestDatabase } from "@repo/db/testing";
 import { eq } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, it } from "vite-plus/test";
 
+import { testDeps } from "../testing";
 import { audit } from "../usecases/audit";
 import { createFirm } from "../usecases/firm";
 import type { SessionUser, StaffContext } from "./context";
@@ -26,6 +27,8 @@ const ctxFor = (u: SessionUser | null, hostKind: "app" | "portal" = "app"): Staf
   requestId: "req-1",
   host: { hostKind, tenantId: null },
   withDb: (fn) => fn(db),
+  services: testDeps().services,
+  config: testDeps().config,
   getSession: async () => u,
 });
 

@@ -1,10 +1,11 @@
+import { realNow } from "@repo/clock";
 import { firmSlugExists, resolveMembership, uniqueViolation, withTenant, type Db } from "@repo/db";
 import { firms, members } from "@repo/db/schema";
 import { DomainError } from "@repo/domain";
-import { eq } from "drizzle-orm";
+import { eq, sql } from "drizzle-orm";
 
 import { isValidPlatformSlug } from "../host/host";
-import { audit } from "./audit";
+import { audit, type Actor } from "./audit";
 
 export interface NewFirmUser {
   id: string;
@@ -73,6 +74,15 @@ export async function getFirm(db: Db, tenantId: string) {
         displayName: firms.displayName,
         timezone: firms.timezone,
         brandPrimary: firms.brandPrimary,
+        brandAccent: firms.brandAccent,
+        replyToEmail: firms.replyToEmail,
+        defaultTermsDays: firms.defaultTermsDays,
+        invoicePrefix: firms.invoicePrefix,
+        hasLogo: sql<boolean>`${firms.logoUrl} is not null`,
+        stripeAccountId: firms.stripeAccountId,
+        stripeChargesEnabled: firms.stripeChargesEnabled,
+        stripePayoutsEnabled: firms.stripePayoutsEnabled,
+        stripeDetailsSubmitted: firms.stripeDetailsSubmitted,
         isDemo: firms.isDemo,
       })
       .from(firms)
@@ -84,4 +94,68 @@ export async function getFirm(db: Db, tenantId: string) {
 
 export async function slugAvailable(db: Db, slug: string) {
   return isValidPlatformSlug(slug) && !(await firmSlugExists(db, slug));
+}
+
+export interface FirmSettingsPatch {
+  legalName?: string;
+  displayName?: string;
+  timezone?: string;
+  replyToEmail?: string | null;
+  brandPrimary?: string;
+  brandAccent?: string | null;
+  defaultTermsDays?: number;
+  invoicePrefix?: string;
+}
+
+function validTimezone(tz: string) {
+  try {
+    new Intl.DateTimeFormat("en-US", { timeZone: tz });
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+/** Owner-only (FR-1.5). The platform slug is deliberately not editable here. */
+export async function updateFirmSettings(db: Db, actor: Actor, patch: FirmSettingsPatch) {
+  if (patch.timezone !== undefined && !validTimezone(patch.timezone)) {
+    throw new DomainError("firm.invalid_timezone", "validation", "Choose a valid timezone.");
+  }
+  await withTenant(db, actor.tenantId, async (tx) => {
+    const [before] = await tx.select().from(firms).where(eq(firms.id, actor.tenantId));
+    if (!before) throw new DomainError("firm.not_found", "not_found");
+    await tx
+      .update(firms)
+      .set({ ...patch, updatedAt: realNow() })
+      .where(eq(firms.id, actor.tenantId));
+    await audit(
+      tx,
+      actor,
+      "firm.updated",
+      { type: "firm", id: actor.tenantId },
+      {
+        before: Object.fromEntries(
+          Object.keys(patch).map((k) => [k, (before as Record<string, unknown>)[k]]),
+        ),
+        after: patch,
+      },
+    );
+  });
+}
+
+export async function setFirmLogo(db: Db, actor: Actor, key: string) {
+  await withTenant(db, actor.tenantId, async (tx) => {
+    await tx
+      .update(firms)
+      .set({ logoUrl: key, updatedAt: realNow() })
+      .where(eq(firms.id, actor.tenantId));
+    await audit(tx, actor, "firm.logo_changed", { type: "firm", id: actor.tenantId });
+  });
+}
+
+export async function getFirmLogoKey(db: Db, tenantId: string) {
+  const [row] = await withTenant(db, tenantId, (tx) =>
+    tx.select({ key: firms.logoUrl }).from(firms).where(eq(firms.id, tenantId)),
+  );
+  return row?.key ?? null;
 }

@@ -5,21 +5,9 @@ import { DomainError } from "@repo/domain";
 import { and, eq, isNull } from "drizzle-orm";
 
 import { audit, type Actor } from "./audit";
+import { newToken, sha256Hex } from "./tokens";
 
 const INVITE_DAYS = 7;
-
-async function sha256Hex(value: string) {
-  const digest = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(value));
-  return Array.from(new Uint8Array(digest), (b) => b.toString(16).padStart(2, "0")).join("");
-}
-
-/** 32 random bytes, base64url. Only the hash is stored (SPEC 7). */
-function newToken() {
-  return btoa(String.fromCharCode(...crypto.getRandomValues(new Uint8Array(32))))
-    .replaceAll("+", "-")
-    .replaceAll("/", "_")
-    .replaceAll("=", "");
-}
 
 /** Re-inviting an address replaces its open invite. Returns the token once; email delivery comes with the outbox. */
 export async function inviteMember(

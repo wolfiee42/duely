@@ -1,34 +1,11 @@
 import { resolveMembership } from "@repo/db";
-import { DomainError, type DomainErrorKind } from "@repo/domain";
+import { DomainError } from "@repo/domain";
 import { initTRPC, TRPCError } from "@trpc/server";
 
 import type { StaffContext } from "./context";
+import { CODE_FOR_KIND, formatError } from "./errors";
 
-// SPEC 6.1: how a domain failure surfaces.
-const CODE_FOR_KIND = {
-  validation: "BAD_REQUEST",
-  unauthorized: "UNAUTHORIZED",
-  forbidden: "FORBIDDEN",
-  not_found: "NOT_FOUND",
-  conflict: "CONFLICT",
-  unprocessable: "UNPROCESSABLE_CONTENT",
-  rate_limited: "TOO_MANY_REQUESTS",
-} as const satisfies Record<DomainErrorKind, TRPCError["code"]>;
-
-const t = initTRPC.context<StaffContext>().create({
-  errorFormatter({ shape, error }) {
-    return {
-      ...shape,
-      // Never leak driver or stack details from unexpected errors.
-      message: error.code === "INTERNAL_SERVER_ERROR" ? "Internal error" : shape.message,
-      data: {
-        ...shape.data,
-        stack: undefined,
-        domainCode: error.cause instanceof DomainError ? error.cause.code : null,
-      },
-    };
-  },
-});
+const t = initTRPC.context<StaffContext>().create({ errorFormatter: formatError });
 
 export const router = t.router;
 export const createCallerFactory = t.createCallerFactory;

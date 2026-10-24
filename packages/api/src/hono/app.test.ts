@@ -4,6 +4,7 @@ import { createTestDatabase, type TestDatabase } from "@repo/db/testing";
 import { Hono } from "hono";
 import { afterAll, beforeAll, describe, expect, it } from "vite-plus/test";
 
+import { testDeps } from "../testing";
 import { createApp } from "./app";
 import { hostScope, requestId, requireHostKind, type AppEnv } from "./middleware";
 
@@ -92,11 +93,7 @@ describe("host-kind guard", () => {
 });
 
 describe("api app", () => {
-  const app = createApp({
-    platformDomain: "duely.app",
-    withDb,
-    auth: { baseURL: "https://app.duely.app", secret: "test-secret-0123456789abcdef0123456789" },
-  });
+  const app = createApp({ withDb, withSystemDb: withDb, ...testDeps() });
 
   it("answers /api/health on any known host and checks the database", async () => {
     for (const host of ["duely.app", "app.duely.app", "acme.duely.app"]) {

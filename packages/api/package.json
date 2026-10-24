@@ -7,7 +7,9 @@
     ".": "./src/index.ts",
     "./hono": "./src/hono/index.ts",
     "./trpc": "./src/trpc/index.ts",
-    "./usecases": "./src/usecases/index.ts"
+    "./usecases": "./src/usecases/index.ts",
+    "./testing": "./src/testing.ts",
+    "./money": "./src/money.ts"
   },
   "dependencies": {
     "@hono/trpc-server": "catalog:",
@@ -15,9 +17,12 @@
     "@repo/clock": "workspace:*",
     "@repo/db": "workspace:*",
     "@repo/domain": "workspace:*",
+    "@repo/email": "workspace:*",
+    "@repo/stripe": "workspace:*",
     "@trpc/server": "catalog:",
     "drizzle-orm": "catalog:",
     "hono": "catalog:",
+    "pdf-lib": "catalog:",
     "zod": "catalog:"
   },
   "devDependencies": {

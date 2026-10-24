@@ -5,6 +5,7 @@ import { eq } from "drizzle-orm";
 import { afterAll, beforeAll, describe, expect, it } from "vite-plus/test";
 
 import { createApp } from "../hono/app";
+import { testDeps } from "../testing";
 
 // trpc-authz + tenant-isolation at the API boundary (SPEC 8): real Better Auth sign-up, real
 // session cookies, real RLS. Requests go through the same Hono app the Worker serves.
@@ -21,11 +22,7 @@ let app: ReturnType<typeof createApp>;
 beforeAll(async () => {
   testDb = await createTestDatabase();
   ({ db, close } = createDb(testDb.appUrl, { max: 6 }));
-  app = createApp({
-    platformDomain: "duely.app",
-    withDb: (fn) => fn(db),
-    auth: { baseURL: APP, secret: "test-secret-0123456789abcdef0123456789" },
-  });
+  app = createApp({ withDb: (fn) => fn(db), withSystemDb: (fn) => fn(db), ...testDeps() });
 }, 60_000);
 
 afterAll(async () => {

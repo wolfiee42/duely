@@ -3,6 +3,7 @@ import { createTestDatabase, type TestDatabase } from "@repo/db/testing";
 import { afterAll, beforeAll, describe, expect, it } from "vite-plus/test";
 
 import { createApp } from "../hono/app";
+import { testDeps } from "../testing";
 
 const APP = "https://app.duely.app";
 let testDb: TestDatabase;
@@ -13,11 +14,7 @@ let app: ReturnType<typeof createApp>;
 beforeAll(async () => {
   testDb = await createTestDatabase();
   ({ db, close } = createDb(testDb.appUrl, { max: 6 }));
-  app = createApp({
-    platformDomain: "duely.app",
-    withDb: (fn) => fn(db),
-    auth: { baseURL: APP, secret: "test-secret-0123456789abcdef0123456789" },
-  });
+  app = createApp({ withDb: (fn) => fn(db), withSystemDb: (fn) => fn(db), ...testDeps() });
 }, 60_000);
 
 afterAll(async () => {
