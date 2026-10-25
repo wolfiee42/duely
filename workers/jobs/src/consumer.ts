@@ -11,6 +11,8 @@ export interface ConsumerDeps {
   deliver(messageId: string): Promise<unknown>;
   /** Runs one `process_job`. Returns the id of a message to send, if the job produced one that needs no approval. */
   processJob(jobId: string): Promise<{ messageId?: string }>;
+  /** Runs one `classify_reply`. Failures are recorded on the review item, so this throws only for infrastructure errors. */
+  classifyReply(messageId: string): Promise<unknown>;
   /** Records a failed job so the scheduler retries it with backoff, or buries it after too many attempts. */
   recordJobFailure(jobId: string, error: string): Promise<unknown>;
   /** Puts a follow-up message on the queue. Called only after the producing transaction has committed. */
@@ -46,9 +48,8 @@ export async function handleBatch(batch: readonly Delivery[], deps: ConsumerDeps
         if (produced.messageId) {
           await deps.enqueue({ type: "send_message", messageId: produced.messageId });
         }
-      } else {
-        // Other job types arrive with the inbound pipeline; acknowledging avoids a poison loop meanwhile.
-        deps.log("jobs.unhandled_type", { type: message.type });
+      } else if (message.type === "classify_reply") {
+        await deps.classifyReply(message.messageId);
       }
       delivery.ack();
     } catch (error) {

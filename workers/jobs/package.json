@@ -9,6 +9,7 @@
     "cf-typegen": "wrangler types"
   },
   "dependencies": {
+    "@repo/ai": "workspace:*",
     "@repo/api": "workspace:*",
     "@repo/cloudflare": "workspace:*",
     "@repo/db": "workspace:*",

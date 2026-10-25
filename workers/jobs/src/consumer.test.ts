@@ -12,6 +12,7 @@ const delivery = (body: Delivery["body"]) => {
 
 function deps(over: Partial<ConsumerDeps> = {}) {
   const calls = {
+    classified: [] as string[],
     delivered: [] as string[],
     processed: [] as string[],
     failed: [] as string[],
@@ -23,6 +24,7 @@ function deps(over: Partial<ConsumerDeps> = {}) {
       calls.processed.push(id);
       return {};
     },
+    classifyReply: async (id) => void calls.classified.push(id),
     recordJobFailure: async (id) => void calls.failed.push(id),
     enqueue: async (m) => void calls.queued.push(m),
     log: () => {},
@@ -109,11 +111,22 @@ describe("queue consumer", () => {
     expect(a.state).toEqual({ acked: 0, retried: 1 });
   });
 
-  it("acknowledges job types it does not handle yet instead of looping on them", async () => {
+  it("classifies a reply by its id", async () => {
     const { calls, deps: d } = deps();
     const a = delivery({ type: "classify_reply", messageId: "m-1" });
     await handleBatch([a.d], d);
-    expect(calls.delivered).toEqual([]);
+    expect(calls.classified).toEqual(["m-1"]);
     expect(a.state).toEqual({ acked: 1, retried: 0 });
+  });
+
+  it("retries a classification that failed for infrastructure reasons", async () => {
+    const { deps: d } = deps({
+      classifyReply: async () => {
+        throw new Error("db down");
+      },
+    });
+    const a = delivery({ type: "classify_reply", messageId: "m-2" });
+    await handleBatch([a.d], d);
+    expect(a.state).toEqual({ acked: 0, retried: 1 });
   });
 });

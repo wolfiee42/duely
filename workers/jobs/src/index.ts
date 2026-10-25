@@ -1,4 +1,6 @@
+import { createAnthropicModel } from "@repo/ai";
 import {
+  classifyReply,
   deliverMessage,
   pollDomains,
   processJob,
@@ -23,6 +25,8 @@ interface Env {
   PLATFORM_DOMAIN: string;
   APP_ORIGIN: string;
   EMAIL_FROM_ADDRESS: string;
+  ANTHROPIC_API_KEY?: string;
+  AI_MODEL?: string;
   CLOUDFLARE_API_TOKEN: string;
   CLOUDFLARE_ZONE_ID: string;
 }
@@ -38,6 +42,12 @@ const configOf = (env: Env): AppConfig => ({
   stripePublishableKey: "",
   portalSessionSecret: "",
 });
+
+/** AI is optional: without a key every reminder uses the plain template. */
+const modelOf = (env: Env) =>
+  env.ANTHROPIC_API_KEY
+    ? createAnthropicModel(env.ANTHROPIC_API_KEY, env.AI_MODEL || undefined)
+    : null;
 
 /** A fresh client per invocation, closed afterwards (SPEC 9.1). */
 async function withSystemDb<T>(
@@ -58,8 +68,12 @@ export default {
     await handleBatch(batch.messages, {
       deliver: (messageId) =>
         withSystemDb(env, (db) => deliverMessage(db, { email, config: configOf(env) }, messageId)),
+      classifyReply: (messageId) =>
+        withSystemDb(env, (db) => classifyReply(db, { model: modelOf(env) }, messageId)),
       processJob: async (jobId) => {
-        const result = await withSystemDb(env, (db) => processJob(db, jobId));
+        const result = await withSystemDb(env, (db) =>
+          processJob(db, jobId, { model: modelOf(env) }),
+        );
         return result.outcome === "queued" ? { messageId: result.messageId } : {};
       },
       recordJobFailure: (jobId, error) =>
