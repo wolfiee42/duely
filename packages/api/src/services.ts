@@ -51,6 +51,8 @@ export interface AppConfig {
   emailFromAddress: string;
   /** Where a firm's custom domain CNAME must point, e.g. `customers.duely.app`. */
   cnameTarget: string;
+  /** Whether anyone may start a demo firm. Off in production unless it is a demo deployment. */
+  demoEnabled: boolean;
   /** Signs portal session cookies. */
   portalSessionSecret: string;
 }

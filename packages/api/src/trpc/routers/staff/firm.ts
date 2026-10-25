@@ -1,5 +1,7 @@
+import { DomainError } from "@repo/domain";
 import { z } from "zod";
 
+import { createDemoFirm, classifySeededReplies } from "../../../usecases/demo";
 import { createFirm, getFirm, slugAvailable, updateFirmSettings } from "../../../usecases/firm";
 import {
   newUserProcedure,
@@ -24,6 +26,28 @@ export const firmRouter = router({
     .mutation(({ ctx, input }) =>
       ctx.withDb((db) => createFirm(db, ctx.user, input, ctx.requestId)),
     ),
+
+  /** Whether this deployment lets visitors start a demo; the sign-up screen only offers it when so. */
+  demoAvailable: sessionProcedure.query(({ ctx }) => ({ available: ctx.config.demoEnabled })),
+
+  /** A throwaway firm full of sample data, for looking around. Only where the deployment allows it. */
+  createDemo: newUserProcedure.mutation(async ({ ctx }) => {
+    if (!ctx.config.demoEnabled) {
+      throw new DomainError("demo.disabled", "forbidden", "The demo isn't available here.");
+    }
+    const created = await ctx.withDb((db) =>
+      createDemoFirm(
+        db,
+        ctx.user,
+        { connectPayments: ctx.config.platformDomain === "localhost", model: ctx.services.model },
+        ctx.requestId,
+      ),
+    );
+    await ctx.withSystemDb((system) =>
+      classifySeededReplies(system, ctx.services.model, created.replyMessageIds),
+    );
+    return { tenantId: created.tenantId };
+  }),
 
   get: staffProcedure.query(({ ctx }) =>
     ctx.withDb(async (db) => ({

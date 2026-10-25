@@ -27,6 +27,7 @@ const ctxFor = (u: SessionUser | null, hostKind: "app" | "portal" = "app"): Staf
   requestId: "req-1",
   host: { hostKind, tenantId: null },
   withDb: (fn) => fn(db),
+  withSystemDb: (fn) => fn(db),
   services: testDeps().services,
   config: testDeps().config,
   getSession: async () => u,

@@ -51,6 +51,7 @@ export function testDeps(): Pick<AppDeps, "auth" | "services" | "config"> & { fa
       resendWebhookSecret: RESEND_WEBHOOK_SECRET,
       stripePublishableKey: "pk_test_fake",
       cnameTarget: "customers.duely.app",
+      demoEnabled: true,
       emailFromAddress: "billing@duely.app",
       portalSessionSecret: "portal-secret-0123456789abcdef0123456789",
     },

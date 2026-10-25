@@ -13,6 +13,8 @@ export interface InboundEmail {
   to: string[];
   subject: string;
   text: string;
+  /** When it arrived. Defaults to now; a demo firm passes its own simulated time. */
+  receivedAt?: Date;
 }
 
 export type InboundResult =
@@ -74,6 +76,7 @@ export async function receiveInboundEmail(
         bodyText: mail.text,
         bodyStripped: stripped,
         providerMessageId: mail.providerId,
+        ...(mail.receivedAt ? { createdAt: mail.receivedAt } : {}),
       })
       .onConflictDoNothing()
       .returning({ id: messages.id });

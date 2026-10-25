@@ -21,6 +21,8 @@ export interface ClientInput {
   billingAddress?: Record<string, string> | null;
   /** A policy override; `null` follows the firm default (FR-9.3). Only settable on update. */
   policyId?: string | null;
+  /** Where the row came from in a spreadsheet; re-importing the same file skips it (FR-13.4). */
+  externalRef?: string | null;
 }
 
 const notFound = () => new DomainError("client.not_found", "not_found", "Client not found.");

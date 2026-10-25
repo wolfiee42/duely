@@ -26,3 +26,6 @@ export * from "./ai";
 export * from "./classify";
 export * from "./extraction";
 export * from "./risk";
+export * from "./dashboard";
+export * from "./imports";
+export * from "./demo";

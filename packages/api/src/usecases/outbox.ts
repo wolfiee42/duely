@@ -205,7 +205,10 @@ export async function deliverMessage(
             : (firm.replyToEmail ?? undefined),
         isDemo: firm.isDemo,
         idempotencyKey: message.dedupeKey ?? message.id,
-        record: { html: redacted.html, text: isReminder ? undefined : redacted.text },
+        // A demo firm's outbox is the only "inbox" its viewer has, so it keeps the working link.
+        record: firm.isDemo
+          ? { html: live.html, text: live.text }
+          : { html: redacted.html, text: isReminder ? undefined : redacted.text },
       };
     },
   );

@@ -19,6 +19,8 @@ export interface StaffContext {
   requestId: string;
   host: HostContext;
   withDb: WithDb;
+  /** `duely_system`. Only the demo controls use it, to run the scheduler on demand. */
+  withSystemDb: WithDb;
   services: Services;
   config: AppConfig;
   /** Resolved at most once per request. `null` when there is no valid staff session. */
@@ -27,6 +29,7 @@ export interface StaffContext {
 
 export interface StaffContextDeps {
   withDb: WithDb;
+  withSystemDb: WithDb;
   auth: AuthConfig;
   services: Services;
   config: AppConfig;
@@ -41,7 +44,7 @@ export interface StaffContextInput {
 
 /** Shared by the Hono transport and the in-process SSR caller (D21), so both behave identically. */
 export function createStaffContext(
-  { withDb, auth, services, config }: StaffContextDeps,
+  { withDb, withSystemDb, auth, services, config }: StaffContextDeps,
   { headers, host, requestId }: StaffContextInput,
 ): StaffContext {
   let session: Promise<SessionUser | null> | undefined;
@@ -49,6 +52,7 @@ export function createStaffContext(
     requestId,
     host,
     withDb,
+    withSystemDb,
     services,
     config,
     getSession() {
