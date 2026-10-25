@@ -4,7 +4,7 @@ import { useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { z } from "zod";
 
-import { Page, StatusBadge } from "#/components/ui-bits.tsx";
+import { Page, RiskBadge, StatusBadge } from "#/components/ui-bits.tsx";
 
 const STATUSES = [
   "draft",
@@ -33,9 +33,18 @@ function Invoices() {
     <Page
       title="Invoices"
       actions={
-        <Button render={<Link to="/app/invoices/new" />} nativeButton={false}>
-          New invoice
-        </Button>
+        <>
+          <Button
+            render={<Link to="/app/invoices/import" />}
+            nativeButton={false}
+            variant="outline"
+          >
+            Import from file
+          </Button>
+          <Button render={<Link to="/app/invoices/new" />} nativeButton={false}>
+            New invoice
+          </Button>
+        </>
       }
     >
       <div className="flex flex-wrap gap-1 text-sm" role="group" aria-label="Filter by status">
@@ -71,6 +80,7 @@ function Invoices() {
                 <th className="px-3 py-2">Client</th>
                 <th className="px-3 py-2">Due</th>
                 <th className="px-3 py-2">Status</th>
+                <th className="px-3 py-2">Payment outlook</th>
                 <th className="px-3 py-2 text-right">Total</th>
               </tr>
             </thead>
@@ -90,6 +100,9 @@ function Invoices() {
                   <td className="px-3 py-2">{i.dueDate ?? "-"}</td>
                   <td className="px-3 py-2">
                     <StatusBadge status={i.effectiveStatus} />
+                  </td>
+                  <td className="px-3 py-2">
+                    <RiskBadge level={i.riskLevel} />
                   </td>
                   <td className="px-3 py-2 text-right tabular-nums">{formatUsd(i.totalMinor)}</td>
                 </tr>

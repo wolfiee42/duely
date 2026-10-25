@@ -54,5 +54,29 @@ export function StatusBadge({ status, label }: { status: string; label?: string 
   );
 }
 
+const RISK_STYLES: Record<string, string> = {
+  low: "bg-green-100 text-green-900 dark:bg-green-950 dark:text-green-200",
+  medium: "bg-amber-100 text-amber-900 dark:bg-amber-950 dark:text-amber-200",
+  high: "bg-red-100 text-red-900 dark:bg-red-950 dark:text-red-200",
+};
+const RISK_LABELS: Record<string, string> = {
+  low: "Likely on time",
+  medium: "May run late",
+  high: "Likely late",
+};
+
+/** How likely a client is to pay late, from their history. Informational: it never blocks sending. */
+export function RiskBadge({ level }: { level: string | null | undefined }) {
+  if (!level) return null;
+  return (
+    <span
+      className={`rounded-full px-2 py-0.5 text-xs font-medium ${RISK_STYLES[level] ?? ""}`}
+      data-testid="risk-badge"
+    >
+      {RISK_LABELS[level] ?? level}
+    </span>
+  );
+}
+
 export const fieldClass =
   "w-full rounded-md border bg-background px-3 py-2 text-sm outline-none focus-visible:ring-2 focus-visible:ring-ring";

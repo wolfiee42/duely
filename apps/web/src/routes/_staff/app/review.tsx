@@ -3,7 +3,7 @@ import { Input } from "@repo/ui/components/input";
 import { Label } from "@repo/ui/components/label";
 import { toast } from "@repo/ui/components/toast";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Link } from "@tanstack/react-router";
 import { useState } from "react";
 
 import { Card, fieldClass, Page } from "#/components/ui-bits.tsx";
@@ -18,6 +18,35 @@ const MESSAGES: Record<string, string> = {
   "review.no_longer_needed": "That invoice no longer needs a reminder, so nothing was sent.",
   "review.not_found": "That item has already been handled.",
   "invoice.not_found": "We couldn't find that invoice.",
+  "review.needs_date": "Choose the date they promised.",
+  "invoice.invalid_transition": "This invoice has changed since the reply came in. Check it first.",
+  "promise.date_in_past": "Choose a date from today onwards.",
+};
+
+// What the assistant read from a reply, as stored on the item. Typed here: the browser never imports server code.
+interface Classification {
+  label: string;
+  confidence: number;
+  quote: string | null;
+  promisedDate: string | null;
+  downgraded: string | null;
+  decision: string;
+}
+
+const DOWNGRADE_NOTES: Record<string, string> = {
+  quote_not_in_message:
+    "The assistant's reasoning didn't match the email, so it needs your judgment.",
+  date_mismatch: "The date couldn't be confirmed from the email's wording.",
+  date_not_understood: "The date in the email isn't clear enough to act on.",
+  date_too_far: "The date is more than 90 days away.",
+};
+
+const LABEL_TEXT: Record<string, string> = {
+  promise: "Looks like a promise to pay",
+  dispute: "Looks like a dispute",
+  already_paid: "Says they've already paid",
+  needs_human: "Needs a person",
+  other: "Doesn't need action",
 };
 
 const KIND_LABELS: Record<string, string> = {
@@ -57,6 +86,9 @@ function Review() {
     toast.add({ type: "success", description });
   };
 
+  const accept = useMutation(
+    trpc.review.accept.mutationOptions({ onSuccess: settled("Done."), onError }),
+  );
   const approve = useMutation(
     trpc.review.approve.mutationOptions({
       onSuccess: settled("Approved. It will be sent shortly."),
@@ -97,12 +129,17 @@ function Review() {
               <ItemCard
                 item={item}
                 busy={
-                  approve.isPending || reject.isPending || dismiss.isPending || assign.isPending
+                  approve.isPending ||
+                  reject.isPending ||
+                  dismiss.isPending ||
+                  assign.isPending ||
+                  accept.isPending
                 }
                 onApprove={(edits) => approve.mutate({ itemId: item.id, edits })}
                 onReject={() => reject.mutate({ itemId: item.id })}
                 onDismiss={() => dismiss.mutate({ itemId: item.id })}
                 onAssign={(invoiceId) => assign.mutate({ itemId: item.id, invoiceId })}
+                onAccept={(promisedDate) => accept.mutate({ itemId: item.id, promisedDate })}
               />
             </li>
           ))}
@@ -119,6 +156,7 @@ function ItemCard({
   onReject,
   onDismiss,
   onAssign,
+  onAccept,
 }: {
   item: Item;
   busy: boolean;
@@ -126,8 +164,10 @@ function ItemCard({
   onReject: () => void;
   onDismiss: () => void;
   onAssign: (invoiceId: string) => void;
+  onAccept: (promisedDate?: string) => void;
 }) {
   const [editing, setEditing] = useState(false);
+  const classification = (item.payload as { classification?: Classification }).classification;
   const heading = `${KIND_LABELS[item.kind] ?? item.kind}${item.invoiceNumber ? ` · ${item.invoiceNumber}` : ""}${item.clientName ? ` · ${item.clientName}` : ""}`;
 
   if (item.kind === "draft_approval") {
@@ -176,7 +216,10 @@ function ItemCard({
           </form>
         ) : (
           <>
-            <p className="text-xs text-muted-foreground">To {item.to}</p>
+            <p className="text-xs text-muted-foreground">
+              To {item.to}
+              {(item.payload as { by?: string }).by === "ai" && " · Written by the assistant"}
+            </p>
             <p className="mt-1 text-sm font-medium">{item.subject}</p>
             <pre className="mt-1 font-sans text-sm whitespace-pre-wrap">{item.body}</pre>
             <div className="mt-3 flex gap-2">
@@ -205,6 +248,9 @@ function ItemCard({
         </p>
         <p className="mt-1 text-sm font-medium">{item.subject}</p>
         <pre className="mt-1 font-sans text-sm whitespace-pre-wrap">{item.body}</pre>
+        {classification && classification.decision !== "failed" && (
+          <Suggestion c={classification} busy={busy} onAccept={onAccept} onDismiss={onDismiss} />
+        )}
         {unmatched && (
           <form
             className="mt-3 flex items-end gap-2"
@@ -233,16 +279,107 @@ function ItemCard({
 
   return (
     <Card title={heading}>
-      <p className="text-sm text-muted-foreground">
-        {item.kind === "dead_job"
-          ? "We couldn't send this reminder after several tries. You can contact the client directly."
-          : "This needs a look."}
-      </p>
+      {item.kind === "already_paid_claim" && (
+        <>
+          <p className="text-sm">
+            The client says they've paid. Reminders are paused until you check your bank.
+          </p>
+          {item.body && (
+            <pre className="mt-1 font-sans text-sm whitespace-pre-wrap">{item.body}</pre>
+          )}
+          <p className="mt-2 text-xs text-muted-foreground">
+            If they haven't paid, mark this as handled and reminders will resume. If they have,
+            their payment will mark the invoice paid.
+          </p>
+        </>
+      )}
+      {item.kind === "extraction_review" && (
+        <p className="text-sm">
+          This draft was read from a file and has details worth checking
+          {item.invoiceId && (
+            <>
+              {" — "}
+              <Link
+                to="/app/invoices/$invoiceId"
+                params={{ invoiceId: item.invoiceId }}
+                className="underline underline-offset-4"
+              >
+                open the draft
+              </Link>
+            </>
+          )}
+          .
+        </p>
+      )}
+      {item.kind === "dead_job" && (
+        <p className="text-sm text-muted-foreground">
+          We couldn't send this reminder after several tries. You can contact the client directly.
+        </p>
+      )}
       <div className="mt-3">
         <Button size="sm" variant="outline" disabled={busy} onClick={onDismiss}>
           Mark as handled
         </Button>
       </div>
     </Card>
+  );
+}
+
+/** The assistant's reading of a reply, with the words it relied on, and what a person can do with it. */
+function Suggestion({
+  c,
+  busy,
+  onAccept,
+  onDismiss,
+}: {
+  c: Classification;
+  busy: boolean;
+  onAccept: (promisedDate?: string) => void;
+  onDismiss: () => void;
+}) {
+  const [date, setDate] = useState(c.promisedDate ?? "");
+  const actionable = c.label === "promise" || c.label === "dispute";
+  return (
+    <div className="mt-3 rounded-md border bg-muted p-3 text-sm" data-testid="suggestion">
+      <p className="font-medium">
+        {LABEL_TEXT[c.label] ?? c.label}{" "}
+        <span className="font-normal text-muted-foreground">
+          ({Math.round(c.confidence * 100)}% sure)
+        </span>
+      </p>
+      {c.quote && <p className="mt-1 text-muted-foreground">“{c.quote}”</p>}
+      {c.downgraded && (
+        <p className="mt-1 text-amber-800 dark:text-amber-300">
+          {DOWNGRADE_NOTES[c.downgraded] ?? "Please check this one yourself."}
+        </p>
+      )}
+      {actionable && (
+        <div className="mt-2 flex flex-wrap items-end gap-2">
+          {c.label === "promise" && (
+            <div className="grid gap-1">
+              <Label htmlFor="promise-date" className="text-xs">
+                Promised date
+              </Label>
+              <Input
+                id="promise-date"
+                type="date"
+                value={date}
+                onChange={(e) => setDate(e.target.value)}
+              />
+            </div>
+          )}
+          <Button
+            size="sm"
+            disabled={busy}
+            onClick={() => onAccept(c.label === "promise" ? date || undefined : undefined)}
+          >
+            {c.label === "promise" ? "Record the promise" : "Open a dispute"}
+          </Button>
+          <Button size="sm" variant="ghost" disabled={busy} onClick={onDismiss}>
+            Ignore
+          </Button>
+        </div>
+      )}
+    </div>
   );
 }

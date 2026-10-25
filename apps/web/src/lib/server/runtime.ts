@@ -60,6 +60,8 @@ const queueProducer: QueuePort = {
 const built = buildServices({
   mode: ENV.SERVICES_MODE === "fake" ? "fake" : "live",
   stripeSecretKey: ENV.STRIPE_SECRET_KEY ?? "",
+  anthropicApiKey: ENV.ANTHROPIC_API_KEY ?? "",
+  aiModel: ENV.AI_MODEL,
   cloudflareApiToken: ENV.CLOUDFLARE_API_TOKEN ?? "",
   cloudflareZoneId: ENV.CLOUDFLARE_ZONE_ID ?? "",
   resendApiKey: ENV.RESEND_API_KEY ?? "",

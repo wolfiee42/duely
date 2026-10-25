@@ -5,10 +5,10 @@ import { Label } from "@repo/ui/components/label";
 import { toast } from "@repo/ui/components/toast";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 
 import { InvoiceEditor } from "#/components/invoice-editor.tsx";
-import { Card, Page, StatusBadge } from "#/components/ui-bits.tsx";
+import { Card, Page, RiskBadge, StatusBadge } from "#/components/ui-bits.tsx";
 import { field } from "#/lib/form.ts";
 import { trpcErrorInfo } from "#/lib/trpc/errors.ts";
 
@@ -79,6 +79,17 @@ function InvoicePage() {
   );
 
   const closed = invoice.status === "paid" || invoice.status === "void";
+
+  // Recompute the payment outlook and its explanation when an open invoice is opened.
+  const explain = useMutation(
+    trpc.invoices.explainRisk.mutationOptions({
+      onSuccess: () => queryClient.invalidateQueries({ queryKey: trpc.invoices.list.queryKey() }),
+    }),
+  );
+  const asked = explain.mutate;
+  useEffect(() => {
+    if (invoice.status !== "draft" && !closed) asked({ invoiceId });
+  }, [invoiceId, invoice.status, closed, asked]);
 
   if (invoice.status === "draft") {
     return (
@@ -209,6 +220,17 @@ function InvoicePage() {
           </div>
         )}
       </Card>
+
+      {!closed && explain.data?.level && (
+        <Card title="Payment outlook">
+          <div className="flex flex-wrap items-center gap-2">
+            <RiskBadge level={explain.data.level} />
+            <span className="text-sm text-muted-foreground" data-testid="risk-explanation">
+              {explain.data.explanation}
+            </span>
+          </div>
+        </Card>
+      )}
 
       {invoice.activePromise && (
         <Card title="Promise to pay">

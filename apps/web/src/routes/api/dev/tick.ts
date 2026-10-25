@@ -14,7 +14,9 @@ export const Route = createFileRoute("/api/dev/tick")({
           makeDue?: boolean;
         };
         return Response.json(
-          await withSystemDb((db) => runDevTick(db, services.queue, { makeDue })),
+          await withSystemDb((db) =>
+            runDevTick(db, services.queue, { makeDue, model: services.model }),
+          ),
         );
       },
     },

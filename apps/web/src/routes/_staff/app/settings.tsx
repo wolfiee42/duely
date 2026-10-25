@@ -6,6 +6,7 @@ import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-q
 import { createFileRoute } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
+import { AssistantCard } from "#/components/assistant-card.tsx";
 import { DomainCard } from "#/components/domain-card.tsx";
 import { Card, fieldClass, Page } from "#/components/ui-bits.tsx";
 import { field } from "#/lib/form.ts";
@@ -236,6 +237,10 @@ function Settings() {
             />
           </div>
         )}
+      </Card>
+
+      <Card title="Assistant">
+        <AssistantCard isOwner={isOwner} />
       </Card>
 
       {isOwner && (

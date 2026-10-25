@@ -1082,15 +1082,15 @@ Each spike ends with a written result in `docs/adr/`. A failed spike means the a
 
 ### Phase 5: AI layer
 
-- [ ] P5-01 · `runAi` wrapper: cap check, schema validation, retry, `ai_runs` logging · L · 11.18 to 11.21
-- [ ] P5-02 · Extraction pipeline + review UI · L · 11.1 to 11.4
-- [ ] P5-03 · Follow-up draft generator with placeholder/guardrail checks · M · 11.5 to 11.7
-- [ ] P5-04 · Reply classifier + decision table + promise/dispute creation · L · 11.9 to 11.13
-- [ ] P5-05 · Deterministic date parser cross-check for promises · M · 11.10
-- [ ] P5-06 · Eval set (≥ 40) + `eval:classify` script · M · 11.14
-- [ ] P5-07 · Injection tests and schema-failure fallback tests · S · 11.13, 11.20
-- [ ] P5-08 · Risk factors + LLM explanation + UI badge · M · 11.15 to 11.17
-- [ ] P5-09 · AI usage page and cap enforcement · S · 11.19
+- [x] P5-01 · `runAi` wrapper: cap check, schema validation, retry, `ai_runs` logging · L · 11.18 to 11.21
+- [x] P5-02 · Extraction pipeline + review UI · L · 11.1 to 11.4
+- [x] P5-03 · Follow-up draft generator with placeholder/guardrail checks · M · 11.5 to 11.7
+- [x] P5-04 · Reply classifier + decision table + promise/dispute creation · L · 11.9 to 11.13
+- [x] P5-05 · Deterministic date parser cross-check for promises · M · 11.10
+- [x] P5-06 · Eval set (≥ 40) + `eval:classify` script · M · 11.14
+- [x] P5-07 · Injection tests and schema-failure fallback tests · S · 11.13, 11.20
+- [x] P5-08 · Risk factors + LLM explanation + UI badge · M · 11.15 to 11.17
+- [x] P5-09 · AI usage page and cap enforcement · S · 11.19
 
 ### Phase 6: Demo polish
 
