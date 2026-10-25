@@ -40,7 +40,15 @@ export function createApp(deps: AppDeps) {
     deps.withDb((db) => createAuth({ db, ...deps.auth }).handler(c.req.raw)),
   );
 
-  app.route("/", fileRoutes({ withDb: deps.withDb, files: deps.services.files, auth: deps.auth }));
+  app.route(
+    "/",
+    fileRoutes({
+      withDb: deps.withDb,
+      files: deps.services.files,
+      ai: deps.services,
+      auth: deps.auth,
+    }),
+  );
 
   app.route(
     "/",

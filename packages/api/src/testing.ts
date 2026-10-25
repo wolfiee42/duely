@@ -1,3 +1,5 @@
+import type { ModelClient } from "@repo/ai";
+import { createHeuristicModel } from "@repo/ai/fake";
 import { realNow } from "@repo/clock";
 import { createFakeCloudflare, type FakeCloudflare } from "@repo/cloudflare/fake";
 import { createDb, type Db } from "@repo/db";
@@ -16,6 +18,8 @@ export const APP = "https://app.duely.app";
 export const PASSWORD = "correct horse battery staple";
 
 export interface Fakes {
+  /** Replace to script model replies; the default is the offline heuristic model. */
+  model: ModelClient | null;
   cloudflare: FakeCloudflare;
   stripe: FakeStripe;
   email: FakeEmail;
@@ -29,6 +33,7 @@ export const RESEND_WEBHOOK_SECRET = `whsec_${btoa("resend-test-secret-bytes")}`
 /** Everything `createApp` needs besides the database, with in-memory services. */
 export function testDeps(): Pick<AppDeps, "auth" | "services" | "config"> & { fakes: Fakes } {
   const fakes: Fakes = {
+    model: createHeuristicModel(),
     cloudflare: createFakeCloudflare(),
     stripe: createFakeStripe(),
     email: createFakeEmail(),

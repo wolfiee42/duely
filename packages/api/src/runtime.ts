@@ -1,3 +1,5 @@
+import { createAnthropicModel } from "@repo/ai";
+import { createHeuristicModel } from "@repo/ai/fake";
 import { createCloudflareClient } from "@repo/cloudflare";
 import { createFakeCloudflare } from "@repo/cloudflare/fake";
 import { createDb } from "@repo/db";
@@ -14,12 +16,16 @@ import {
   type QueuePort,
   type Services,
 } from "./services";
+import { classifyReply } from "./usecases/classify";
 import { deliverMessage } from "./usecases/outbox";
 
 export interface BuildServicesOptions {
   /** `fake` keeps everything in memory and delivers the outbox inline. For local dev and E2E only. */
   mode: "live" | "fake";
   stripeSecretKey: string;
+  /** Empty disables AI features in live mode. */
+  anthropicApiKey: string;
+  aiModel?: string;
   cloudflareApiToken: string;
   cloudflareZoneId: string;
   resendApiKey: string;
@@ -48,6 +54,9 @@ export function buildServices(opts: BuildServicesOptions): {
   if (opts.mode === "live") {
     return {
       services: {
+        model: opts.anthropicApiKey
+          ? createAnthropicModel(opts.anthropicApiKey, opts.aiModel || undefined)
+          : null,
         cloudflare: createCloudflareClient(opts.cloudflareApiToken, opts.cloudflareZoneId),
         stripe: createStripeClient(opts.stripeSecretKey),
         email: createResendClient(opts.resendApiKey),
@@ -62,19 +71,24 @@ export function buildServices(opts: BuildServicesOptions): {
     throw new Error("SERVICES_MODE=fake is only allowed when PLATFORM_DOMAIN is localhost");
   }
   const email = createFakeEmail();
+  const model = createHeuristicModel();
   const stripe = createFakeStripe();
   const cloudflare = createFakeCloudflare();
   const memory = createMemoryQueue();
   const queue: QueuePort = {
     async send(message) {
       await memory.send(message);
-      if (message.type !== "send_message") return;
-      // No jobs worker in fake mode: deliver right after the response.
+      if (message.type !== "send_message" && message.type !== "classify_reply") return;
+      // No jobs worker in fake mode: do the work right after the response.
       opts.waitUntil(
         (async () => {
           const { db, close } = createDb(opts.systemConnectionString());
           try {
-            await deliverMessage(db, { email, config: opts.config }, message.messageId);
+            if (message.type === "send_message") {
+              await deliverMessage(db, { email, config: opts.config }, message.messageId);
+            } else {
+              await classifyReply(db, { model }, message.messageId);
+            }
           } finally {
             await close();
           }
@@ -83,7 +97,14 @@ export function buildServices(opts: BuildServicesOptions): {
     },
   };
   return {
-    services: { cloudflare, stripe, email, files: createMemoryFiles(), queue },
+    services: {
+      model,
+      cloudflare,
+      stripe,
+      email,
+      files: createMemoryFiles(),
+      queue,
+    },
     fake: {
       outbox: () => email.sent,
       completeOnboarding: (id) => stripe.completeOnboarding(id),

@@ -5,6 +5,9 @@ import { DomainError } from "@repo/domain";
 import { and, desc, eq } from "drizzle-orm";
 
 import { audit, type Actor } from "./audit";
+import type { Classification } from "./classify";
+import { createPromise, openDispute } from "./promises-disputes";
+import { replanInvoiceJobs } from "./reminders";
 
 const notFound = () => new DomainError("review.not_found", "not_found", "That item is gone.");
 const REMINDABLE = ["sent", "viewed", "overdue"];
@@ -187,12 +190,84 @@ export async function dismissReviewItem(db: Db, actor: Actor, itemId: string) {
       .update(reviewItems)
       .set({ status: "dismissed", resolvedBy: actor.id, resolvedAt: realNow() })
       .where(eq(reviewItems.id, itemId));
+    // "They haven't paid after all": the pause that came with the claim ends and reminders resume.
+    if (item.kind === "already_paid_claim" && item.invoiceId) {
+      await replanInvoiceJobs(tx, actor.tenantId, item.invoiceId);
+    }
     await audit(
       tx,
       actor,
       "review.dismissed",
       { type: "review_item", id: itemId },
       { after: { kind: item.kind } },
+    );
+  });
+}
+
+/**
+ * Act on what the classifier read in a reply, after a person has looked at it (FR-12.2). The promise date
+ * shown to the reviewer is the one the code verified; they can correct it. It is recorded as coming from
+ * the reply, with the words that justified it.
+ */
+export async function acceptSuggestion(
+  db: Db,
+  actor: Actor,
+  itemId: string,
+  edits?: { promisedDate?: string },
+) {
+  const item = await withTenant(db, actor.tenantId, async (tx) => {
+    const [i] = await tx.select().from(reviewItems).where(eq(reviewItems.id, itemId));
+    if (
+      !i ||
+      i.status !== "open" ||
+      i.kind !== "low_confidence_reply" ||
+      !i.invoiceId ||
+      !i.messageId
+    ) {
+      throw notFound();
+    }
+    const [inv] = await tx.select().from(invoices).where(eq(invoices.id, i.invoiceId));
+    return { ...i, clientId: inv?.clientId ?? null };
+  });
+  const c = (item.payload as { classification?: Classification }).classification;
+  if (!c || !["promise", "dispute"].includes(c.label) || !item.clientId) {
+    throw new DomainError(
+      "review.nothing_to_accept",
+      "validation",
+      "There is nothing to apply here.",
+    );
+  }
+  const origin = {
+    actor,
+    source: "ai_reply" as const,
+    clientId: item.clientId,
+    provenance: { messageId: item.messageId!, quote: c.quote, confidence: c.confidence },
+  };
+  if (c.label === "promise") {
+    const date = edits?.promisedDate ?? c.promisedDate;
+    if (!date) {
+      throw new DomainError("review.needs_date", "validation", "Choose the date they promised.");
+    }
+    await createPromise(db, origin, item.invoiceId!, date);
+  } else {
+    await openDispute(db, origin, item.invoiceId!, {
+      reason: "Disputed by the client by email",
+      detail: c.quote,
+    });
+  }
+  await withTenant(db, actor.tenantId, async (tx) => {
+    await tx
+      .update(reviewItems)
+      .set({ status: "approved", resolvedBy: actor.id, resolvedAt: realNow() })
+      .where(eq(reviewItems.id, itemId));
+    await audit(
+      tx,
+      actor,
+      "review.suggestion_accepted",
+      { type: "message", id: item.messageId },
+      {
+        after: { label: c.label, edited: Boolean(edits?.promisedDate) },
+      },
     );
   });
 }

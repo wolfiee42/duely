@@ -1,3 +1,4 @@
+import type { ModelClient } from "@repo/ai";
 import type { CloudflareClient } from "@repo/cloudflare";
 import type { EmailClient } from "@repo/email";
 import type { StripeClient } from "@repo/stripe";
@@ -27,6 +28,8 @@ export interface QueuePort {
 }
 
 export interface Services {
+  /** `null` when no model is configured: every AI feature then takes its manual path. */
+  model: ModelClient | null;
   cloudflare: CloudflareClient;
   stripe: StripeClient;
   email: EmailClient;

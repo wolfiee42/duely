@@ -3,6 +3,7 @@ import {
   auditLog,
   clients,
   disputes,
+  documents,
   invoiceItems,
   invoices,
   messages,
@@ -100,7 +101,13 @@ async function writeItems(tx: Tx, tenantId: string, invoiceId: string, items: It
   return totals;
 }
 
-export async function createDraft(db: Db, actor: Actor, input: DraftInput) {
+export async function createDraft(
+  db: Db,
+  actor: Actor,
+  input: DraftInput,
+  /** Set when the draft was read from an uploaded file rather than typed in. */
+  provenance?: { source: "ai_extraction"; documentId: string },
+) {
   return withTenant(db, actor.tenantId, async (tx) => {
     await requireClient(tx, input.clientId);
     const [invoice] = await tx
@@ -110,8 +117,15 @@ export async function createDraft(db: Db, actor: Actor, input: DraftInput) {
         clientId: input.clientId,
         dueDate: input.dueDate ?? null,
         notes: input.notes ?? null,
+        source: provenance?.source ?? "manual",
       })
       .returning({ id: invoices.id });
+    if (provenance) {
+      await tx
+        .update(documents)
+        .set({ invoiceId: invoice!.id })
+        .where(eq(documents.id, provenance.documentId));
+    }
     const totals = await writeItems(tx, actor.tenantId, invoice!.id, input.items);
     await tx
       .update(invoices)
@@ -241,6 +255,7 @@ export async function listInvoices(
         paidMinor: invoices.paidMinor,
         clientId: invoices.clientId,
         clientName: clients.name,
+        riskLevel: invoices.riskLevel,
         createdAt: invoices.createdAt,
       })
       .from(invoices)

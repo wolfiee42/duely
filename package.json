@@ -15,6 +15,7 @@
     "format:check": "vp fmt --check",
     "check": "vp check",
     "check:fix": "vp check --fix",
+    "eval:classify": "varlock run --path apps/web -- cross-env EVAL_LIVE=1 vp test packages/api/src/eval/classify-eval.test.ts",
     "env:audit": "cd apps/web && varlock audit . ../../packages/auth ../../packages/db",
     "env:load": "varlock load --path apps/web",
     "env:codegen": "varlock codegen --path apps/web",

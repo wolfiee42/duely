@@ -9,6 +9,7 @@ import { audit } from "./audit";
 import { firmClock } from "./firm-clock";
 import { baseContext } from "./invoices";
 import { replanInvoiceJobs } from "./reminders";
+import { refreshRisk } from "./risk";
 
 const SYSTEM = (tenantId: string) => ({ tenantId, type: "system" as const, id: null });
 
@@ -134,6 +135,7 @@ export async function overdueSweep(systemDb: Db, limit = 200) {
         .update(invoices)
         .set({ status: next.state.status, updatedAt: sql`now()` })
         .where(eq(invoices.id, row.id));
+      await refreshRisk(tx, row.tenant_id, row.id);
       return 1;
     });
   }
@@ -189,6 +191,7 @@ export async function promiseSweep(systemDb: Db, limit = 200) {
       } else if (["sent", "viewed", "overdue"].includes(invoice!.status)) {
         await replanInvoiceJobs(tx, row.tenant_id, invoice!.id);
       }
+      await refreshRisk(tx, row.tenant_id, promise.invoiceId);
       await audit(
         tx,
         SYSTEM(row.tenant_id),

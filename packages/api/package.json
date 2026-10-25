@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@hono/trpc-server": "catalog:",
+    "@repo/ai": "workspace:*",
     "@repo/auth": "workspace:*",
     "@repo/clock": "workspace:*",
     "@repo/cloudflare": "workspace:*",

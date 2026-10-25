@@ -2,6 +2,7 @@ import { z } from "zod";
 
 import { assignInbound } from "../../../usecases/inbound";
 import {
+  acceptSuggestion,
   approveDraft,
   countOpenReviewItems,
   dismissReviewItem,
@@ -47,6 +48,15 @@ export const reviewRouter = router({
   reject: staffProcedure
     .input(itemId)
     .mutation(({ ctx, input }) => ctx.withDb((db) => rejectDraft(db, actorOf(ctx), input.itemId))),
+
+  // Apply the promise or dispute the classifier read in a reply, once a person agrees (optionally with the date corrected).
+  accept: staffProcedure
+    .input(itemId.extend({ promisedDate: z.iso.date().optional() }))
+    .mutation(({ ctx, input }) =>
+      ctx.withDb((db) =>
+        acceptSuggestion(db, actorOf(ctx), input.itemId, { promisedDate: input.promisedDate }),
+      ),
+    ),
 
   // Attach an unmatched reply to the invoice it is about.
   assign: staffProcedure

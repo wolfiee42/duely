@@ -1,4 +1,5 @@
 import { router } from "../../init";
+import { aiRouter } from "./ai";
 import { clientsRouter, contactsRouter } from "./clients";
 import { domainsRouter } from "./domains";
 import { firmRouter } from "./firm";
@@ -10,6 +11,7 @@ import { reviewRouter } from "./review";
 import { stripeRouter } from "./stripe";
 
 export const staffRouter = router({
+  ai: aiRouter,
   clients: clientsRouter,
   contacts: contactsRouter,
   disputes: disputesRouter,

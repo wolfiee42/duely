@@ -1,3 +1,4 @@
+import type { ModelClient } from "@repo/ai";
 import type { Db } from "@repo/db";
 import { sql } from "drizzle-orm";
 
@@ -13,7 +14,7 @@ import { runTick } from "./scheduler";
 export async function runDevTick(
   systemDb: Db,
   queue: QueuePort,
-  { makeDue = false }: { makeDue?: boolean } = {},
+  { makeDue = false, model = null }: { makeDue?: boolean; model?: ModelClient | null } = {},
 ) {
   if (makeDue) {
     await systemDb.execute(
@@ -25,7 +26,7 @@ export async function runDevTick(
   let drafted = 0;
   for (const message of jobs) {
     if (message.type !== "process_job") continue;
-    const result = await processJob(systemDb, message.jobId);
+    const result = await processJob(systemDb, message.jobId, { model });
     if (result.outcome === "drafted") drafted++;
     if (result.outcome === "queued") {
       await queue.send({ type: "send_message", messageId: result.messageId });

@@ -1,9 +1,12 @@
+import type { ModelClient } from "@repo/ai";
 import { DomainError } from "@repo/domain";
 import { Hono } from "hono";
 
 import type { WithDb } from "../db";
 import type { FilesPort } from "../services";
 import { PORTAL_COOKIE, readCookie } from "../trpc/portal-context";
+import { requestScope } from "../usecases/domains";
+import { extractInvoiceFile, type ExtractMediaType } from "../usecases/extraction";
 import { getFirmLogoKey, setFirmLogo } from "../usecases/firm";
 import { renderInvoicePdf } from "../usecases/invoice-pdf";
 import { loadSession } from "../usecases/portal-auth";
@@ -53,9 +56,23 @@ async function readCapped(request: Request, max: number): Promise<Uint8Array | n
   return out;
 }
 
+export const MAX_EXTRACT_BYTES = 10 * 1024 * 1024;
+
+/** Invoice uploads for extraction: PDF or a photo/scan, checked by content as well as declared type. */
+function sniff(bytes: Uint8Array): ExtractMediaType | null {
+  if (bytes.length > 4 && new TextDecoder().decode(bytes.slice(0, 5)) === "%PDF-")
+    return "application/pdf";
+  for (const type of Object.keys(IMAGE_TYPES) as Array<keyof typeof IMAGE_TYPES>) {
+    if (matchesMagic(bytes, type)) return type;
+  }
+  return null;
+}
+
 export function fileRoutes(deps: {
   withDb: WithDb;
   files: FilesPort;
+  /** Read per request, so the model in use is always the configured one. */
+  ai: { model: ModelClient | null };
   auth: { baseURL: string; secret: string };
 }) {
   const app = new Hono<AppEnv>();
@@ -89,6 +106,31 @@ export function fileRoutes(deps: {
       ),
     );
     return c.json({ ok: true });
+  });
+
+  // Upload an invoice (PDF or image) to be read into a draft. Any member may; nothing is sent (FR-11.4).
+  app.post("/files/extract", requireHostKind("app"), requireStaff(deps), async (c) => {
+    const staff = c.var.staff;
+    const bytes = await readCapped(c.req.raw, MAX_EXTRACT_BYTES);
+    if (!bytes) return c.json({ error: "too_large" }, 413);
+    const mediaType = sniff(bytes);
+    if (!mediaType) return c.json({ error: "unsupported_type" }, 415);
+    const declared = (c.req.header("content-type") ?? "").split(";")[0]!.trim().toLowerCase();
+    if (declared !== mediaType) return c.json({ error: "type_mismatch" }, 415);
+
+    const actor = {
+      tenantId: staff.tenantId,
+      type: "member" as const,
+      id: staff.memberId,
+      requestId: c.var.requestId,
+    };
+    const result = await extractInvoiceFile(
+      { scope: requestScope(deps.withDb), files: deps.files, model: deps.ai.model },
+      actor,
+      { bytes, mediaType },
+    );
+    // A failed read is not an error for the user: they fill the form in by hand (FR-11.20).
+    return c.json(result);
   });
 
   // Branding is shown before sign-in on the portal, so the portal host serves it without a session.

@@ -22,3 +22,7 @@ export * from "./review";
 export * from "./email-events";
 export * from "./inbound";
 export * from "./dev-tick";
+export * from "./ai";
+export * from "./classify";
+export * from "./extraction";
+export * from "./risk";

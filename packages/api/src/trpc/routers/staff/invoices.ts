@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { requestScope } from "../../../usecases/domains";
+import { createDraftFromExtraction } from "../../../usecases/extraction";
 import {
   createDraft,
   deleteDraft,
@@ -9,6 +11,7 @@ import {
   updateDraft,
   voidInvoice,
 } from "../../../usecases/invoices";
+import { explainRisk } from "../../../usecases/risk";
 import { sendInvoice } from "../../../usecases/send-invoice";
 import { idempotencyKeyInput, runIdempotent } from "../../idempotency";
 import { router, staffProcedure } from "../../init";
@@ -64,6 +67,27 @@ export const invoicesRouter = router({
   createDraft: staffProcedure
     .input(draft)
     .mutation(({ ctx, input }) => ctx.withDb((db) => createDraft(db, actorOf(ctx), input))),
+
+  // A confirmed extraction becomes a draft, never a sent invoice. Takes an idempotency key (D29).
+  createFromExtraction: staffProcedure
+    .input(draft.extend({ documentId: id, runId: id, ...idempotencyKeyInput }))
+    .mutation(({ ctx, input }) => {
+      const { idempotencyKey, ...rest } = input;
+      return runIdempotent(
+        ctx.withDb,
+        ctx.tenantId,
+        "invoices.createFromExtraction",
+        idempotencyKey,
+        () => ctx.withDb((db) => createDraftFromExtraction(db, actorOf(ctx), rest)),
+      );
+    }),
+
+  // Recomputes the risk score and returns its plain-language explanation (FR-11.15 to 11.17).
+  explainRisk: staffProcedure
+    .input(z.object({ invoiceId: id }))
+    .mutation(({ ctx, input }) =>
+      explainRisk(requestScope(ctx.withDb), ctx.services.model, ctx.tenantId, input.invoiceId),
+    ),
 
   updateDraft: staffProcedure.input(draft.extend({ invoiceId: id })).mutation(({ ctx, input }) => {
     const { invoiceId, ...rest } = input;

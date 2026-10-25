@@ -14,7 +14,9 @@ const MAX_PROMISE_DAYS = 90;
 /** Where a promise or dispute came from. Portal actions are scoped to the contact's own client. */
 export interface Origin {
   actor: Actor;
-  source: "portal" | "manual";
+  source: "portal" | "manual" | "ai_reply";
+  /** For `ai_reply`: the message it came from, the words that justify it, and how sure the classifier was. */
+  provenance?: { messageId: string; quote: string | null; confidence: number };
   /** Portal callers: the invoice must belong to this client. */
   clientId?: string;
 }
@@ -79,6 +81,9 @@ export async function createPromise(
         invoiceId,
         promisedDate,
         source: origin.source,
+        sourceMessageId: origin.provenance?.messageId ?? null,
+        sourceQuote: origin.provenance?.quote ?? null,
+        confidence: origin.provenance ? origin.provenance.confidence.toFixed(3) : null,
         priorStatus: invoice.status,
       });
     } catch (error) {
@@ -168,6 +173,7 @@ export async function openDispute(
           reason: input.reason,
           detail: input.detail ?? null,
           source: origin.source,
+          sourceMessageId: origin.provenance?.messageId ?? null,
           priorStatus,
         })
         .returning({ id: disputes.id });

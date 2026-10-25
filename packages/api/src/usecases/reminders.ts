@@ -128,7 +128,11 @@ async function withdraw(tx: Tx, jobIds: string[]) {
 }
 
 /** A promise or dispute is holding the schedule: nothing is sent until it ends (FR-9.7). */
-export async function pauseInvoiceJobs(tx: Tx, invoiceId: string, reason: "promise" | "dispute") {
+export async function pauseInvoiceJobs(
+  tx: Tx,
+  invoiceId: string,
+  reason: "promise" | "dispute" | "already_paid_review",
+) {
   const paused = await tx
     .update(reminderJobs)
     .set({ status: "skipped", pauseReason: reason })

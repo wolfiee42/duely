@@ -9,6 +9,7 @@ import { audit, type Actor } from "./audit";
 import { firmClock } from "./firm-clock";
 import { baseContext } from "./invoices";
 import { applyJobEffects } from "./reminders";
+import { refreshRisk } from "./risk";
 import { newToken } from "./tokens";
 
 /**
@@ -71,6 +72,7 @@ export async function sendInvoice(db: Db, actor: Actor, invoiceId: string) {
       .where(eq(invoices.id, invoiceId));
 
     await applyJobEffects(tx, actor.tenantId, invoiceId, next.effects);
+    await refreshRisk(tx, actor.tenantId, invoiceId);
 
     const messageIds: string[] = [];
     for (const contact of recipients) {
