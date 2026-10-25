@@ -1,0 +1,616 @@
+{
+  "type": "diff",
+  "version": "9",
+  "dialect": "postgres",
+  "id": "535d4d37-83c4-439a-8f87-da48df17578e",
+  "prevIds": [
+    "b0326630-13ef-45c4-a247-94b9d9df4116"
+  ],
+  "footprints": [
+    {
+      "statementType": "create_table",
+      "statementTarget": [
+        "table",
+        "public",
+        "ai_runs"
+      ],
+      "writes": [
+        "s|tbl|public.ai_runs",
+        "n|tbl|public.ai_runs",
+        "e|tbl|public.ai_runs",
+        "n|rel|public.ai_runs",
+        "n|type|public.ai_runs",
+        "n|rel|public.ai_runs_pkey",
+        "n|rel|public.ai_runs_tenant_id_id"
+      ],
+      "reads": [
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "add_column",
+      "statementTarget": [
+        "column",
+        "public",
+        "review_items",
+        "ai_run_id"
+      ],
+      "writes": [
+        "s|col|public.review_items.ai_run_id",
+        "n|col|public.review_items.ai_run_id",
+        "e|col|public.review_items.ai_run_id"
+      ],
+      "reads": [
+        "n|tbl|public.review_items",
+        "n|sch|public"
+      ]
+    },
+    {
+      "statementType": "create_index",
+      "statementTarget": [
+        "index",
+        "public",
+        "ai_runs",
+        "ai_runs_tenant_month"
+      ],
+      "writes": [
+        "s|idx|public.ai_runs_tenant_month",
+        "n|idx|public.ai_runs_tenant_month",
+        "e|idx|public.ai_runs_tenant_month",
+        "n|rel|public.ai_runs_tenant_month"
+      ],
+      "reads": [
+        "n|tbl|public.ai_runs",
+        "n|sch|public",
+        "n|col|public.ai_runs.tenant_id",
+        "n|col|public.ai_runs.created_at"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "ai_runs"
+      ],
+      "writes": [
+        "s|fk|public.ai_runs.ai_runs_tenant_id_firms_id_fkey",
+        "n|fk|public.ai_runs.ai_runs_tenant_id_firms_id_fkey",
+        "e|fk|public.ai_runs.ai_runs_tenant_id_firms_id_fkey",
+        "n|con|public.ai_runs.ai_runs_tenant_id_firms_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.ai_runs",
+        "n|sch|public",
+        "n|tbl|public.firms",
+        "n|sch|public",
+        "n|col|public.ai_runs.tenant_id",
+        "n|col|public.firms.id",
+        "e|uniqueness|public.firms.id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "ai_runs"
+      ],
+      "writes": [
+        "s|fk|public.ai_runs.ai_runs_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "n|fk|public.ai_runs.ai_runs_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "e|fk|public.ai_runs.ai_runs_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "n|con|public.ai_runs.ai_runs_tenant_id_invoice_id_invoices_tenant_id_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.ai_runs",
+        "n|sch|public",
+        "n|tbl|public.invoices",
+        "n|sch|public",
+        "n|col|public.ai_runs.tenant_id",
+        "n|col|public.ai_runs.invoice_id",
+        "n|col|public.invoices.tenant_id",
+        "n|col|public.invoices.id",
+        "e|uniqueness|public.invoices.id.tenant_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "ai_runs"
+      ],
+      "writes": [
+        "s|fk|public.ai_runs.ai_runs_tenant_id_message_id_messages_tenant_id_id_fkey",
+        "n|fk|public.ai_runs.ai_runs_tenant_id_message_id_messages_tenant_id_id_fkey",
+        "e|fk|public.ai_runs.ai_runs_tenant_id_message_id_messages_tenant_id_id_fkey",
+        "n|con|public.ai_runs.ai_runs_tenant_id_message_id_messages_tenant_id_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.ai_runs",
+        "n|sch|public",
+        "n|tbl|public.messages",
+        "n|sch|public",
+        "n|col|public.ai_runs.tenant_id",
+        "n|col|public.ai_runs.message_id",
+        "n|col|public.messages.tenant_id",
+        "n|col|public.messages.id",
+        "e|uniqueness|public.messages.id.tenant_id"
+      ]
+    },
+    {
+      "statementType": "create_fk",
+      "statementTarget": [
+        "table",
+        "public",
+        "review_items"
+      ],
+      "writes": [
+        "s|fk|public.review_items.review_items_tenant_id_ai_run_id_ai_runs_tenant_id_id_fkey",
+        "n|fk|public.review_items.review_items_tenant_id_ai_run_id_ai_runs_tenant_id_id_fkey",
+        "e|fk|public.review_items.review_items_tenant_id_ai_run_id_ai_runs_tenant_id_id_fkey",
+        "n|con|public.review_items.review_items_tenant_id_ai_run_id_ai_runs_tenant_id_id_fkey"
+      ],
+      "reads": [
+        "n|tbl|public.review_items",
+        "n|sch|public",
+        "n|tbl|public.ai_runs",
+        "n|sch|public",
+        "n|col|public.review_items.tenant_id",
+        "n|col|public.review_items.ai_run_id",
+        "n|col|public.ai_runs.tenant_id",
+        "n|col|public.ai_runs.id",
+        "e|uniqueness|public.ai_runs.id.tenant_id"
+      ]
+    }
+  ],
+  "deltas": [
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "name": "ai_runs",
+        "isRlsEnabled": false,
+        "entityType": "tables"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "ai_runs",
+        "name": "id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "gen_random_uuid()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "ai_runs",
+        "name": "tenant_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "ai_runs",
+        "name": "purpose",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "ai_runs",
+        "name": "prompt_version",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "ai_runs",
+        "name": "model",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "ai_runs",
+        "name": "input_hash",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "ai_runs",
+        "name": "input_tokens",
+        "type": "integer",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "ai_runs",
+        "name": "output_tokens",
+        "type": "integer",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "ai_runs",
+        "name": "cost_micros",
+        "type": "bigint",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "ai_runs",
+        "name": "latency_ms",
+        "type": "integer",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "ai_runs",
+        "name": "status",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "ai_runs",
+        "name": "output",
+        "type": "jsonb",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "ai_runs",
+        "name": "error",
+        "type": "text",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "ai_runs",
+        "name": "invoice_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "ai_runs",
+        "name": "message_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "ai_runs",
+        "name": "created_at",
+        "type": "timestamp with time zone",
+        "typeSchema": null,
+        "notNull": true,
+        "dimensions": 0,
+        "default": "now()",
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "review_items",
+        "name": "ai_run_id",
+        "type": "uuid",
+        "typeSchema": null,
+        "notNull": false,
+        "dimensions": 0,
+        "default": null,
+        "generated": null,
+        "identity": null,
+        "entityType": "columns"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "ai_runs",
+        "name": "ai_runs_tenant_month",
+        "nameExplicit": true,
+        "columns": [
+          {
+            "value": "tenant_id",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          },
+          {
+            "value": "created_at",
+            "isExpression": false,
+            "asc": true,
+            "nullsFirst": false,
+            "opclass": null
+          }
+        ],
+        "isUnique": false,
+        "where": null,
+        "with": "",
+        "method": "btree",
+        "concurrently": false,
+        "entityType": "indexes"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "ai_runs",
+        "name": "ai_runs_tenant_id_firms_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "firms",
+        "columnsTo": [
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "ai_runs",
+        "name": "ai_runs_tenant_id_invoice_id_invoices_tenant_id_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id",
+          "invoice_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "invoices",
+        "columnsTo": [
+          "tenant_id",
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "ai_runs",
+        "name": "ai_runs_tenant_id_message_id_messages_tenant_id_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id",
+          "message_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "messages",
+        "columnsTo": [
+          "tenant_id",
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "review_items",
+        "name": "review_items_tenant_id_ai_run_id_ai_runs_tenant_id_id_fkey",
+        "nameExplicit": false,
+        "columns": [
+          "tenant_id",
+          "ai_run_id"
+        ],
+        "schemaTo": "public",
+        "tableTo": "ai_runs",
+        "columnsTo": [
+          "tenant_id",
+          "id"
+        ],
+        "onUpdate": "NO ACTION",
+        "onDelete": "NO ACTION",
+        "entityType": "fks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "ai_runs",
+        "name": "ai_runs_pkey",
+        "columns": [
+          "id"
+        ],
+        "nameExplicit": false,
+        "entityType": "pks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "ai_runs",
+        "name": "ai_runs_tenant_id_id",
+        "nameExplicit": true,
+        "columns": [
+          "tenant_id",
+          "id"
+        ],
+        "nullsNotDistinct": false,
+        "entityType": "uniques"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "ai_runs",
+        "name": "ai_runs_purpose_check",
+        "value": "\"purpose\" in ('extraction', 'draft', 'classify', 'risk_explain')",
+        "entityType": "checks"
+      }
+    },
+    {
+      "op": "create",
+      "row": {
+        "schema": "public",
+        "table": "ai_runs",
+        "name": "ai_runs_status_check",
+        "value": "\"status\" in ('ok', 'schema_invalid', 'error', 'capped')",
+        "entityType": "checks"
+      }
+    }
+  ]
+}

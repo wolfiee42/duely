@@ -1,6 +1,7 @@
 import { sql } from "drizzle-orm";
 import {
   check,
+  bigint,
   date,
   foreignKey,
   index,
@@ -17,7 +18,14 @@ import { invoices } from "./billing";
 import { policySteps } from "./policies";
 import { messages } from "./portal";
 import { firms, members } from "./tenancy";
-import type { JobPauseReason, JobStatus, ReviewKind, ReviewStatus } from "./types";
+import type {
+  AiPurpose,
+  AiRunStatus,
+  JobPauseReason,
+  JobStatus,
+  ReviewKind,
+  ReviewStatus,
+} from "./types";
 
 const tenantId = () =>
   uuid("tenant_id")
@@ -72,6 +80,47 @@ export const reminderJobs = pgTable(
   ],
 );
 
+// Every model call (FR-11.18). Only validated output is stored, never the prompt or the raw reply.
+export const aiRuns = pgTable(
+  "ai_runs",
+  {
+    id: uuid("id").primaryKey().defaultRandom(),
+    tenantId: tenantId(),
+    purpose: text("purpose").$type<AiPurpose>().notNull(),
+    promptVersion: text("prompt_version").notNull(),
+    model: text("model").notNull(),
+    inputHash: text("input_hash").notNull(),
+    inputTokens: integer("input_tokens"),
+    outputTokens: integer("output_tokens"),
+    // Millionths of a dollar.
+    costMicros: bigint("cost_micros", { mode: "number" }),
+    latencyMs: integer("latency_ms"),
+    status: text("status").$type<AiRunStatus>().notNull(),
+    output: jsonb("output"),
+    error: text("error"),
+    invoiceId: uuid("invoice_id"),
+    messageId: uuid("message_id"),
+    createdAt: createdAt(),
+  },
+  (t) => [
+    foreignKey({
+      columns: [t.tenantId, t.invoiceId],
+      foreignColumns: [invoices.tenantId, invoices.id],
+    }),
+    foreignKey({
+      columns: [t.tenantId, t.messageId],
+      foreignColumns: [messages.tenantId, messages.id],
+    }),
+    unique("ai_runs_tenant_id_id").on(t.tenantId, t.id),
+    index("ai_runs_tenant_month").on(t.tenantId, t.createdAt),
+    check(
+      "ai_runs_purpose_check",
+      sql`${t.purpose} in ('extraction', 'draft', 'classify', 'risk_explain')`,
+    ),
+    check("ai_runs_status_check", sql`${t.status} in ('ok', 'schema_invalid', 'error', 'capped')`),
+  ],
+);
+
 export const reviewItems = pgTable(
   "review_items",
   {
@@ -81,7 +130,7 @@ export const reviewItems = pgTable(
     invoiceId: uuid("invoice_id"),
     messageId: uuid("message_id"),
     jobId: uuid("job_id"),
-    // `ai_run_id` joins in Phase 5 with the `ai_runs` table.
+    aiRunId: uuid("ai_run_id"),
     payload: jsonb("payload").notNull().default({}),
     status: text("status").$type<ReviewStatus>().notNull().default("open"),
     resolvedBy: uuid("resolved_by"),
@@ -100,6 +149,10 @@ export const reviewItems = pgTable(
     foreignKey({
       columns: [t.tenantId, t.jobId],
       foreignColumns: [reminderJobs.tenantId, reminderJobs.id],
+    }),
+    foreignKey({
+      columns: [t.tenantId, t.aiRunId],
+      foreignColumns: [aiRuns.tenantId, aiRuns.id],
     }),
     foreignKey({
       columns: [t.tenantId, t.resolvedBy],

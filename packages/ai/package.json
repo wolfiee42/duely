@@ -4,7 +4,13 @@
   "private": true,
   "type": "module",
   "exports": {
-    ".": "./src/index.ts"
+    ".": "./src/index.ts",
+    "./fake": "./src/fake.ts"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "catalog:",
+    "@repo/domain": "workspace:*",
+    "zod": "catalog:"
   },
   "devDependencies": {
     "@repo/tsconfig": "workspace:*",

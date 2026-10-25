@@ -47,3 +47,5 @@ export type ReviewKind =
   | "dead_job"
   | "extraction_review";
 export type ReviewStatus = "open" | "approved" | "edited" | "rejected" | "dismissed";
+export type AiPurpose = "extraction" | "draft" | "classify" | "risk_explain";
+export type AiRunStatus = "ok" | "schema_invalid" | "error" | "capped";
