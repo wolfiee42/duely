@@ -8,11 +8,13 @@ export const Route = createFileRoute("/_staff/app")({
   component: AppLayout,
 });
 
+const DEMO_NAV = { to: "/app/demo", label: "Demo tools" } as const;
 const NAV = [
   { to: "/app", label: "Home", exact: true },
   { to: "/app/invoices", label: "Invoices" },
   { to: "/app/clients", label: "Clients" },
   { to: "/app/review", label: "Review" },
+  { to: "/app/imports", label: "Import" },
   { to: "/app/policies", label: "Follow-ups" },
   { to: "/app/settings", label: "Settings" },
 ] as const;
@@ -32,7 +34,7 @@ function AppLayout() {
         </div>
       </header>
       <nav aria-label="Main" className="flex gap-1 border-b pb-2 text-sm">
-        {NAV.map((item) => (
+        {(data.firm.isDemo ? [...NAV, DEMO_NAV] : NAV).map((item) => (
           <Link
             key={item.to}
             to={item.to}

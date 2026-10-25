@@ -16,6 +16,7 @@ export const Route = createFileRoute("/portal/login")({
     const me = await context.queryClient.query(context.portalTrpc.auth.me.queryOptions());
     if (me.contact) throw redirect({ to: "/portal" });
   },
+  head: () => ({ meta: [{ title: "Sign in" }] }),
   component: PortalLogin,
 });
 
@@ -40,7 +41,7 @@ function PortalLogin() {
 
   if (sent) {
     return (
-      <div className="flex flex-col gap-2 text-center">
+      <div className="flex flex-col gap-2 text-center" role="status">
         <h1 className="text-2xl font-bold tracking-tight">Check your email</h1>
         <p className="text-sm text-muted-foreground">
           If that address has invoices with us, a sign-in link is on its way. It works once and
@@ -60,6 +61,9 @@ function PortalLogin() {
       }}
     >
       <h1 className="text-center text-2xl font-bold tracking-tight">View your invoices</h1>
+      <p className="text-center text-sm text-muted-foreground">
+        Enter the email address your invoices were sent to.
+      </p>
       {link === "invalid" && (
         <p role="alert" className="rounded-md border border-destructive/40 p-2 text-sm">
           That link has expired or was already used. Request a new one below.

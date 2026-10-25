@@ -26,6 +26,7 @@ export const config: AppConfig = {
   platformDomain,
   appOrigin: ENV.VITE_BASE_URL,
   cnameTarget: ENV.CLOUDFLARE_CNAME_TARGET ?? `customers.${platformDomain}`,
+  demoEnabled: ENV.DEMO_ENABLED || platformDomain === "localhost",
   resendWebhookSecret: ENV.RESEND_WEBHOOK_SECRET ?? "",
   stripeWebhookSecret: ENV.STRIPE_CONNECT_WEBHOOK_SECRET ?? "",
   stripePublishableKey: ENV.STRIPE_PUBLISHABLE_KEY ?? "",

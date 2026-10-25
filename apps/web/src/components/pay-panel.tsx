@@ -83,7 +83,9 @@ export function PayPanel({ invoiceId, trpc, onPaid }: Props) {
   if (!stripePromise) {
     return (
       <div className="flex flex-col gap-2 rounded-md border border-dashed p-4">
-        <p className="text-sm text-muted-foreground">Test mode: no real payment is taken.</p>
+        <p className="text-sm text-muted-foreground" role="note">
+          Test mode: no real payment is taken.
+        </p>
         <Button size="lg" disabled={simulate.isPending} onClick={() => simulate.mutate(session)}>
           {simulate.isPending ? "Paying..." : "Pay (test mode)"}
         </Button>

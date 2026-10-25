@@ -14,6 +14,7 @@ import { trpcErrorInfo } from "#/lib/trpc/errors.ts";
 
 export const Route = createFileRoute("/portal/invoices/$invoiceId")({
   beforeLoad: ({ context }) => requirePortalContact(context),
+  head: () => ({ meta: [{ title: "Invoice" }] }),
   component: PortalInvoice,
 });
 
@@ -55,6 +56,14 @@ function PortalInvoice() {
           From {invoice.firm.legalName} · issued {invoice.issueDate} · due {invoice.dueDate}
         </p>
         <table className="mt-3 w-full text-sm">
+          <caption className="sr-only">Items on this invoice</caption>
+          <thead className="sr-only">
+            <tr>
+              <th scope="col">Description</th>
+              <th scope="col">Quantity and price</th>
+              <th scope="col">Amount</th>
+            </tr>
+          </thead>
           <tbody className="divide-y">
             {invoice.items.map((i, n) => (
               <tr key={n}>
@@ -88,7 +97,7 @@ function PortalInvoice() {
 
       {invoice.status === "paid" && (
         <Card>
-          <p className="text-sm">
+          <p className="text-sm" role="status">
             Thank you, this invoice is paid.{" "}
             <Link to="/portal/receipts" className="underline underline-offset-4">
               View receipts
@@ -113,14 +122,14 @@ function PortalInvoice() {
 
       {invoice.activePromise && (
         <Card>
-          <p className="text-sm">
+          <p className="text-sm" role="status">
             You told us you'd pay on <strong>{invoice.activePromise.promisedDate}</strong>.
           </p>
         </Card>
       )}
       {invoice.hasOpenDispute && (
         <Card>
-          <p className="text-sm">
+          <p className="text-sm" role="status">
             We've received your question about this invoice and will be in touch.
           </p>
         </Card>
@@ -164,10 +173,11 @@ function PortalInvoice() {
               >
                 <Label htmlFor="dispute-reason">What's the issue?</Label>
                 <Input id="dispute-reason" name="reason" required />
+                <Label htmlFor="dispute-detail">More detail (optional)</Label>
                 <textarea
+                  id="dispute-detail"
                   name="detail"
                   rows={2}
-                  aria-label="More detail"
                   className="w-full rounded-md border bg-background px-3 py-2 text-sm"
                 />
                 <Button type="submit" variant="outline" disabled={dispute.isPending}>

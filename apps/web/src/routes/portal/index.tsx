@@ -7,6 +7,7 @@ import { requirePortalContact } from "#/lib/portal.ts";
 
 export const Route = createFileRoute("/portal/")({
   beforeLoad: ({ context }) => requirePortalContact(context),
+  head: () => ({ meta: [{ title: "Your invoices" }] }),
   component: PortalHome,
 });
 

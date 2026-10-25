@@ -31,6 +31,13 @@ function PortalLayout() {
 
   return (
     <div className="mx-auto flex min-h-svh w-full max-w-2xl flex-col gap-6 px-4 py-6">
+      {/* First stop for keyboard and screen-reader users: skip the header and go to the page. */}
+      <a
+        href="#main-content"
+        className="sr-only rounded-md bg-background px-3 py-2 text-sm font-medium focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-50 focus:ring-2 focus:ring-ring"
+      >
+        Skip to content
+      </a>
       <header
         className="flex items-center justify-between gap-2 border-b pb-4"
         style={{ borderColor: me.firm?.brandPrimary }}
@@ -50,7 +57,7 @@ function PortalLayout() {
           </nav>
         )}
       </header>
-      <main>
+      <main id="main-content" tabIndex={-1} className="outline-none">
         <Outlet />
       </main>
     </div>

@@ -37,6 +37,7 @@ const configOf = (env: Env): AppConfig => ({
   appOrigin: env.APP_ORIGIN,
   emailFromAddress: env.EMAIL_FROM_ADDRESS,
   cnameTarget: "",
+  demoEnabled: false,
   resendWebhookSecret: "",
   stripeWebhookSecret: "",
   stripePublishableKey: "",

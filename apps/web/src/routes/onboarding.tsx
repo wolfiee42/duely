@@ -2,7 +2,7 @@ import { Button } from "@repo/ui/components/button";
 import { Input } from "@repo/ui/components/input";
 import { Label } from "@repo/ui/components/label";
 import { toast } from "@repo/ui/components/toast";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { createFileRoute, redirect, useNavigate } from "@tanstack/react-router";
 import { LoaderCircleIcon } from "lucide-react";
 
@@ -52,6 +52,18 @@ function OnboardingForm() {
             "We couldn't create your firm. Please try again.",
         });
       },
+    }),
+  );
+
+  const demoAvailable = useQuery(trpc.firm.demoAvailable.queryOptions());
+  const demo = useMutation(
+    trpc.firm.createDemo.mutationOptions({
+      onSuccess: async () => {
+        await queryClient.invalidateQueries({ queryKey: trpc.firm.get.queryKey() });
+        await navigate({ to: "/app/demo" });
+      },
+      onError: () =>
+        toast.add({ type: "error", description: "We couldn't start the demo. Please try again." }),
     }),
   );
 
@@ -118,6 +130,19 @@ function OnboardingForm() {
             {isPending ? "Creating..." : "Create firm"}
           </Button>
         </form>
+        {demoAvailable.data?.available && (
+          <div className="border-t pt-5 text-center">
+            <p className="mb-3 text-sm text-muted-foreground">Just want a look around?</p>
+            <Button
+              variant="outline"
+              className="w-full"
+              disabled={demo.isPending || isPending}
+              onClick={() => demo.mutate()}
+            >
+              {demo.isPending ? "Setting up the demo…" : "Explore with sample data"}
+            </Button>
+          </div>
+        )}
       </div>
     </div>
   );

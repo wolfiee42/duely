@@ -8,6 +8,7 @@ import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
 import { useEffect, useState } from "react";
 
 import { InvoiceEditor } from "#/components/invoice-editor.tsx";
+import { Timeline } from "#/components/timeline.tsx";
 import { Card, Page, RiskBadge, StatusBadge } from "#/components/ui-bits.tsx";
 import { field } from "#/lib/form.ts";
 import { trpcErrorInfo } from "#/lib/trpc/errors.ts";
@@ -363,20 +364,8 @@ function InvoicePage() {
         </Card>
       )}
 
-      <Card title="Activity">
-        <ul className="divide-y text-sm">
-          {timeline.events.map((e, i) => (
-            <li key={i} className="flex justify-between gap-4 py-2">
-              <span>{e.action.replace(/[._]/g, " ")}</span>
-              <span className="text-muted-foreground">{new Date(e.at).toLocaleString()}</span>
-            </li>
-          ))}
-        </ul>
-        {timeline.messages.length > 0 && (
-          <p className="mt-3 text-xs text-muted-foreground">
-            Emails: {timeline.messages.map((m) => `${m.kind} (${m.status})`).join(", ")}
-          </p>
-        )}
+      <Card title="Timeline">
+        <Timeline entries={timeline.entries} />
       </Card>
     </Page>
   );

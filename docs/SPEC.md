@@ -1094,18 +1094,18 @@ Each spike ends with a written result in `docs/adr/`. A failed spike means the a
 
 ### Phase 6: Demo polish
 
-- [ ] P6-01 · Dashboard: totals, AR aging, promises this week · M · 12.3
-- [ ] P6-02 · Invoice timeline component · M · 12.4
-- [ ] P6-03 · CSV import (clients, invoices) with dry-run · L · 13.x
-- [ ] P6-04 · Seed script: demo firm, data across all statuses · M · 14.1
-- [ ] P6-05 · Demo mode: outbox viewer, email interception, Stripe test mode · M · 14.3
-- [ ] P6-06 · Simulate time + simulate reply endpoints/UI + server guards · M · 14.2, 14.4, 14.7
-- [ ] P6-07 · Reset demo · S · 14.5
-- [ ] P6-08 · E2E demo loop under 90s · M
-- [ ] P6-09 · README: architecture diagram, decisions table, trade-offs, eval results, credit to Cove Stack · M
+- [x] P6-01 · Dashboard: totals, AR aging, promises this week · M · 12.3
+- [x] P6-02 · Invoice timeline component · M · 12.4
+- [x] P6-03 · CSV import (clients, invoices) with dry-run · L · 13.x
+- [x] P6-04 · Seed script: demo firm, data across all statuses · M · 14.1
+- [x] P6-05 · Demo mode: outbox viewer, email interception, Stripe test mode · M · 14.3
+- [x] P6-06 · Simulate time + simulate reply endpoints/UI + server guards · M · 14.2, 14.4, 14.7
+- [x] P6-07 · Reset demo · S · 14.5
+- [x] P6-08 · E2E demo loop under 90s · M
+- [x] P6-09 · README: architecture diagram, decisions table, trade-offs, eval results, credit to Cove Stack · M
 - [ ] P6-10 · GIF + Loom (< 90s) · S
-- [ ] P6-11 · Accessibility pass on portal (WCAG AA basics) · S
-- [ ] P6-12 · Guided tour overlay (P2) · S · 14.6
+- [x] P6-11 · Accessibility pass on portal (WCAG AA basics) · S
+- [x] P6-12 · Guided tour overlay (P2) · S · 14.6
 
 ### Cut line if time runs short (in order)
 

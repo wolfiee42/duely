@@ -23,6 +23,8 @@ import { Route as PortalIndexRouteImport } from './routes/portal/index'
 import { Route as PortalLoginRouteImport } from './routes/portal/login'
 import { Route as PortalReceiptsRouteImport } from './routes/portal/receipts'
 import { Route as StaffAppIndexRouteImport } from './routes/_staff/app/index'
+import { Route as StaffAppDemoRouteImport } from './routes/_staff/app/demo'
+import { Route as StaffAppImportsRouteImport } from './routes/_staff/app/imports'
 import { Route as StaffAppPoliciesRouteImport } from './routes/_staff/app/policies'
 import { Route as StaffAppReviewRouteImport } from './routes/_staff/app/review'
 import { Route as StaffAppSettingsRouteImport } from './routes/_staff/app/settings'
@@ -106,6 +108,16 @@ const PortalReceiptsRoute = PortalReceiptsRouteImport.update({
 const StaffAppIndexRoute = StaffAppIndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => StaffAppRouteRoute,
+} as any)
+const StaffAppDemoRoute = StaffAppDemoRouteImport.update({
+  id: '/demo',
+  path: '/demo',
+  getParentRoute: () => StaffAppRouteRoute,
+} as any)
+const StaffAppImportsRoute = StaffAppImportsRouteImport.update({
+  id: '/imports',
+  path: '/imports',
   getParentRoute: () => StaffAppRouteRoute,
 } as any)
 const StaffAppPoliciesRoute = StaffAppPoliciesRouteImport.update({
@@ -203,6 +215,8 @@ export interface FileRoutesByFullPath {
   '/portal/login': typeof PortalLoginRoute
   '/portal/receipts': typeof PortalReceiptsRoute
   '/portal/': typeof PortalIndexRoute
+  '/app/demo': typeof StaffAppDemoRoute
+  '/app/imports': typeof StaffAppImportsRoute
   '/app/policies': typeof StaffAppPoliciesRoute
   '/app/review': typeof StaffAppReviewRoute
   '/app/settings': typeof StaffAppSettingsRoute
@@ -231,6 +245,8 @@ export interface FileRoutesByTo {
   '/portal/login': typeof PortalLoginRoute
   '/portal/receipts': typeof PortalReceiptsRoute
   '/portal': typeof PortalIndexRoute
+  '/app/demo': typeof StaffAppDemoRoute
+  '/app/imports': typeof StaffAppImportsRoute
   '/app/policies': typeof StaffAppPoliciesRoute
   '/app/review': typeof StaffAppReviewRoute
   '/app/settings': typeof StaffAppSettingsRoute
@@ -264,6 +280,8 @@ export interface FileRoutesById {
   '/portal/login': typeof PortalLoginRoute
   '/portal/receipts': typeof PortalReceiptsRoute
   '/portal/': typeof PortalIndexRoute
+  '/_staff/app/demo': typeof StaffAppDemoRoute
+  '/_staff/app/imports': typeof StaffAppImportsRoute
   '/_staff/app/policies': typeof StaffAppPoliciesRoute
   '/_staff/app/review': typeof StaffAppReviewRoute
   '/_staff/app/settings': typeof StaffAppSettingsRoute
@@ -296,6 +314,8 @@ export interface FileRouteTypes {
     | '/portal/login'
     | '/portal/receipts'
     | '/portal/'
+    | '/app/demo'
+    | '/app/imports'
     | '/app/policies'
     | '/app/review'
     | '/app/settings'
@@ -324,6 +344,8 @@ export interface FileRouteTypes {
     | '/portal/login'
     | '/portal/receipts'
     | '/portal'
+    | '/app/demo'
+    | '/app/imports'
     | '/app/policies'
     | '/app/review'
     | '/app/settings'
@@ -356,6 +378,8 @@ export interface FileRouteTypes {
     | '/portal/login'
     | '/portal/receipts'
     | '/portal/'
+    | '/_staff/app/demo'
+    | '/_staff/app/imports'
     | '/_staff/app/policies'
     | '/_staff/app/review'
     | '/_staff/app/settings'
@@ -491,6 +515,20 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof StaffAppIndexRouteImport
       parentRoute: typeof StaffAppRouteRoute
     }
+    '/_staff/app/demo': {
+      id: '/_staff/app/demo'
+      path: '/demo'
+      fullPath: '/app/demo'
+      preLoaderRoute: typeof StaffAppDemoRouteImport
+      parentRoute: typeof StaffAppRouteRoute
+    }
+    '/_staff/app/imports': {
+      id: '/_staff/app/imports'
+      path: '/imports'
+      fullPath: '/app/imports'
+      preLoaderRoute: typeof StaffAppImportsRouteImport
+      parentRoute: typeof StaffAppRouteRoute
+    }
     '/_staff/app/policies': {
       id: '/_staff/app/policies'
       path: '/policies'
@@ -621,6 +659,8 @@ const GuestRouteRouteWithChildren = GuestRouteRoute._addFileChildren(
 )
 
 interface StaffAppRouteRouteChildren {
+  StaffAppDemoRoute: typeof StaffAppDemoRoute
+  StaffAppImportsRoute: typeof StaffAppImportsRoute
   StaffAppPoliciesRoute: typeof StaffAppPoliciesRoute
   StaffAppReviewRoute: typeof StaffAppReviewRoute
   StaffAppSettingsRoute: typeof StaffAppSettingsRoute
@@ -634,6 +674,8 @@ interface StaffAppRouteRouteChildren {
 }
 
 const StaffAppRouteRouteChildren: StaffAppRouteRouteChildren = {
+  StaffAppDemoRoute: StaffAppDemoRoute,
+  StaffAppImportsRoute: StaffAppImportsRoute,
   StaffAppPoliciesRoute: StaffAppPoliciesRoute,
   StaffAppReviewRoute: StaffAppReviewRoute,
   StaffAppSettingsRoute: StaffAppSettingsRoute,

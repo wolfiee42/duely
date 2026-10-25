@@ -99,6 +99,6 @@ test("an uploaded invoice becomes a draft, and a reply is read into a promise", 
 
   await page.goto("/app/invoices");
   await page.getByRole("link", { name: invoiceNumber }).click();
-  await expect(page.getByText("Promise to pay")).toBeVisible();
+  await expect(page.getByText("Promise to pay", { exact: true })).toBeVisible();
   await expect(page.getByText("ai_reply")).toBeVisible();
 });

@@ -6,7 +6,14 @@ import { getRequest } from "@tanstack/react-start/server";
 import { createTRPCClient, httpBatchLink } from "@trpc/client";
 import { createTRPCOptionsProxy } from "@trpc/tanstack-react-query";
 
-import { authConfig, config, platformDomain, services, withDb } from "#/lib/server/runtime.ts";
+import {
+  authConfig,
+  config,
+  platformDomain,
+  services,
+  withDb,
+  withSystemDb,
+} from "#/lib/server/runtime.ts";
 
 // D21: on the server the router runs in-process (no self-HTTP on Workers); in the browser it is
 // batched HTTP to Hono. Both build the same context, so behavior matches.
@@ -20,7 +27,7 @@ export const createStaffTrpc = createIsomorphicFn()
         const host = await resolveHostContext(new URL(request.url).host, platformDomain, withDb);
         return {
           ...createStaffContext(
-            { withDb, auth: authConfig, services, config },
+            { withDb, withSystemDb, auth: authConfig, services, config },
             // Start's host middleware already 404s unknown hosts, so `host` is set here.
             { headers: request.headers, host: host!, requestId: crypto.randomUUID() },
           ),
