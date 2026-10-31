@@ -59,6 +59,20 @@ describe("the seeded demo firm (P6-04)", () => {
     });
   });
 
+  it("reports payments as connected without asking Stripe about the made-up account", async () => {
+    // What the seed does when it switches payments on (the beforeAll firm is created without it).
+    const tenant = (
+      await q<{ id: string }>(`select id from firms where id = '${demoTenant}'`)
+    )[0]!.id;
+    await q(
+      `update firms set stripe_account_id = 'acct_demo_${tenant.slice(0, 8)}', stripe_charges_enabled = true where id = '${tenant}'`,
+    );
+    expect((await h.staff("stripe.status", { cookie: demo })).data).toMatchObject({
+      connected: true,
+      chargesEnabled: true,
+    });
+  });
+
   it("has invoices in every status", async () => {
     expect(await counts(demoTenant)).toEqual({
       draft: 1,

@@ -110,16 +110,32 @@ export async function startConnectOnboarding(
 
 /** Pulls the live flags from Stripe, stores them, and returns them. */
 export async function refreshConnectStatus(withDb: WithDb, stripe: StripeClient, actor: Actor) {
-  const accountId = await withDb((db) =>
+  const firm = await withDb((db) =>
     withTenant(db, actor.tenantId, async (tx) => {
-      const [firm] = await tx
-        .select({ id: firms.stripeAccountId })
+      const [row] = await tx
+        .select({
+          id: firms.stripeAccountId,
+          chargesEnabled: firms.stripeChargesEnabled,
+          payoutsEnabled: firms.stripePayoutsEnabled,
+          detailsSubmitted: firms.stripeDetailsSubmitted,
+        })
         .from(firms)
         .where(eq(firms.id, actor.tenantId));
-      return firm?.id ?? null;
+      return row;
     }),
   );
+  const accountId = firm?.id;
   if (!accountId) return { connected: false as const };
+  // The demo seed stamps a made-up account id that Stripe has never heard of; its flags are already final.
+  if (accountId.startsWith("acct_demo_")) {
+    return {
+      connected: true as const,
+      id: accountId,
+      chargesEnabled: firm.chargesEnabled,
+      payoutsEnabled: firm.payoutsEnabled,
+      detailsSubmitted: firm.detailsSubmitted,
+    };
+  }
   const status = await stripe.retrieveAccount(accountId);
   await withDb((db) => applyAccountStatus(db, actor.tenantId, status, actor));
   return { connected: true as const, ...status };
