@@ -43,17 +43,17 @@ export function UserMenu() {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger className="flex w-full items-center gap-2.5 rounded-lg p-2 text-left outline-none hover:bg-sidebar-accent focus-visible:ring-2 focus-visible:ring-ring aria-expanded:bg-sidebar-accent">
+      <DropdownMenuTrigger className="flex w-full items-center gap-2.5 rounded-lg p-2 text-left outline-none group-data-[collapsible=icon]:p-0 hover:bg-sidebar-accent focus-visible:ring-2 focus-visible:ring-ring aria-expanded:bg-sidebar-accent">
         <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary text-xs font-semibold text-primary-foreground">
           {initials}
         </span>
-        <span className="min-w-0 flex-1">
+        <span className="min-w-0 flex-1 group-data-[collapsible=icon]:hidden">
           <span className="block truncate text-sm font-medium">{name}</span>
           {user?.email && user.email !== name && (
             <span className="block truncate text-xs text-muted-foreground">{user.email}</span>
           )}
         </span>
-        <ChevronsUpDownIcon className="size-4 shrink-0 text-muted-foreground" />
+        <ChevronsUpDownIcon className="size-4 shrink-0 text-muted-foreground group-data-[collapsible=icon]:hidden" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="start" side="top" className="min-w-56">
         <DropdownMenuGroup>
