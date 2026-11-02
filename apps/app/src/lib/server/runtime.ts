@@ -1,9 +1,9 @@
 import {
   buildServices,
+  createQueue,
   createWithDb,
   type AppConfig,
   type FilesPort,
-  type QueuePort,
   type Services,
 } from "@repo/api";
 import { createApp } from "@repo/api/hono";
@@ -52,11 +52,12 @@ function r2Files(): FilesPort {
   };
 }
 
-const queueProducer: QueuePort = {
-  async send(message) {
-    await env.QUEUE_MAIN.send(message);
-  },
-};
+// The producer for whichever provider runs background work. The matching consumer is workers/jobs
+// (cloudflare) or workers/trigger (trigger); deploy only one.
+const queueProducer = createQueue(ENV.QUEUE_PROVIDER ?? "cloudflare", {
+  cloudflareBinding: env.QUEUE_MAIN,
+  trigger: { secretKey: ENV.TRIGGER_SECRET_KEY ?? "", apiUrl: ENV.TRIGGER_API_URL },
+});
 
 const built = buildServices({
   mode: ENV.SERVICES_MODE === "fake" ? "fake" : "live",

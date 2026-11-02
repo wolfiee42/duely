@@ -1,0 +1,24 @@
+{
+  "name": "@repo/trigger",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "deploy": "trigger deploy",
+    "dev": "trigger dev"
+  },
+  "dependencies": {
+    "@repo/ai": "workspace:*",
+    "@repo/api": "workspace:*",
+    "@repo/cloudflare": "workspace:*",
+    "@repo/db": "workspace:*",
+    "@repo/email": "workspace:*",
+    "@trigger.dev/sdk": "catalog:"
+  },
+  "devDependencies": {
+    "@repo/tsconfig": "workspace:*",
+    "@types/node": "catalog:",
+    "trigger.dev": "catalog:",
+    "typescript": "catalog:"
+  }
+}

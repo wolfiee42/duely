@@ -4,6 +4,8 @@ packages:
   - tools/*
   - workers/*
 allowBuilds:
+  # Trigger.dev CLI dependency whose install script downloads a binary; not needed for dev or tests.
+  "@depot/cli": false
   esbuild: true
   workerd: true
 
@@ -42,6 +44,8 @@ catalog:
   "@trpc/client": 11.19.0
   "@trpc/server": 11.19.0
   "@trpc/tanstack-react-query": 11.19.0
+  "@trigger.dev/sdk": 4.8.3
+  trigger.dev: 4.8.3
   "@types/node": 26.6.5
   "@types/react": 19.3.0
   "@types/react-dom": 19.3.0

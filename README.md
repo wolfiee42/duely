@@ -55,7 +55,7 @@ flowchart LR
   classDef ui fill:#eef,stroke:#88a
 ```
 
-**Packages.** `domain` (pure: money, invoice state machine, reminder planner, date and risk rules), `clock`, `db` (schema, migrations, RLS), `api` (use-cases, tRPC, Hono), `stripe`, `email`, `cloudflare`, `ai` (model port, schemas, prompts, guardrails), `auth`, `ui`; apps `web` and `workers/jobs`. Import boundaries are enforced by lint (SPEC 1.2): `domain` can't import infrastructure, browser code can't import `@repo/api`, the jobs worker can't import routers.
+**Packages.** `domain` (pure: money, invoice state machine, reminder planner, date and risk rules), `clock`, `db` (schema, migrations, RLS), `api` (use-cases, tRPC, Hono), `stripe`, `email`, `cloudflare`, `ai` (model port, schemas, prompts, guardrails), `auth`, `ui`; apps `web`, and the background-work adapters `workers/jobs` (Cloudflare) and `workers/trigger` (Trigger.dev). Import boundaries are enforced by lint (SPEC 1.2): `domain` can't import infrastructure, browser code can't import `@repo/api`, the jobs worker can't import routers.
 
 **Request path.** A host decides what is being asked: `app.duely.app` is staff, `{slug}.duely.app` and verified custom domains are client portals, anything else is a 404. Staff cookies are host-only, so a session never reaches a tenant host.
 
@@ -125,6 +125,15 @@ vpr eval:classify   # the reply classifier against a live model (needs ANTHROPIC
 The suite includes the gates the spec marks as never-cut: tenant isolation, host-kind guards, webhook replay, scheduler concurrency, send-time re-checks, and the outbox.
 
 ### Environment
+
+**Background work (reminders, email delivery, reply classification).** The app only produces messages; the logic that runs them is provider-agnostic (`createJobRunner` in `@repo/api`: `handle(message)` and `tick()`). `QUEUE_PROVIDER` picks the producer, and you deploy exactly one consumer, each a thin adapter around the runner:
+
+| `QUEUE_PROVIDER`       | Consumer                                                  | Needs                                                                                                                                                                                                                                                                                                       |
+| ---------------------- | --------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `cloudflare` (default) | `workers/jobs` (Queues + a cron trigger every minute)     | the `QUEUE_MAIN` binding                                                                                                                                                                                                                                                                                    |
+| `trigger`              | `workers/trigger` (Trigger.dev tasks + a `tick` schedule) | `TRIGGER_SECRET_KEY` on the app; on Trigger.dev: `TRIGGER_PROJECT_REF`, `SYSTEM_DATABASE_URL` (the `duely_system` role, over TLS and through a pooler), `PLATFORM_DOMAIN`, `APP_ORIGIN`, `EMAIL_FROM_ADDRESS`, `RESEND_API_KEY`, `CLOUDFLARE_API_TOKEN`, `CLOUDFLARE_ZONE_ID`, optional `ANTHROPIC_API_KEY` |
+
+Never run both consumers at once: both would tick. To switch, deploy the new consumer, flip `QUEUE_PROVIDER`, let the old queue drain, then retire the old consumer (the stale-message sweep re-sends anything lost in between). To add another provider, add a producer next to `createTriggerQueue` in `packages/api/src/queue.ts` and a consumer that calls `runner.handle` per message and `runner.tick` on a schedule.
 
 Variables are declared in [`apps/app/.env.schema`](apps/app/.env.schema) with [Varlock](https://varlock.dev); secrets (Stripe, Resend, Cloudflare, `ANTHROPIC_API_KEY`) are Workers secrets, never committed. The jobs worker needs `RESEND_API_KEY`, `CLOUDFLARE_API_TOKEN` and `ANTHROPIC_API_KEY` as well. Hyperdrive, Queue and R2 identifiers in the `wrangler.jsonc` files are placeholders until you create the resources.
 

@@ -21,6 +21,7 @@ const ALL_REPO = [
   "@repo/logger",
   "@repo/marketing",
   "@repo/stripe",
+  "@repo/trigger",
   "@repo/ui",
   "@repo/app",
 ];
@@ -205,10 +206,11 @@ export default defineConfig({
         "api must not import apps or workers (SPEC 1.2)",
       ),
       boundary(
-        ["workers/jobs/**"],
+        ["workers/jobs/**", "workers/trigger/**"],
         [
           ...without(
             "@repo/jobs",
+            "@repo/trigger",
             "@repo/db",
             "@repo/domain",
             "@repo/clock",
@@ -223,7 +225,7 @@ export default defineConfig({
           "@repo/api/trpc",
           ...DB_DRIVERS,
         ],
-        "jobs may import db, domain, clock, email, ai, stripe, cloudflare and api/usecases only (SPEC 1.2)",
+        "jobs and trigger may import db, domain, clock, email, ai, stripe, cloudflare and api/usecases only (SPEC 1.2)",
       ),
       boundary(
         ["apps/app/**"],
