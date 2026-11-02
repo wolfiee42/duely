@@ -28,10 +28,10 @@ test("a drafted reminder is edited, approved, sent once, and can be stopped by t
   await page.getByLabel("Display name").fill("E2E Reminders");
   await page.getByLabel("Client portal address").fill("e2e-reminders");
   await page.getByRole("button", { name: "Create firm" }).click();
-  await page.waitForURL("**/app");
+  await page.waitForURL("**/");
 
   // Connect payments (fake) so invoices can be sent.
-  await page.goto("/app/settings");
+  await page.goto("/settings");
   let accountId = "";
   await page.route("https://connect.stripe.test/**", async (route) => {
     accountId = new URL(route.request().url()).pathname.split("/").pop()!;
@@ -40,11 +40,11 @@ test("a drafted reminder is edited, approved, sent once, and can be stopped by t
   await page.getByRole("button", { name: "Connect payments" }).click();
   await expect.poll(() => accountId).toMatch(/^acct_fake_/);
   await page.request.post(`${APP}/api/dev/complete-onboarding`, { data: { accountId } });
-  await page.goto("/app/settings"); // loading the page syncs the account's status
+  await page.goto("/settings"); // loading the page syncs the account's status
   await expect(page.getByText("Payments are connected")).toBeVisible();
 
   // The default plan is there, and the preview shows what would happen.
-  await page.goto("/app/policies");
+  await page.goto("/policies");
   await expect(page.getByRole("tab", { name: /Standard follow-up/ })).toBeVisible();
   await expect(page.getByTestId("preview").getByRole("listitem")).toHaveCount(5);
   // Weekends and all-day windows: make the sending window cover any time of day, so the test is not clock-dependent.
@@ -55,18 +55,18 @@ test("a drafted reminder is edited, approved, sent once, and can be stopped by t
   await expect(page.getByText("Plan saved.")).toBeVisible();
 
   // A client and an invoice, sent.
-  await page.goto("/app/clients");
+  await page.goto("/clients");
   await page.getByLabel("Client name").fill("Initech");
   await page.getByLabel("Contact name").fill("Bill Lumbergh");
   await page.getByLabel("Contact email").fill("bill@initech.test");
   await page.getByRole("button", { name: "Add client" }).click();
-  await page.waitForURL(/\/app\/clients\/[0-9a-f-]{36}$/);
+  await page.waitForURL(/\/clients\/[0-9a-f-]{36}$/);
   await page.getByRole("button", { name: "New invoice" }).click();
   await page.getByLabel("Description 1").fill("Consulting");
   await page.getByLabel("Quantity 1").fill("1");
   await page.getByLabel("Price 1").fill("500.00");
   await page.getByRole("button", { name: "Save draft" }).click();
-  await page.waitForURL(/\/app\/invoices\/[0-9a-f-]{36}$/);
+  await page.waitForURL(/\/invoices\/[0-9a-f-]{36}$/);
   await page.getByRole("button", { name: "Send invoice" }).click();
   await expect(page.getByText("sent", { exact: true }).first()).toBeVisible();
 
@@ -77,7 +77,7 @@ test("a drafted reminder is edited, approved, sent once, and can be stopped by t
   expect((await tick.json()).drafted).toBeGreaterThan(0);
   expect((await outbox(page)).length).toBe(before);
 
-  await page.goto("/app/review");
+  await page.goto("/review");
   await expect(page.getByTestId("review-count")).toBeVisible();
   const card = page.getByRole("listitem").first();
   await expect(card.getByText("Reminder to approve")).toBeVisible();
@@ -113,10 +113,10 @@ test("a drafted reminder is edited, approved, sent once, and can be stopped by t
   await expect(client.getByRole("heading", { name: "Reminders stopped" })).toBeVisible();
 
   // The firm sees it on the client, and no more reminders are drafted.
-  await page.goto("/app/clients");
+  await page.goto("/clients");
   await page.getByRole("link", { name: "Initech" }).click();
   await expect(page.getByText("stopped reminders")).toBeVisible();
   await page.request.post(`${APP}/api/dev/tick`, { data: { makeDue: true } });
-  await page.goto("/app/review");
+  await page.goto("/review");
   await expect(page.getByText("Reminder to approve")).toHaveCount(0);
 });

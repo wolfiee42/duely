@@ -21,10 +21,10 @@ test("an uploaded invoice becomes a draft, and a reply is read into a promise", 
   await page.getByLabel("Display name").fill("E2E Assistant");
   await page.getByLabel("Client portal address").fill("e2e-assistant");
   await page.getByRole("button", { name: "Create firm" }).click();
-  await page.waitForURL("**/app");
+  await page.waitForURL("**/");
 
   // Payments (fake), so the invoice can be sent later.
-  await page.goto("/app/settings");
+  await page.goto("/settings");
   let accountId = "";
   await page.route("https://connect.stripe.test/**", async (route) => {
     accountId = new URL(route.request().url()).pathname.split("/").pop()!;
@@ -33,7 +33,7 @@ test("an uploaded invoice becomes a draft, and a reply is read into a promise", 
   await page.getByRole("button", { name: "Connect payments" }).click();
   await expect.poll(() => accountId).toMatch(/^acct_fake_/);
   await page.request.post(`${APP}/api/dev/complete-onboarding`, { data: { accountId } });
-  await page.goto("/app/settings");
+  await page.goto("/settings");
   await expect(page.getByText("Payments are connected")).toBeVisible();
 
   // The assistant card: on, with a monthly limit.
@@ -41,15 +41,15 @@ test("an uploaded invoice becomes a draft, and a reply is read into a promise", 
   await expect(page.getByLabel("Monthly limit ($)")).toHaveValue("5.00");
 
   // A client whose name the invoice mentions.
-  await page.goto("/app/clients");
+  await page.goto("/clients");
   await page.getByLabel("Client name").fill("Initech");
   await page.getByLabel("Contact name").fill("Bill Lumbergh");
   await page.getByLabel("Contact email").fill("bill@initech.test");
   await page.getByRole("button", { name: "Add client" }).click();
-  await page.waitForURL(/\/app\/clients\/[0-9a-f-]{36}$/);
+  await page.waitForURL(/\/clients\/[0-9a-f-]{36}$/);
 
   // Upload: the file is read, the client is picked, and shaky details are highlighted.
-  await page.goto("/app/invoices/import");
+  await page.goto("/invoices/import");
   await page.waitForLoadState("networkidle"); // the file input must be hydrated before a file is chosen
   await page.getByLabel("Upload a PDF or a photo of an invoice").setInputFiles({
     name: "invoice.pdf",
@@ -61,11 +61,11 @@ test("an uploaded invoice becomes a draft, and a reply is read into a promise", 
   await expect(page.getByTestId("import-warning")).toContainText("highlighted");
   await expect(page.getByText("Total $1,200.00")).toBeVisible();
   await page.getByRole("button", { name: "Create draft" }).click();
-  await page.waitForURL(/\/app\/invoices\/[0-9a-f-]{36}$/);
+  await page.waitForURL(/\/invoices\/[0-9a-f-]{36}$/);
   await expect(page.getByRole("heading", { name: "Draft invoice" })).toBeVisible();
 
   // It is a draft until the firm sends it; the uncertain read is also waiting in the review queue.
-  await page.goto("/app/review");
+  await page.goto("/review");
   await expect(page.getByText("Invoice to check")).toBeVisible();
   await page.goBack();
   await page.getByRole("button", { name: "Send invoice" }).click();
@@ -86,7 +86,7 @@ test("an uploaded invoice becomes a draft, and a reply is read into a promise", 
   });
   expect((await reply.json()).outcome).toBe("matched");
 
-  await page.goto("/app/review");
+  await page.goto("/review");
   await expect
     .poll(async () => page.getByTestId("suggestion").count(), { message: "reply classified" })
     .toBeGreaterThan(0);
@@ -97,7 +97,7 @@ test("an uploaded invoice becomes a draft, and a reply is read into a promise", 
   await page.getByRole("button", { name: "Record the promise" }).click();
   await expect(page.getByText("Done.")).toBeVisible();
 
-  await page.goto("/app/invoices");
+  await page.goto("/invoices");
   await page.getByRole("link", { name: invoiceNumber }).click();
   await expect(page.getByText("Promise to pay", { exact: true })).toBeVisible();
   await expect(page.getByText("ai_reply")).toBeVisible();

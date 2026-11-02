@@ -4,6 +4,7 @@ import { Label } from "@repo/ui/components/label";
 import { toast } from "@repo/ui/components/toast";
 import { useMutation } from "@tanstack/react-query";
 import { createFileRoute, redirect } from "@tanstack/react-router";
+import { MailCheckIcon } from "lucide-react";
 import { useState } from "react";
 import { z } from "zod";
 
@@ -41,8 +42,14 @@ function PortalLogin() {
 
   if (sent) {
     return (
-      <div className="flex flex-col gap-2 text-center" role="status">
-        <h1 className="text-2xl font-bold tracking-tight">Check your email</h1>
+      <div
+        className="mx-auto flex max-w-sm flex-col gap-2 rounded-xl border bg-card p-8 text-center shadow-card"
+        role="status"
+      >
+        <span className="mx-auto grid size-12 place-items-center rounded-full bg-accent text-accent-foreground">
+          <MailCheckIcon className="size-6" />
+        </span>
+        <h1 className="text-2xl font-semibold tracking-tight">Check your email</h1>
         <p className="text-sm text-muted-foreground">
           If that address has invoices with us, a sign-in link is on its way. It works once and
           expires in 15 minutes.
@@ -53,14 +60,14 @@ function PortalLogin() {
 
   return (
     <form
-      className="mx-auto flex w-full max-w-sm flex-col gap-4"
+      className="mx-auto flex w-full max-w-sm flex-col gap-4 rounded-xl border bg-card p-8 shadow-card"
       aria-busy={request.isPending}
       onSubmit={(e) => {
         e.preventDefault();
         request.mutate({ email: field(new FormData(e.currentTarget), "email") });
       }}
     >
-      <h1 className="text-center text-2xl font-bold tracking-tight">View your invoices</h1>
+      <h1 className="text-center text-2xl font-semibold tracking-tight">View your invoices</h1>
       <p className="text-center text-sm text-muted-foreground">
         Enter the email address your invoices were sent to.
       </p>

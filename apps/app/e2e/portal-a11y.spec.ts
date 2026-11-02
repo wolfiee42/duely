@@ -18,23 +18,23 @@ test("the client portal works by keyboard and reads sensibly to a screen reader"
   await page.waitForURL("**/onboarding");
   await page.waitForLoadState("networkidle");
   await page.getByRole("button", { name: "Explore with sample data" }).click();
-  await page.waitForURL("**/app/demo");
+  await page.waitForURL("**/demo");
 
   // Send an invoice so the client has an emailed link to follow.
-  await page.goto("/app/invoices/new");
+  await page.goto("/invoices/new");
   await page.waitForLoadState("networkidle");
   await page.getByLabel("Client").selectOption({ label: "Initech" });
   await page.getByLabel("Description 1").fill("Accessibility check");
   await page.getByLabel("Quantity 1").fill("1");
   await page.getByLabel("Price 1").fill("250.00");
   await page.getByRole("button", { name: "Save draft" }).click();
-  await page.waitForURL(/\/app\/invoices\/[0-9a-f-]{36}$/);
+  await page.waitForURL(/\/invoices\/[0-9a-f-]{36}$/);
   await page.getByRole("button", { name: "Send invoice" }).click();
   const heading = page.getByRole("heading", { name: /^Invoice / });
   await expect(heading).toBeVisible();
   const number = (await heading.textContent())!.replace("Invoice ", "").trim();
 
-  await page.goto("/app/demo");
+  await page.goto("/demo");
   await page.waitForLoadState("networkidle");
   const row = page
     .getByTestId("outbox")

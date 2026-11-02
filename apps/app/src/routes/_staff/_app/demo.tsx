@@ -3,13 +3,14 @@ import { Label } from "@repo/ui/components/label";
 import { toast } from "@repo/ui/components/toast";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { ArrowRightIcon, CheckIcon, InfoIcon } from "lucide-react";
 import { useState } from "react";
 
 import { Card, fieldClass, Page } from "#/components/ui-bits.tsx";
 import { field } from "#/lib/form.ts";
 import { trpcErrorInfo } from "#/lib/trpc/errors.ts";
 
-export const Route = createFileRoute("/_staff/app/demo")({
+export const Route = createFileRoute("/_staff/_app/demo")({
   component: DemoTools,
 });
 
@@ -121,20 +122,31 @@ function DemoTools() {
         control the clock.
       </p>
       {note && (
-        <p className="rounded-md border bg-muted p-3 text-sm" role="status" data-testid="demo-note">
+        <p
+          className="flex items-start gap-2.5 rounded-xl border border-info/20 bg-info-soft p-3.5 text-sm text-info"
+          role="status"
+          data-testid="demo-note"
+        >
+          <InfoIcon className="mt-0.5 size-4 shrink-0" aria-hidden />
           {note}
         </p>
       )}
 
       <Card title={`Quick tour · ${done} of ${TOUR.length}`}>
-        <ol className="grid gap-1.5 text-sm" data-testid="tour">
+        <div className="mb-4 h-1.5 overflow-hidden rounded-full bg-muted" role="presentation">
+          <div
+            className="h-full rounded-full bg-primary transition-all"
+            style={{ width: `${(done / TOUR.length) * 100}%` }}
+          />
+        </div>
+        <ol className="grid gap-3 text-sm" data-testid="tour">
           {TOUR.map(([key, text]) => (
-            <li key={key} className="flex items-start gap-2">
+            <li key={key} className="flex items-start gap-3">
               <span
                 aria-hidden="true"
-                className={`mt-0.5 flex size-4 items-center justify-center rounded-full border text-[10px] ${status.tour[key] ? "bg-green-600 text-white" : ""}`}
+                className={`mt-0.5 grid size-5 shrink-0 place-items-center rounded-full border ${status.tour[key] ? "border-transparent bg-success-soft text-success" : ""}`}
               >
-                {status.tour[key] ? "✓" : ""}
+                {status.tour[key] && <CheckIcon className="size-3" />}
               </span>
               <span className={status.tour[key] ? "text-muted-foreground line-through" : ""}>
                 {text}
@@ -195,7 +207,7 @@ function DemoTools() {
                 <button
                   key={r}
                   type="button"
-                  className="rounded-full border px-2.5 py-1 text-xs hover:bg-muted"
+                  className="rounded-full border px-3 py-1 text-xs transition-colors hover:bg-muted"
                   onClick={() => {
                     const box = document.getElementById("text") as HTMLTextAreaElement | null;
                     if (box) box.value = r;
@@ -258,8 +270,11 @@ function DemoTools() {
           ))}
         </ul>
         <p className="mt-3 text-sm">
-          <Link to="/app/review" className="underline underline-offset-4">
-            Open review
+          <Link
+            to="/review"
+            className="inline-flex items-center gap-1.5 font-medium text-primary hover:underline"
+          >
+            Open review <ArrowRightIcon className="size-4" />
           </Link>
         </p>
       </Card>

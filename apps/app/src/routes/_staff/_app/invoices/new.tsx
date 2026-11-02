@@ -6,7 +6,7 @@ import { z } from "zod";
 import { blankItem, InvoiceEditor } from "#/components/invoice-editor.tsx";
 import { Page } from "#/components/ui-bits.tsx";
 
-export const Route = createFileRoute("/_staff/app/invoices/new")({
+export const Route = createFileRoute("/_staff/_app/invoices/new")({
   validateSearch: z.object({ clientId: z.uuid().optional() }),
   component: NewInvoice,
 });
@@ -22,7 +22,7 @@ function NewInvoice() {
     trpc.invoices.createDraft.mutationOptions({
       onSuccess: async ({ id }) => {
         await queryClient.invalidateQueries({ queryKey: trpc.invoices.list.queryKey() });
-        await navigate({ to: "/app/invoices/$invoiceId", params: { invoiceId: id } });
+        await navigate({ to: "/invoices/$invoiceId", params: { invoiceId: id } });
       },
       onError: () =>
         toast.add({

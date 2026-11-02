@@ -42,11 +42,11 @@ test("a firm signs up, connects payments, sends an invoice, and the client pays 
   await page.getByLabel("Display name").fill("E2E Acme");
   await page.getByLabel("Client portal address").fill("e2e-acme");
   await page.getByRole("button", { name: "Create firm" }).click();
-  await page.waitForURL("**/app");
+  await page.waitForURL("**/");
   await expect(page.getByRole("heading", { name: "Welcome to E2E Acme" })).toBeVisible();
 
   // 2. Connect payments. Stripe's hosted form is replaced by the fake; finish onboarding as it would.
-  await page.goto("/app/settings");
+  await page.goto("/settings");
   let accountId = "";
   await page.route("https://connect.stripe.test/**", async (route) => {
     accountId = new URL(route.request().url()).pathname.split("/").pop()!;
@@ -61,16 +61,16 @@ test("a firm signs up, connects payments, sends an invoice, and the client pays 
   expect(
     (await page.request.post(`${APP}/api/dev/complete-onboarding`, { data: { accountId } })).ok(),
   ).toBe(true);
-  await page.goto("/app/settings");
+  await page.goto("/settings");
   await expect(page.getByText("Payments are connected")).toBeVisible();
 
   // 3. Add a client and draft an invoice.
-  await page.goto("/app/clients");
+  await page.goto("/clients");
   await page.getByLabel("Client name").fill("Initech");
   await page.getByLabel("Contact name").fill("Bill Lumbergh");
   await page.getByLabel("Contact email").fill("bill@initech.test");
   await page.getByRole("button", { name: "Add client" }).click();
-  await page.waitForURL(/\/app\/clients\/[0-9a-f-]{36}$/);
+  await page.waitForURL(/\/clients\/[0-9a-f-]{36}$/);
 
   await page.getByRole("button", { name: "New invoice" }).click();
   await page.getByLabel("Description 1").fill("Consulting");
@@ -78,7 +78,7 @@ test("a firm signs up, connects payments, sends an invoice, and the client pays 
   await page.getByLabel("Price 1").fill("150.00");
   await expect(page.getByText("Total $300.00")).toBeVisible(); // live total, same rounding as the server
   await page.getByRole("button", { name: "Save draft" }).click();
-  await page.waitForURL(/\/app\/invoices\/[0-9a-f-]{36}$/);
+  await page.waitForURL(/\/invoices\/[0-9a-f-]{36}$/);
   const invoiceUrl = page.url();
 
   // 4. Send it. The client's invoice email carries the magic link.
@@ -126,7 +126,7 @@ test("a firm signs up, connects payments, sends an invoice, and the client pays 
 test("the staff app is a 404 on a portal host and the portal is a 404 on the app host", async ({
   page,
 }) => {
-  expect((await page.goto(`${PORTAL}/app`))!.status()).toBe(404);
+  expect((await page.goto(`${PORTAL}/settings`))!.status()).toBe(404);
   expect((await page.goto(`${PORTAL}/login`))!.status()).toBe(404);
   expect((await page.goto(`${APP}/portal`))!.status()).toBe(404);
   expect((await page.goto(`http://nope.localhost:${PORT}/`))!.status()).toBe(404);

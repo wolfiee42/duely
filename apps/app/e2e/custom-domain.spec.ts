@@ -17,9 +17,9 @@ test("an owner adds a custom domain, waits for it to go live, and removes it", a
   await page.getByLabel("Display name").fill("E2E Domains");
   await page.getByLabel("Client portal address").fill("e2e-domains");
   await page.getByRole("button", { name: "Create firm" }).click();
-  await page.waitForURL("**/app");
+  await page.waitForURL("**/");
 
-  await page.goto("/app/settings");
+  await page.goto("/settings");
   await page.getByLabel("Show invoices on your own address").fill("not a domain");
   await page.getByRole("button", { name: "Add domain" }).click();
   await expect(page.getByText("Enter a domain like billing.yourfirm.com.")).toBeVisible();

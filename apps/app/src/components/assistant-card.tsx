@@ -7,7 +7,7 @@ import { getRouteApi } from "@tanstack/react-router";
 
 import { field } from "#/lib/form.ts";
 
-const settings = getRouteApi("/_staff/app/settings");
+const settings = getRouteApi("/_staff/_app/settings");
 
 const PURPOSES: Record<string, string> = {
   extraction: "Reading invoices",

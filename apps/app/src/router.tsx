@@ -4,6 +4,7 @@ import { setupRouterSsrQueryIntegration } from "@tanstack/react-router-ssr-query
 
 import { DefaultCatchBoundary } from "#/components/default-catch-boundary.tsx";
 import { DefaultNotFound } from "#/components/default-not-found.tsx";
+import { PageSkeleton } from "#/components/ui-bits.tsx";
 
 import { createPortalTrpc } from "./lib/trpc/portal.ts";
 import { createStaffTrpc } from "./lib/trpc/staff.ts";
@@ -30,6 +31,8 @@ export function getRouter() {
     // react-query will handle data fetching & caching
     // https://tanstack.com/router/latest/docs/framework/react/guide/data-loading#passing-all-loader-events-to-an-external-cache
     defaultPreloadStaleTime: 0,
+    defaultPendingComponent: PageSkeleton,
+    defaultPendingMs: 300,
     defaultErrorComponent: DefaultCatchBoundary,
     defaultNotFoundComponent: DefaultNotFound,
     scrollRestoration: true,

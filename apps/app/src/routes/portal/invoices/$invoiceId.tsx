@@ -45,16 +45,19 @@ function PortalInvoice() {
   const balance = invoice.totalMinor - invoice.paidMinor;
 
   return (
-    <section className="flex flex-col gap-4">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h1 className="text-2xl font-bold tracking-tight">Invoice {invoice.number}</h1>
+    <section className="flex flex-col gap-6">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight">Invoice {invoice.number}</h1>
+          <p className="mt-1 text-sm text-muted-foreground">
+            From {invoice.firm.legalName} · due {invoice.dueDate}
+          </p>
+        </div>
         <StatusBadge status={invoice.effectiveStatus} />
       </div>
 
       <Card>
-        <p className="text-sm text-muted-foreground">
-          From {invoice.firm.legalName} · issued {invoice.issueDate} · due {invoice.dueDate}
-        </p>
+        <p className="text-sm text-muted-foreground">Issued {invoice.issueDate}</p>
         <table className="mt-3 w-full text-sm">
           <caption className="sr-only">Items on this invoice</caption>
           <thead className="sr-only">
@@ -76,7 +79,7 @@ function PortalInvoice() {
             ))}
           </tbody>
         </table>
-        <div className="mt-3 flex justify-between border-t pt-3 text-lg font-semibold">
+        <div className="mt-4 flex items-baseline justify-between border-t pt-4 text-xl font-semibold">
           <span>{invoice.status === "paid" ? "Paid" : "Amount due"}</span>
           <span className="tabular-nums" data-testid="amount-due">
             {formatUsd(invoice.status === "paid" ? invoice.paidMinor : balance)}

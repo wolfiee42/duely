@@ -8,7 +8,7 @@ import { useState } from "react";
 import { Card, fieldClass, Page } from "#/components/ui-bits.tsx";
 import { trpcErrorInfo } from "#/lib/trpc/errors.ts";
 
-export const Route = createFileRoute("/_staff/app/imports")({
+export const Route = createFileRoute("/_staff/_app/imports")({
   component: Imports,
 });
 
@@ -224,7 +224,7 @@ function Imports() {
           {!report.dryRun && (
             <p className="mt-3 text-sm">
               <Link
-                to={kind === "clients" ? "/app/clients" : "/app/invoices"}
+                to={kind === "clients" ? "/clients" : "/invoices"}
                 className="underline underline-offset-4"
               >
                 See your {kind === "clients" ? "clients" : "invoices"}

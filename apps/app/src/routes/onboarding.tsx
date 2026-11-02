@@ -22,7 +22,7 @@ export const Route = createFileRoute("/onboarding")({
       if (trpcErrorInfo(error).domainCode === "member.no_firm") return;
       throw error;
     }
-    throw redirect({ to: "/app" });
+    throw redirect({ to: "/" });
   },
   component: OnboardingForm,
 });
@@ -41,7 +41,7 @@ function OnboardingForm() {
     trpc.firm.create.mutationOptions({
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: trpc.firm.get.queryKey() });
-        await navigate({ to: "/app" });
+        await navigate({ to: "/" });
       },
       onError: (error) => {
         const { domainCode } = trpcErrorInfo(error);
@@ -60,7 +60,7 @@ function OnboardingForm() {
     trpc.firm.createDemo.mutationOptions({
       onSuccess: async () => {
         await queryClient.invalidateQueries({ queryKey: trpc.firm.get.queryKey() });
-        await navigate({ to: "/app/demo" });
+        await navigate({ to: "/demo" });
       },
       onError: () =>
         toast.add({ type: "error", description: "We couldn't start the demo. Please try again." }),

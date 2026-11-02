@@ -9,7 +9,7 @@ import { Card, fieldClass, Page, StatusBadge } from "#/components/ui-bits.tsx";
 import { field } from "#/lib/form.ts";
 import { trpcErrorInfo } from "#/lib/trpc/errors.ts";
 
-export const Route = createFileRoute("/_staff/app/clients/$clientId")({
+export const Route = createFileRoute("/_staff/_app/clients/$clientId")({
   component: ClientPage,
 });
 
@@ -57,7 +57,7 @@ function ClientPage() {
         <>
           {!client.archivedAt && (
             <Button
-              render={<Link to="/app/invoices/new" search={{ clientId }} />}
+              render={<Link to="/invoices/new" search={{ clientId }} />}
               nativeButton={false}
               size="sm"
             >
@@ -202,7 +202,7 @@ function ClientPage() {
             {invoices.map((i) => (
               <li key={i.id} className="flex items-center justify-between py-2">
                 <Link
-                  to="/app/invoices/$invoiceId"
+                  to="/invoices/$invoiceId"
                   params={{ invoiceId: i.id }}
                   className="underline underline-offset-4"
                 >

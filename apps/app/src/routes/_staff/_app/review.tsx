@@ -4,13 +4,24 @@ import { Label } from "@repo/ui/components/label";
 import { toast } from "@repo/ui/components/toast";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useState } from "react";
+import {
+  BanknoteIcon,
+  FileSearchIcon,
+  InboxIcon,
+  MailCheckIcon,
+  MailQuestionIcon,
+  MailXIcon,
+  MessageSquareTextIcon,
+  PartyPopperIcon,
+  type LucideIcon,
+} from "lucide-react";
+import { useState, type ReactNode } from "react";
 
-import { Card, fieldClass, Page } from "#/components/ui-bits.tsx";
+import { AiMark, EmptyState, fieldClass, Page } from "#/components/ui-bits.tsx";
 import { field } from "#/lib/form.ts";
 import { trpcErrorInfo } from "#/lib/trpc/errors.ts";
 
-export const Route = createFileRoute("/_staff/app/review")({
+export const Route = createFileRoute("/_staff/_app/review")({
   component: Review,
 });
 
@@ -115,13 +126,14 @@ function Review() {
   );
 
   return (
-    <Page title="Review">
+    <Page
+      title="Review"
+      description="Drafts and replies waiting on your decision. Nothing is sent until you approve it."
+    >
       {items.length === 0 ? (
-        <Card>
-          <p className="text-sm text-muted-foreground" data-testid="review-empty">
-            Nothing needs your attention.
-          </p>
-        </Card>
+        <EmptyState icon={<PartyPopperIcon />}>
+          <span data-testid="review-empty">Nothing needs your attention.</span>
+        </EmptyState>
       ) : (
         <ul className="flex flex-col gap-3">
           {items.map((item) => (
@@ -149,6 +161,38 @@ function Review() {
   );
 }
 
+const KIND_ICONS: Record<string, LucideIcon> = {
+  draft_approval: MailCheckIcon,
+  low_confidence_reply: MessageSquareTextIcon,
+  unmatched_inbound: MailQuestionIcon,
+  already_paid_claim: BanknoteIcon,
+  dead_job: MailXIcon,
+  extraction_review: FileSearchIcon,
+};
+
+/** One review item: what it is, which invoice it belongs to, then whatever it needs from a person. */
+function ItemShell({ item, children }: { item: Item; children: ReactNode }) {
+  const Icon = KIND_ICONS[item.kind] ?? InboxIcon;
+  return (
+    <div className="rounded-xl border bg-card p-5 shadow-card">
+      <div className="mb-4 flex items-center gap-3">
+        <span className="grid size-9 shrink-0 place-items-center rounded-lg bg-accent text-accent-foreground">
+          <Icon className="size-4" />
+        </span>
+        <div className="min-w-0">
+          <h2 className="text-sm font-semibold">{KIND_LABELS[item.kind] ?? item.kind}</h2>
+          {(item.invoiceNumber || item.clientName) && (
+            <p className="truncate text-xs text-muted-foreground">
+              {[item.invoiceNumber, item.clientName].filter(Boolean).join(" · ")}
+            </p>
+          )}
+        </div>
+      </div>
+      {children}
+    </div>
+  );
+}
+
 function ItemCard({
   item,
   busy,
@@ -168,11 +212,10 @@ function ItemCard({
 }) {
   const [editing, setEditing] = useState(false);
   const classification = (item.payload as { classification?: Classification }).classification;
-  const heading = `${KIND_LABELS[item.kind] ?? item.kind}${item.invoiceNumber ? ` · ${item.invoiceNumber}` : ""}${item.clientName ? ` · ${item.clientName}` : ""}`;
 
   if (item.kind === "draft_approval") {
     return (
-      <Card title={heading}>
+      <ItemShell item={item}>
         {editing ? (
           <form
             className="grid gap-3"
@@ -216,12 +259,16 @@ function ItemCard({
           </form>
         ) : (
           <>
-            <p className="text-xs text-muted-foreground">
+            <p className="flex items-center gap-2 text-xs text-muted-foreground">
               To {item.to}
-              {(item.payload as { by?: string }).by === "ai" && " · Written by the assistant"}
+              {(item.payload as { by?: string }).by === "ai" && (
+                <AiMark label="Written by the assistant" />
+              )}
             </p>
             <p className="mt-1 text-sm font-medium">{item.subject}</p>
-            <pre className="mt-1 font-sans text-sm whitespace-pre-wrap">{item.body}</pre>
+            <pre className="mt-2 rounded-lg border bg-muted/50 p-3 font-sans text-sm whitespace-pre-wrap">
+              {item.body}
+            </pre>
             <div className="mt-3 flex gap-2">
               <Button size="sm" disabled={busy} onClick={() => onApprove()}>
                 Approve
@@ -235,19 +282,21 @@ function ItemCard({
             </div>
           </>
         )}
-      </Card>
+      </ItemShell>
     );
   }
 
   if (item.kind === "low_confidence_reply" || item.kind === "unmatched_inbound") {
     const unmatched = item.kind === "unmatched_inbound";
     return (
-      <Card title={heading}>
+      <ItemShell item={item}>
         <p className="text-xs text-muted-foreground">
           From {(item.payload as { from?: string }).from ?? item.to ?? "unknown"}
         </p>
         <p className="mt-1 text-sm font-medium">{item.subject}</p>
-        <pre className="mt-1 font-sans text-sm whitespace-pre-wrap">{item.body}</pre>
+        <pre className="mt-2 rounded-lg border bg-muted/50 p-3 font-sans text-sm whitespace-pre-wrap">
+          {item.body}
+        </pre>
         {classification && classification.decision !== "failed" && (
           <Suggestion c={classification} busy={busy} onAccept={onAccept} onDismiss={onDismiss} />
         )}
@@ -273,19 +322,21 @@ function ItemCard({
             Mark as handled
           </Button>
         </div>
-      </Card>
+      </ItemShell>
     );
   }
 
   return (
-    <Card title={heading}>
+    <ItemShell item={item}>
       {item.kind === "already_paid_claim" && (
         <>
           <p className="text-sm">
             The client says they've paid. Reminders are paused until you check your bank.
           </p>
           {item.body && (
-            <pre className="mt-1 font-sans text-sm whitespace-pre-wrap">{item.body}</pre>
+            <pre className="mt-2 rounded-lg border bg-muted/50 p-3 font-sans text-sm whitespace-pre-wrap">
+              {item.body}
+            </pre>
           )}
           <p className="mt-2 text-xs text-muted-foreground">
             If they haven't paid, mark this as handled and reminders will resume. If they have,
@@ -300,7 +351,7 @@ function ItemCard({
             <>
               {" — "}
               <Link
-                to="/app/invoices/$invoiceId"
+                to="/invoices/$invoiceId"
                 params={{ invoiceId: item.invoiceId }}
                 className="underline underline-offset-4"
               >
@@ -321,7 +372,7 @@ function ItemCard({
           Mark as handled
         </Button>
       </div>
-    </Card>
+    </ItemShell>
   );
 }
 
@@ -340,7 +391,13 @@ function Suggestion({
   const [date, setDate] = useState(c.promisedDate ?? "");
   const actionable = c.label === "promise" || c.label === "dispute";
   return (
-    <div className="mt-3 rounded-md border bg-muted p-3 text-sm" data-testid="suggestion">
+    <div
+      className="mt-3 rounded-lg border border-violet/20 bg-violet-soft/40 p-3 text-sm"
+      data-testid="suggestion"
+    >
+      <div className="mb-1">
+        <AiMark label="Assistant's reading" />
+      </div>
       <p className="font-medium">
         {LABEL_TEXT[c.label] ?? c.label}{" "}
         <span className="font-normal text-muted-foreground">
@@ -349,7 +406,7 @@ function Suggestion({
       </p>
       {c.quote && <p className="mt-1 text-muted-foreground">“{c.quote}”</p>}
       {c.downgraded && (
-        <p className="mt-1 text-amber-800 dark:text-amber-300">
+        <p className="mt-1 text-warning">
           {DOWNGRADE_NOTES[c.downgraded] ?? "Please check this one yourself."}
         </p>
       )}

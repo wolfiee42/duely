@@ -5,7 +5,7 @@ import { requireHostKind } from "#/lib/host.ts";
 import { trpcErrorInfo } from "#/lib/trpc/errors.ts";
 
 /**
- * The _staff layout protects every child route (e.g. _staff/app/*): the app host, a signed-in
+ * The _staff layout protects every child route (e.g. _staff/_app/*): the app host, a signed-in
  * user, and a firm. The firm check is `firm.get`, which also warms the query the pages read.
  */
 export const Route = createFileRoute("/_staff")({

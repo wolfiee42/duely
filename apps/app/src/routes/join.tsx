@@ -24,7 +24,7 @@ function Join() {
 
   const accept = useMutation(
     trpc.members.acceptInvite.mutationOptions({
-      onSuccess: () => navigate({ to: "/app", reloadDocument: true }),
+      onSuccess: () => navigate({ to: "/", reloadDocument: true }),
       onError: (e) =>
         toast.add({
           type: "error",

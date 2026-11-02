@@ -10,7 +10,7 @@ import { StatusBadge } from "#/components/ui-bits.tsx";
 import { field } from "#/lib/form.ts";
 import { trpcErrorInfo } from "#/lib/trpc/errors.ts";
 
-const settings = getRouteApi("/_staff/app/settings");
+const settings = getRouteApi("/_staff/_app/settings");
 
 const MESSAGES: Record<string, string> = {
   "domain.invalid_hostname": "Enter a domain like billing.yourfirm.com.",

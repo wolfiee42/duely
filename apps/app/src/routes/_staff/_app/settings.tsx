@@ -12,7 +12,7 @@ import { Card, fieldClass, Page } from "#/components/ui-bits.tsx";
 import { field } from "#/lib/form.ts";
 import { trpcErrorInfo } from "#/lib/trpc/errors.ts";
 
-export const Route = createFileRoute("/_staff/app/settings")({
+export const Route = createFileRoute("/_staff/_app/settings")({
   component: Settings,
 });
 

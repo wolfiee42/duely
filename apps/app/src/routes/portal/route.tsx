@@ -1,6 +1,7 @@
 import { Button } from "@repo/ui/components/button";
 import { useMutation, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { createFileRoute, Link, Outlet, useNavigate } from "@tanstack/react-router";
+import { LockIcon } from "lucide-react";
 
 import { requireHostKind } from "#/lib/host.ts";
 
@@ -30,7 +31,15 @@ function PortalLayout() {
   );
 
   return (
-    <div className="mx-auto flex min-h-svh w-full max-w-2xl flex-col gap-6 px-4 py-6">
+    // The firm's brand colour drives buttons and accents for everything inside the portal.
+    <div
+      className="min-h-svh bg-background"
+      style={
+        me.firm?.brandPrimary
+          ? ({ "--primary": me.firm.brandPrimary } as React.CSSProperties)
+          : undefined
+      }
+    >
       {/* First stop for keyboard and screen-reader users: skip the header and go to the page. */}
       <a
         href="#main-content"
@@ -38,28 +47,49 @@ function PortalLayout() {
       >
         Skip to content
       </a>
-      <header
-        className="flex items-center justify-between gap-2 border-b pb-4"
-        style={{ borderColor: me.firm?.brandPrimary }}
-      >
-        <Link to="/portal" className="flex items-center gap-2 text-lg font-semibold tracking-tight">
-          {me.firm?.hasLogo && <img src="/api/logo" alt="" className="h-8 w-auto" />}
-          {me.firm?.displayName}
-        </Link>
-        {me.contact && (
-          <nav aria-label="Portal" className="flex items-center gap-2 text-sm">
-            <Link to="/portal/receipts" className="underline underline-offset-4">
-              Receipts
-            </Link>
-            <Button variant="outline" size="sm" onClick={() => logout.mutate()}>
-              Sign out
-            </Button>
-          </nav>
-        )}
+      <header className="border-b bg-card">
+        <div className="mx-auto flex w-full max-w-3xl items-center justify-between gap-2 px-4 py-4">
+          <Link
+            to="/portal"
+            className="flex items-center gap-2.5 text-lg font-semibold tracking-tight"
+          >
+            {me.firm?.hasLogo ? (
+              <img src="/api/logo" alt="" className="h-8 w-auto" />
+            ) : (
+              <span
+                aria-hidden
+                className="grid size-8 place-items-center rounded-lg bg-primary text-sm font-bold text-primary-foreground"
+              >
+                {me.firm?.displayName.slice(0, 1).toUpperCase()}
+              </span>
+            )}
+            {me.firm?.displayName}
+          </Link>
+          {me.contact && (
+            <nav aria-label="Portal" className="flex items-center gap-2 text-sm">
+              <Link
+                to="/portal/receipts"
+                className="rounded-lg px-3 py-1.5 text-muted-foreground hover:bg-muted hover:text-foreground"
+              >
+                Receipts
+              </Link>
+              <Button variant="outline" size="sm" onClick={() => logout.mutate()}>
+                Sign out
+              </Button>
+            </nav>
+          )}
+        </div>
       </header>
-      <main id="main-content" tabIndex={-1} className="outline-none">
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className="mx-auto w-full max-w-3xl px-4 py-8 outline-none sm:py-10"
+      >
         <Outlet />
       </main>
+      <footer className="mx-auto flex max-w-3xl items-center justify-center gap-1.5 px-4 pb-10 text-xs text-muted-foreground">
+        <LockIcon className="size-3" aria-hidden /> Secure payments · Powered by Duely
+      </footer>
     </div>
   );
 }

@@ -9,7 +9,7 @@ import { useState } from "react";
 import { Card, fieldClass, Page } from "#/components/ui-bits.tsx";
 import { trpcErrorInfo } from "#/lib/trpc/errors.ts";
 
-export const Route = createFileRoute("/_staff/app/policies")({
+export const Route = createFileRoute("/_staff/_app/policies")({
   component: Policies,
 });
 

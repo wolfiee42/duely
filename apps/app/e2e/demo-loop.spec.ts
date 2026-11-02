@@ -21,24 +21,24 @@ test("the demo loop: send, fast-forward, reply, promise, pay, in under 90 second
   await page.waitForURL("**/onboarding");
   await page.waitForLoadState("networkidle");
   await page.getByRole("button", { name: "Explore with sample data" }).click();
-  await page.waitForURL("**/app/demo");
+  await page.waitForURL("**/demo");
   await expect(page.getByText("Quick tour · 0 of 5")).toBeVisible();
 
   // The sample firm has history: aging buckets, a promise this week, payments.
-  await page.goto("/app");
+  await page.goto("/");
   await expect(page.getByTestId("aging-61+")).toContainText("(1)");
   await expect(page.getByTestId("promises-due").getByRole("listitem")).toHaveCount(1);
   await expect(page.getByTestId("recent-payments").getByRole("listitem")).toHaveCount(5);
 
   // 1. Send an invoice.
-  await page.goto("/app/invoices/new");
+  await page.goto("/invoices/new");
   await page.waitForLoadState("networkidle");
   await page.getByLabel("Client").selectOption({ label: "Initech" });
   await page.getByLabel("Description 1").fill("Demo consulting");
   await page.getByLabel("Quantity 1").fill("1");
   await page.getByLabel("Price 1").fill("500.00");
   await page.getByRole("button", { name: "Save draft" }).click();
-  await page.waitForURL(/\/app\/invoices\/[0-9a-f-]{36}$/);
+  await page.waitForURL(/\/invoices\/[0-9a-f-]{36}$/);
   await page.getByRole("button", { name: "Send invoice" }).click();
   const heading = page.getByRole("heading", { name: /^Invoice / });
   await expect(heading).toBeVisible();
@@ -47,7 +47,7 @@ test("the demo loop: send, fast-forward, reply, promise, pay, in under 90 second
   await expect(page.getByTestId("timeline")).toContainText("Invoice sent");
 
   // 2. Fast-forward a week.
-  await page.goto("/app/demo");
+  await page.goto("/demo");
   await page.waitForLoadState("networkidle");
   await page.getByRole("button", { name: "+7 days" }).click();
   await expect(page.getByTestId("demo-note")).toContainText("It's now");
@@ -59,14 +59,14 @@ test("the demo loop: send, fast-forward, reply, promise, pay, in under 90 second
   await expect(page.getByTestId("demo-note")).toContainText("reply arrived");
 
   // 4. The assistant read it as a promise; record it.
-  await page.goto("/app/review");
+  await page.goto("/review");
   const card = page.getByRole("listitem").filter({ hasText: number });
   await expect(card.getByTestId("suggestion")).toContainText("Looks like a promise to pay");
   await card.getByRole("button", { name: "Record the promise" }).click();
   await expect(page.getByText("Done.")).toBeVisible();
 
   // 5. Pay as the client, from the link in the outbox.
-  await page.goto("/app/demo");
+  await page.goto("/demo");
   await page.waitForLoadState("networkidle");
   const row = page
     .getByTestId("outbox")
@@ -87,10 +87,10 @@ test("the demo loop: send, fast-forward, reply, promise, pay, in under 90 second
   await clientContext.close();
 
   // The tour ticks off all five, and the whole story is on the invoice.
-  await page.goto("/app/demo");
+  await page.goto("/demo");
   await expect(page.getByText("Quick tour · 5 of 5")).toBeVisible();
   await page.getByRole("link", { name: "Open review" }).waitFor();
-  await page.goto("/app/invoices");
+  await page.goto("/invoices");
   await page.getByRole("link", { name: number }).click();
   const story = page.getByTestId("timeline");
   for (const step of ["Invoice sent", "Client replied", "Promise to pay by", "Payment received"]) {

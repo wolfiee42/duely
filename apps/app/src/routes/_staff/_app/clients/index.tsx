@@ -9,7 +9,7 @@ import { Card, Page } from "#/components/ui-bits.tsx";
 import { field } from "#/lib/form.ts";
 import { trpcErrorInfo } from "#/lib/trpc/errors.ts";
 
-export const Route = createFileRoute("/_staff/app/clients/")({
+export const Route = createFileRoute("/_staff/_app/clients/")({
   component: Clients,
 });
 
@@ -23,7 +23,7 @@ function Clients() {
     trpc.clients.create.mutationOptions({
       onSuccess: async ({ id }) => {
         await queryClient.invalidateQueries({ queryKey: trpc.clients.list.queryKey() });
-        await navigate({ to: "/app/clients/$clientId", params: { clientId: id } });
+        await navigate({ to: "/clients/$clientId", params: { clientId: id } });
       },
       onError: (error) =>
         toast.add({
@@ -73,7 +73,7 @@ function Clients() {
           {clients.map((c) => (
             <li key={c.id}>
               <Link
-                to="/app/clients/$clientId"
+                to="/clients/$clientId"
                 params={{ clientId: c.id }}
                 className="block px-4 py-3 hover:bg-muted"
               >

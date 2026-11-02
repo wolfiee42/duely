@@ -10,7 +10,7 @@ import { useState } from "react";
 import { Card, fieldClass, Page } from "#/components/ui-bits.tsx";
 import { trpcErrorInfo } from "#/lib/trpc/errors.ts";
 
-export const Route = createFileRoute("/_staff/app/invoices/import")({
+export const Route = createFileRoute("/_staff/_app/invoices/import")({
   component: ImportInvoice,
 });
 
@@ -93,7 +93,7 @@ function ImportInvoice() {
             ? "Draft created. A few things are worth a second look."
             : "Draft created.",
         });
-        await navigate({ to: "/app/invoices/$invoiceId", params: { invoiceId: created.id } });
+        await navigate({ to: "/invoices/$invoiceId", params: { invoiceId: created.id } });
       },
       onError: (error) =>
         toast.add({
@@ -116,7 +116,7 @@ function ImportInvoice() {
     <Page
       title="Import an invoice"
       actions={
-        <Button render={<Link to="/app/invoices" />} nativeButton={false} variant="ghost" size="sm">
+        <Button render={<Link to="/invoices" />} nativeButton={false} variant="ghost" size="sm">
           Back
         </Button>
       }
@@ -143,7 +143,7 @@ function ImportInvoice() {
           {failed && (
             <p className="mt-2 text-sm" role="alert" data-testid="import-failed">
               We couldn't read that file.{" "}
-              <Link to="/app/invoices/new" className="underline underline-offset-4">
+              <Link to="/invoices/new" className="underline underline-offset-4">
                 Enter the invoice by hand
               </Link>
               .
