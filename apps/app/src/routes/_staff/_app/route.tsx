@@ -134,7 +134,7 @@ function AppLayout() {
         <header className="flex h-12 items-center gap-2 px-4 sm:px-6">
           <SidebarTrigger aria-label="Toggle sidebar" />
         </header>
-        <main className="mx-auto w-full max-w-5xl px-4 pb-10 sm:px-8">
+        <main className="mx-auto w-full max-w-7xl px-4 pb-10 sm:px-8">
           <Outlet />
         </main>
       </SidebarInset>
