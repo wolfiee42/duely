@@ -120,6 +120,7 @@ export function StatTile({
   tone = "neutral",
   icon,
   testId,
+  compact = false,
 }: {
   label: string;
   value: string;
@@ -127,9 +128,13 @@ export function StatTile({
   tone?: Tone;
   icon?: ReactNode;
   testId?: string;
+  /** Tighter padding and a smaller figure, for tiles that share a row with other cards. */
+  compact?: boolean;
 }) {
   return (
-    <div className="rounded-xl border bg-card p-5 shadow-card">
+    <div
+      className={`h-full rounded-xl border bg-card shadow-card ${compact ? "flex flex-col justify-center p-4" : "p-5"}`}
+    >
       <div className="flex items-center justify-between gap-2">
         <p className="text-sm font-medium text-muted-foreground">{label}</p>
         {icon && (
@@ -140,7 +145,10 @@ export function StatTile({
           </span>
         )}
       </div>
-      <p className="mt-3 text-3xl font-semibold tracking-tight tabular-nums" data-testid={testId}>
+      <p
+        className={`font-semibold tracking-tight tabular-nums ${compact ? "mt-2 text-2xl" : "mt-3 text-3xl"}`}
+        data-testid={testId}
+      >
         {value}
       </p>
       {hint && <p className="mt-1 text-xs text-muted-foreground">{hint}</p>}

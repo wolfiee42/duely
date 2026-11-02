@@ -6,7 +6,6 @@ import {
   ArrowRightIcon,
   BanknoteIcon,
   CalendarCheckIcon,
-  CheckCircle2Icon,
   CircleDollarSignIcon,
   ClockAlertIcon,
   CreditCardIcon,
@@ -14,6 +13,7 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 
+import { DecisionDeck } from "#/components/decision-deck.tsx";
 import { Card, EmptyState, Page, StatTile } from "#/components/ui-bits.tsx";
 
 export const Route = createFileRoute("/_staff/_app/")({
@@ -35,6 +35,8 @@ const SLICE_GAP = 3;
 // Tiles rise in one after another; motion-reduce users get them instantly.
 const tile =
   "animate-in fade-in slide-in-from-bottom-2 duration-500 fill-mode-both motion-reduce:animate-none";
+const DELAYS = ["delay-100", "delay-150", "delay-200", "delay-300"];
+
 function Banner({
   icon,
   title,
@@ -70,9 +72,11 @@ function Banner({
 function AgingDonut({
   aging,
   total,
+  size,
 }: {
   aging: Record<(typeof BUCKETS)[number][0], { amountMinor: number; count: number }>;
   total: number;
+  size: string;
 }) {
   const [active, setActive] = useState<(typeof BUCKETS)[number][0] | null>(null);
   // Slices grow from nothing on first paint.
@@ -87,10 +91,10 @@ function AgingDonut({
   let offset = 0;
 
   return (
-    <div className="flex flex-wrap items-center gap-8">
+    <div className="flex w-full flex-wrap items-center gap-8">
       <svg
         viewBox="0 0 200 200"
-        className="size-56 shrink-0"
+        className={`${size} shrink-0`}
         role="img"
         aria-label="Receivables by how late they are"
       >
@@ -185,6 +189,119 @@ function Dashboard() {
   const promisedMinor = d.promisesDue.reduce((sum, p) => sum + p.amountMinor, 0);
   const collectedMinor = d.recentPayments.reduce((sum, p) => sum + p.amountMinor, 0);
 
+  const stats = [
+    <StatTile
+      key="outstanding"
+      compact
+      label="Outstanding"
+      value={formatUsd(d.outstandingMinor)}
+      hint={`${d.openCount} open invoices`}
+      icon={<CircleDollarSignIcon />}
+      tone="info"
+      testId="outstanding"
+    />,
+    <StatTile
+      key="overdue"
+      compact
+      label="Overdue"
+      value={formatUsd(d.overdueMinor)}
+      hint={
+        <>
+          {d.overdueCount} invoices
+          {d.highRiskCount > 0 && ` · ${d.highRiskCount} likely to pay late`}
+        </>
+      }
+      icon={<ClockAlertIcon />}
+      tone="danger"
+      testId="overdue"
+    />,
+    <StatTile
+      key="promised"
+      compact
+      label="Promised this week"
+      value={formatUsd(promisedMinor)}
+      hint={`${d.promisesDue.length} ${d.promisesDue.length === 1 ? "promise" : "promises"} due`}
+      icon={<CalendarCheckIcon />}
+      tone="warning"
+    />,
+    <StatTile
+      key="collected"
+      compact
+      label="Recently collected"
+      value={formatUsd(collectedMinor)}
+      hint={`${d.recentPayments.length} latest payments`}
+      icon={<BanknoteIcon />}
+      tone="success"
+    />,
+  ];
+
+  const aging = (
+    <section
+      className={`${tile} flex flex-col rounded-2xl border bg-card p-5 text-card-foreground shadow-card delay-75`}
+    >
+      <h2 className="text-sm font-medium text-muted-foreground">Who owes you, by how late</h2>
+      <div className="flex flex-1 items-center">
+        <AgingDonut aging={d.aging} total={total} size="size-48" />
+      </div>
+    </section>
+  );
+
+  const promises = (
+    <div className={`${tile} delay-300`}>
+      <Card title="Promises due this week">
+        {d.promisesDue.length === 0 ? (
+          <EmptyState icon={<CalendarCheckIcon />}>No promised payments this week.</EmptyState>
+        ) : (
+          <ul className="-my-2 divide-y text-sm" data-testid="promises-due">
+            {d.promisesDue.map((p) => (
+              <li key={p.id} className="flex items-center justify-between gap-3 py-3">
+                <Link
+                  to="/invoices/$invoiceId"
+                  params={{ invoiceId: p.invoiceId }}
+                  className="min-w-0 hover:underline"
+                >
+                  <span className="block truncate font-medium">{p.clientName}</span>
+                  <span className="text-xs text-muted-foreground">
+                    {p.number} · by {p.promisedDate}
+                  </span>
+                </Link>
+                <span className="font-medium tabular-nums">{formatUsd(p.amountMinor)}</span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
+    </div>
+  );
+
+  const payments = (
+    <div className={`${tile} delay-300`}>
+      <Card title="Recent payments">
+        {d.recentPayments.length === 0 ? (
+          <EmptyState icon={<AlertCircleIcon />}>No payments yet.</EmptyState>
+        ) : (
+          <ul className="-my-2 divide-y text-sm" data-testid="recent-payments">
+            {d.recentPayments.map((p) => (
+              <li key={p.id} className="flex items-center justify-between gap-3 py-3">
+                <Link
+                  to="/invoices/$invoiceId"
+                  params={{ invoiceId: p.invoiceId }}
+                  className="min-w-0 hover:underline"
+                >
+                  <span className="block truncate font-medium">{p.clientName}</span>
+                  <span className="text-xs text-muted-foreground">{p.number}</span>
+                </Link>
+                <span className="font-medium text-success tabular-nums">
+                  +{formatUsd(p.amountMinor)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
+    </div>
+  );
+
   return (
     <Page
       title={`Welcome to ${firm.firm.displayName}`}
@@ -206,154 +323,18 @@ function Dashboard() {
         />
       )}
 
-      <div className="grid gap-4 lg:grid-cols-12">
-        <section
-          className={`${tile} flex flex-col rounded-2xl border p-6 lg:col-span-4 lg:row-span-2 ${d.waitingForReview > 0 ? "border-primary bg-primary text-primary-foreground" : "bg-card shadow-card"}`}
-        >
-          {d.waitingForReview > 0 ? (
-            <>
-              <p className="flex items-center gap-2 text-sm opacity-90">
-                <span aria-hidden className="size-2 animate-pulse rounded-full bg-current" />
-                Needs your decision
-              </p>
-              <p className="mt-4 text-8xl leading-none font-bold tracking-tighter tabular-nums">
-                {d.waitingForReview}
-              </p>
-              <p className="mt-2 text-lg font-semibold">
-                {d.waitingForReview === 1 ? "item waiting" : "items waiting"}
-              </p>
-              <p className="mt-2 text-sm opacity-90">
-                Drafts and replies are waiting for you. Nothing goes out until you approve it.
-              </p>
-              <Link
-                to="/review"
-                className="mt-auto inline-flex w-fit items-center gap-1.5 rounded-lg bg-background px-4 py-2.5 text-sm font-semibold text-primary shadow-card transition-shadow hover:shadow-lg"
-              >
-                Open review <ArrowRightIcon className="size-4" />
-              </Link>
-            </>
-          ) : (
-            <>
-              <span className="grid size-10 place-items-center rounded-xl bg-success-soft text-success [&_svg]:size-5">
-                <CheckCircle2Icon />
-              </span>
-              <p className="mt-4 text-xl font-semibold">All caught up</p>
-              <p className="mt-2 text-sm text-muted-foreground">
-                Nothing is waiting for your decision. Reminders keep going out on schedule.
-              </p>
-              <Link
-                to="/review"
-                className="mt-auto inline-flex w-fit items-center gap-1.5 text-sm font-medium text-primary hover:underline"
-              >
-                Open review <ArrowRightIcon className="size-4" />
-              </Link>
-            </>
-          )}
-        </section>
-
-        <section
-          className={`${tile} rounded-2xl border bg-card p-6 text-card-foreground shadow-card delay-75 lg:col-span-8 lg:row-span-2`}
-        >
-          <h2 className="mb-4 text-sm font-medium text-muted-foreground">
-            Who owes you, by how late
-          </h2>
-          <AgingDonut aging={d.aging} total={total} />
-        </section>
-
-        <div className={`${tile} delay-100 lg:col-span-3`}>
-          <StatTile
-            label="Outstanding"
-            value={formatUsd(d.outstandingMinor)}
-            hint={`${d.openCount} open invoices`}
-            icon={<CircleDollarSignIcon />}
-            tone="info"
-            testId="outstanding"
-          />
+      <div className="grid gap-4 lg:grid-cols-12 lg:grid-rows-[16.5rem_16.5rem_auto]">
+        <DecisionDeck className={`${tile} lg:col-span-4 lg:row-span-2`} />
+        <div className="flex flex-col lg:col-span-8 lg:row-start-1 [&>section]:flex-1">{aging}</div>
+        <div className="grid gap-4 sm:grid-cols-2 lg:col-span-8 lg:row-start-2">
+          {stats.map((stat, n) => (
+            <div key={stat.key} className={`${tile} ${DELAYS[n]}`}>
+              {stat}
+            </div>
+          ))}
         </div>
-        <div className={`${tile} delay-150 lg:col-span-3`}>
-          <StatTile
-            label="Overdue"
-            value={formatUsd(d.overdueMinor)}
-            hint={
-              <>
-                {d.overdueCount} invoices
-                {d.highRiskCount > 0 && ` · ${d.highRiskCount} likely to pay late`}
-              </>
-            }
-            icon={<ClockAlertIcon />}
-            tone="danger"
-            testId="overdue"
-          />
-        </div>
-        <div className={`${tile} delay-200 lg:col-span-3`}>
-          <StatTile
-            label="Promised this week"
-            value={formatUsd(promisedMinor)}
-            hint={`${d.promisesDue.length} ${d.promisesDue.length === 1 ? "promise" : "promises"} due`}
-            icon={<CalendarCheckIcon />}
-            tone="warning"
-          />
-        </div>
-        <div className={`${tile} delay-300 lg:col-span-3`}>
-          <StatTile
-            label="Recently collected"
-            value={formatUsd(collectedMinor)}
-            hint={`${d.recentPayments.length} latest payments`}
-            icon={<BanknoteIcon />}
-            tone="success"
-          />
-        </div>
-
-        <div className={`${tile} delay-300 lg:col-span-6`}>
-          <Card title="Promises due this week">
-            {d.promisesDue.length === 0 ? (
-              <EmptyState icon={<CalendarCheckIcon />}>No promised payments this week.</EmptyState>
-            ) : (
-              <ul className="-my-2 divide-y text-sm" data-testid="promises-due">
-                {d.promisesDue.map((p) => (
-                  <li key={p.id} className="flex items-center justify-between gap-3 py-3">
-                    <Link
-                      to="/invoices/$invoiceId"
-                      params={{ invoiceId: p.invoiceId }}
-                      className="min-w-0 hover:underline"
-                    >
-                      <span className="block truncate font-medium">{p.clientName}</span>
-                      <span className="text-xs text-muted-foreground">
-                        {p.number} · by {p.promisedDate}
-                      </span>
-                    </Link>
-                    <span className="font-medium tabular-nums">{formatUsd(p.amountMinor)}</span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Card>
-        </div>
-        <div className={`${tile} delay-300 lg:col-span-6`}>
-          <Card title="Recent payments">
-            {d.recentPayments.length === 0 ? (
-              <EmptyState icon={<AlertCircleIcon />}>No payments yet.</EmptyState>
-            ) : (
-              <ul className="-my-2 divide-y text-sm" data-testid="recent-payments">
-                {d.recentPayments.map((p) => (
-                  <li key={p.id} className="flex items-center justify-between gap-3 py-3">
-                    <Link
-                      to="/invoices/$invoiceId"
-                      params={{ invoiceId: p.invoiceId }}
-                      className="min-w-0 hover:underline"
-                    >
-                      <span className="block truncate font-medium">{p.clientName}</span>
-                      <span className="text-xs text-muted-foreground">{p.number}</span>
-                    </Link>
-                    <span className="font-medium text-success tabular-nums">
-                      +{formatUsd(p.amountMinor)}
-                    </span>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </Card>
-        </div>
+        <div className="lg:col-span-6 lg:row-start-3">{promises}</div>
+        <div className="lg:col-span-6 lg:row-start-3">{payments}</div>
       </div>
     </Page>
   );
