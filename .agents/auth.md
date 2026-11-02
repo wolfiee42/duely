@@ -9,9 +9,9 @@
 
 ## Route Guards
 
-- Protected route layout is `apps/web/src/routes/_auth/route.tsx`.
+- Protected route layout is `apps/app/src/routes/_auth/route.tsx`.
   - It enforces auth in `beforeLoad` using TanStack Query for optimized navigation UX.
-- Guest-only route layout is `apps/web/src/routes/_guest/route.tsx`.
+- Guest-only route layout is `apps/app/src/routes/_guest/route.tsx`.
   - It redirects authenticated users away from login/signup routes.
 
 ## Server Functions and Mutations

@@ -3,7 +3,7 @@ import type { CloudflareClient } from "@repo/cloudflare";
 import type { EmailClient } from "@repo/email";
 import type { StripeClient } from "@repo/stripe";
 
-// Ports for everything outside Postgres. Runtime wires real adapters (apps/web, workers/jobs);
+// Ports for everything outside Postgres. Runtime wires real adapters (apps/app, workers/jobs);
 // tests wire in-memory fakes, so default runs never touch a remote service.
 
 export interface FilesPort {

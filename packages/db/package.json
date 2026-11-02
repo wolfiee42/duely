@@ -9,8 +9,8 @@
     "./testing": "./src/testing.ts"
   },
   "scripts": {
-    "db": "varlock run --path ../../apps/web -- drizzle-kit",
-    "auth:generate": "varlock run --path ../../apps/web -- vpx auth@latest generate --config ../auth/src/cli.ts --y --output ./src/schema/auth.schema.ts",
+    "db": "varlock run --path ../../apps/app -- drizzle-kit",
+    "auth:generate": "varlock run --path ../../apps/app -- vpx auth@latest generate --config ../auth/src/cli.ts --y --output ./src/schema/auth.schema.ts",
     "e2e:prepare": "node --experimental-strip-types scripts/prepare-e2e.ts"
   },
   "dependencies": {

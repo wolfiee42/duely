@@ -1,6 +1,6 @@
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "duely-web",
+  "name": "duely-app",
   "compatibility_date": "2026-10-01",
   "compatibility_flags": ["nodejs_compat"],
   "main": "@tanstack/react-start/server-entry",
@@ -20,7 +20,7 @@
       "localConnectionString": "postgresql://duely_system:duely_system@localhost:5432/duely",
     },
   ],
-  // D24: the web Worker only produces; workers/jobs consumes.
+  // D24: the app Worker only produces; workers/jobs consumes.
   "queues": { "producers": [{ "binding": "QUEUE_MAIN", "queue": "duely-main" }] },
   "r2_buckets": [{ "binding": "FILES", "bucket_name": "duely-files" }],
 }

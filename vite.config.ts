@@ -21,7 +21,7 @@ const ALL_REPO = [
   "@repo/logger",
   "@repo/stripe",
   "@repo/ui",
-  "@repo/web",
+  "@repo/app",
 ];
 const without = (...keep: string[]) => ALL_REPO.filter((p) => !keep.includes(p));
 const boundary = (files: string[], banned: string[], message: string) => {
@@ -225,12 +225,12 @@ export default defineConfig({
         "jobs may import db, domain, clock, email, ai, stripe, cloudflare and api/usecases only (SPEC 1.2)",
       ),
       boundary(
-        ["apps/web/**"],
+        ["apps/app/**"],
         [
-          ...without("@repo/web", "@repo/api", "@repo/auth", "@repo/ui", "@repo/logger"),
+          ...without("@repo/app", "@repo/api", "@repo/auth", "@repo/ui", "@repo/logger"),
           ...DB_DRIVERS,
         ],
-        "web may import api, auth, ui and logger only (SPEC 1.2)",
+        "app may import api, auth, ui and logger only (SPEC 1.2)",
       ),
       boundary(["packages/ui/**"], without("@repo/ui"), "ui has no domain knowledge (SPEC 1.2)"),
     ],

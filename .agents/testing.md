@@ -45,7 +45,7 @@ Test application-owned integration behavior locally, including calculations, ext
 
 - Colocate Vitest tests with source code as `*.test.ts` or `*.test.tsx`. Put Playwright tests under `e2e/` as `*.spec.ts`. Do not create a `__tests__` directory unless a feature has enough test-only files to justify grouping them.
 - Import Vitest APIs from `vite-plus/test`.
-- Keep Playwright tests, config, and dependency with each browser app (for example, `apps/web/e2e/**/*.spec.ts`).
+- Keep Playwright tests, config, and dependency with each browser app (for example, `apps/app/e2e/**/*.spec.ts`).
 - `vpr test`: Run all Vitest unit and local integration tests once.
 - `vpr test watch`: Run the Vitest suite in watch mode.
 - `vpx playwright install chromium`: Install the E2E browser once per machine.

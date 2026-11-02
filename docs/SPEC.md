@@ -32,7 +32,7 @@
 | D21 | SSR data                            | On the server, tRPC runs in-process (options proxy bound to the router and request context); in the browser it uses `httpBatchLink`. Loaders follow Cove's `.agents/data-flow.md` (Query owns server data)                                                                                                                                                                              | No self-HTTP on Workers; keeps Cove's data rules                                                                                   |
 | D22 | Short transactions, outbox          | Hyperdrive holds a connection for the whole transaction, so transactions contain **DB work only**: no Stripe, Resend, Claude, or R2 calls inside one. Outbound email is an outbox: insert `messages(status='queued')`, commit, then enqueue `send_message`. Same for receipts and notifications                                                                                         | Correct under Hyperdrive and crash-safe                                                                                            |
 | D23 | Env and bindings                    | **Resolved in P0-05.** Strings (secrets, URLs, flags) are declared in the Varlock schema and read via `ENV` from `varlock/env`, using `@varlock/cloudflare-integration` (`varlockCloudflareVitePlugin`, `varlock-wrangler deploy`) so secrets become Cloudflare secrets and are never bundled. Bindings (Hyperdrive, R2, Queues, ...) come from the Worker `env` (`cloudflare:workers`) | `@varlock/vite-integration` baked build-time secrets into the Worker source (ADR P0-05)                                            |
-| D24 | Jobs worker                         | One extra Worker, `workers/jobs`, exporting `scheduled()` (tick) and `queue()` (consumers). The web Worker only produces to the queue                                                                                                                                                                                                                                                   | Avoids custom-entry tricks in the Start Worker                                                                                     |
+| D24 | Jobs worker                         | One extra Worker, `workers/jobs`, exporting `scheduled()` (tick) and `queue()` (consumers). The app Worker only produces to the queue                                                                                                                                                                                                                                                   | Avoids custom-entry tricks in the Start Worker                                                                                     |
 | D25 | Repo provenance                     | Create from **`mugnavo/cove-monorepo`** (not the single-package `cove`) as a GitHub template rather than a fork; keep `.cove.jsonc` so Cove's `sync-template` skill can pull upstream changes; credit Cove Stack in the README                                                                                                                                                          | The monorepo already has `apps/`, `packages/{auth,db,ui,logger}`, `tools/tsconfig`; a template gives a clean history for a CV repo |
 | D26 | Toolchain                           | Keep Cove's pinned toolchain (Vite+, Oxlint/Oxfmt, pnpm 12, Node 24, TypeScript 7, Drizzle 1.0 RC, Tailwind 4, shadcn on Base UI). Spike P0-02 confirms `@cloudflare/vite-plugin` works with Cove's aliased `vite`; fallback is plain Vite. No dependency upgrades mid-build                                                                                                            | Cove's versions are very new; stability beats freshness                                                                            |
 | D27 | Auth tables                         | better-auth tables (`user`, `session`, `account`, `verification`) are not tenant-scoped and have no RLS. `members` links a user to exactly one firm in v1                                                                                                                                                                                                                               | better-auth owns that schema                                                                                                       |
@@ -51,7 +51,7 @@ Created from `mugnavo/cove-monorepo`. Items marked (Cove) come from the template
 ```
 duely/
   apps/
-    web/                           # TanStack Start app, deployed as a Cloudflare Worker
+    app/                           # TanStack Start app, deployed as a Cloudflare Worker
       src/
         routes/
           __root.tsx               # (Cove)
@@ -105,7 +105,7 @@ duely/
 | `auth`                                | `db`                                                                           | `apps/*`                               |
 | `api`                                 | all packages above                                                             | `apps/*`, `workers/*`                  |
 | `workers/jobs`                        | `db`, `domain`, `clock`, `email`, `ai`, `stripe`, `cloudflare`, `api/usecases` | `api/hono`, `api/trpc`, `apps/*`       |
-| `apps/web`                            | `api`, `auth`, `ui`, `logger`                                                  | `workers/*`                            |
+| `apps/app`                            | `api`, `auth`, `ui`, `logger`                                                  | `workers/*`                            |
 | `ui`                                  | nothing from the domain                                                        | domain packages                        |
 
 Enforced with import-restriction lint rules (P1-01). `packages/domain` stays pure so state machines and the planner are unit-testable without infrastructure.
@@ -160,7 +160,7 @@ Rules:
 - Hono mounting, following Cove's server-route style:
 
 ```ts
-// apps/web/src/routes/api/$.ts
+// apps/app/src/routes/api/$.ts
 export const Route = createFileRoute("/api/$")({
   server: {
     handlers: {
@@ -979,7 +979,7 @@ CI gates: `vp check` (format, lint, types), unit, integration (Postgres service 
 
 | Worker         | Entry                                                                                             | Bindings and triggers                                                                                                                                    |
 | -------------- | ------------------------------------------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `apps/web`     | `@tanstack/react-start/server-entry` (TanStack's documented Workers setup), flags `nodejs_compat` | `HYPERDRIVE_APP`, `QUEUE_MAIN` (producer), `FILES` (R2), static assets; routes `app.<domain>/*`, `*.<domain>/*`, and the custom-hostname fallback origin |
+| `apps/app`     | `@tanstack/react-start/server-entry` (TanStack's documented Workers setup), flags `nodejs_compat` | `HYPERDRIVE_APP`, `QUEUE_MAIN` (producer), `FILES` (R2), static assets; routes `app.<domain>/*`, `*.<domain>/*`, and the custom-hostname fallback origin |
 | `workers/jobs` | `src/index.ts` exporting `scheduled` and `queue`                                                  | `HYPERDRIVE_SYSTEM`, `QUEUE_MAIN` (consumer), `FILES` (R2); cron `* * * * *`                                                                             |
 
 Hyperdrive rules (D4, D22, D28):
@@ -1124,4 +1124,4 @@ Settled in Rev 2: file storage is R2 (`FILES` binding); Postgres access is throu
 5. **Logging without Nitro:** evlog is wired through Nitro in Cove. Replace it with Hono and Start middleware that emit one event per request, and confirm evlog works on Workers; fallback is a small structured logger in `packages/logger`.
 6. **Pre-1.0 dependencies:** Drizzle 1.0 RC (relations v2), TypeScript 7, and the Vite+ toolchain are pinned by Cove. Pin them and take upgrades only between phases, using the `sync-template` skill.
 7. **Auto-classification default:** promise and dispute auto-creation is off unless the firm enables `auto_classify_actions`.
-8. **Two apps instead of one:** splitting `apps/web` into a staff app and a portal app would give a harder deployment boundary. Rejected for v1 because host-kind gating plus separate routers covers the risk at lower cost; revisit if the portal needs independent scaling.
+8. **Two apps instead of one:** splitting `apps/app` into a staff app and a portal app would give a harder deployment boundary. Rejected for v1 because host-kind gating plus separate routers covers the risk at lower cost; revisit if the portal needs independent scaling.

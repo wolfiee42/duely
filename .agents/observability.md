@@ -6,7 +6,7 @@ Do not add permanent application logs merely as a routine part of implementation
 
 ## TanStack Start
 
-- Call `useLogger()` from `apps/web/src/lib/logger.server.ts` only inside server request work (server functions, server route handlers, or services called by them).
+- Call `useLogger()` from `apps/app/src/lib/logger.server.ts` only inside server request work (server functions, server route handlers, or services called by them).
 - Add context progressively with `log.set({ ... })`. Use stable, queryable field names and nested objects for related fields.
 - A request already produces one Nitro-owned event. Do not add separate `log.info()` milestone events inside it; add the outcome and relevant context to the request logger instead.
 - Do not call `emit()` for request work. Nitro emits the completed wide event after the response finishes.
@@ -31,7 +31,7 @@ throw createError({
 });
 ```
 
-Framework wiring stays in `apps/web`: `nitro.config.ts` registers the Nitro v3 module and `src/routes/__root.tsx` installs Start's error middleware.
+Framework wiring stays in `apps/app`: `nitro.config.ts` registers the Nitro v3 module and `src/routes/__root.tsx` installs Start's error middleware.
 
 ## Standalone server work
 
@@ -58,7 +58,7 @@ try {
 }
 ```
 
-Call `initLogger()` once at the entry point of a standalone process. Do not call it in request handlers or in `apps/web`; the Nitro module initializes evlog there. Use the simple `log` API from `@repo/logger/server` only for rare one-off lifecycle events where a progressively built wide event would add no value.
+Call `initLogger()` once at the entry point of a standalone process. Do not call it in request handlers or in `apps/app`; the Nitro module initializes evlog there. Use the simple `log` API from `@repo/logger/server` only for rare one-off lifecycle events where a progressively built wide event would add no value.
 
 `DEFAULT_REDACT_CONFIG` redacts common credential fields in every configured server integration. It is a backstop, not permission to add raw headers, cookies, request bodies, or full records to log context.
 

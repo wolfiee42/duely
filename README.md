@@ -107,7 +107,7 @@ Requires Node 24, pnpm 12 and [Vite+](https://viteplus.dev) (`vp`; `vpr` is shor
 ```sh
 vp install
 docker compose up -d db          # or ./dev.sh, which also runs the dev server
-# create apps/web/.env.local with your values (see apps/web/.env.schema); SERVICES_MODE=fake needs no provider keys
+# create apps/app/.env.local with your values (see apps/app/.env.schema); SERVICES_MODE=fake needs no provider keys
 vpr env:load                     # validate
 vpr db migrate
 vpr dev                          # http://app.localhost:3000
@@ -126,7 +126,7 @@ The suite includes the gates the spec marks as never-cut: tenant isolation, host
 
 ### Environment
 
-Variables are declared in [`apps/web/.env.schema`](apps/web/.env.schema) with [Varlock](https://varlock.dev); secrets (Stripe, Resend, Cloudflare, `ANTHROPIC_API_KEY`) are Workers secrets, never committed. The jobs worker needs `RESEND_API_KEY`, `CLOUDFLARE_API_TOKEN` and `ANTHROPIC_API_KEY` as well. Hyperdrive, Queue and R2 identifiers in the `wrangler.jsonc` files are placeholders until you create the resources.
+Variables are declared in [`apps/app/.env.schema`](apps/app/.env.schema) with [Varlock](https://varlock.dev); secrets (Stripe, Resend, Cloudflare, `ANTHROPIC_API_KEY`) are Workers secrets, never committed. The jobs worker needs `RESEND_API_KEY`, `CLOUDFLARE_API_TOKEN` and `ANTHROPIC_API_KEY` as well. Hyperdrive, Queue and R2 identifiers in the `wrangler.jsonc` files are placeholders until you create the resources.
 
 ## Credits
 
